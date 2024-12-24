@@ -38,12 +38,12 @@ const Landing = () => {
             </View>
             <Modalize
                 ref={modalizeRef}
-                modalHeight={220}
+                adjustToContentHeight={true}
                 modalStyle={generalStyle.background[colorScheme]}
             >
                 <View style={styles.modalContent}>
-                    <Pressable onPress={()=> router.push("/userRegister")} style={{ ...styles.loginButton, marginTop: 40 }}><Text style={{ ...styles.buttonText, ...generalStyle.buttonText[colorScheme] }}>I am looking for service providers</Text></Pressable>
-                    <Pressable style={{ ...styles.registerButton, ...generalStyle.border[colorScheme] }}><Text style={{ ...styles.buttonText, ...generalStyle.text[colorScheme] }}>I am a service provider</Text></Pressable>
+                    <Pressable onPress={()=> router.push("/userRegister")} style={{ ...styles.loginButton, marginTop: 40 }}><Text style={{ ...styles.buttonText, ...generalStyle.buttonText.light }}>I am looking for service providers</Text></Pressable>
+                    <Pressable onPress={()=> router.push("/providerRegister1")} style={{ ...styles.registerButton, ...generalStyle.border[colorScheme] }}><Text style={{ ...styles.buttonText, ...generalStyle.text[colorScheme] }}>I am a service provider</Text></Pressable>
                 </View>
             </Modalize>
         </>
@@ -73,7 +73,8 @@ const styles = StyleSheet.create({
     },
     modalContent: {
         padding: 20,
-        paddingTop: 1
+        paddingTop: 1,
+        height: 220
     },
     carouselView: {
         display: "flex",

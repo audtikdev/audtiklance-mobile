@@ -44,6 +44,14 @@ export const generalStyle = {
       backgroundColor: "#FFFFFF",
     },
   },
+  modalBackground: {
+    dark: {
+      backgroundColor: "#000000",
+    },
+    light: {
+      backgroundColor: "#FFFFFF",
+    },
+  },
   divider: {
     dark: {
       backgroundColor: "#FFFFFF",

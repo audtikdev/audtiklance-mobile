@@ -27,13 +27,13 @@ const ForgotPassword = () => {
             </KeyboardAvoidingView>
             <Modalize
                 ref={modalizeRef}
-                modalHeight={280}
+                adjustToContentHeight={true}
                 modalStyle={generalStyle.background[colorScheme]}
             >
                 <View style={styles.modalContent}>
-                   <Text style={styles.emailTitle}>Reset Password Email Sent</Text>
+                   <Text style={{...styles.emailTitle, ...generalStyle.text[colorScheme]}}>Reset Password Email Sent</Text>
                    <Image style={{width: 150, height: 150}} source={require("../../assets/images/email.png")} />
-                   <Text style={styles.emailText}>Check Your Email For The Link To Reset Your Password</Text>
+                   <Text style={{...styles.emailText, ...generalStyle.text[colorScheme]}}>Check Your Email For The Link To Reset Your Password</Text>
                 </View>
             </Modalize>
         </>
@@ -63,7 +63,8 @@ const styles = StyleSheet.create({
         padding: 25,
         display: "flex",
         alignItems: "center",
-        justifyContent: "center"
+        justifyContent: "center",
+        height: 280
     },
     profileText: {
         fontSize: 18,
