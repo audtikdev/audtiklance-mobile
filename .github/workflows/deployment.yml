@@ -28,4 +28,4 @@ jobs:
         env:
           EXPO_TOKEN: kmBhZO3-kKk5rN7l3RirNx9E2q-4aHz0O_eMYv9u
         run: |
-          eas update --platform all --message "Automatic update via GitHub Actions"
+          eas update --platform all --branch main --message "Automatic update via GitHub Actions"
