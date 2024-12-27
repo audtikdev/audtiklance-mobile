@@ -1,0 +1,12 @@
+steps:
+  - name: Checkout repository
+    uses: actions/checkout@v3
+
+  - name: Install dependencies
+    run: yarn install
+
+  - name: Build and upload with EAS Update
+    env:
+      EXPO_TOKEN: kmBhZO3-kKk5rN7l3RirNx9E2q-4aHz0O_eMYv9u
+    run: |
+      npx eas update --platform all --message "Automatic update via GitHub Actions"

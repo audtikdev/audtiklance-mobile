@@ -1,11 +1,14 @@
-import { View, Text, Image, ImageSourcePropType, StyleSheet, Pressable } from 'react-native'
+import { View, Text, Image, ImageSourcePropType, StyleSheet, Pressable, useColorScheme } from 'react-native'
 import React from 'react'
+import { generalStyle } from '@/style/generalStyle'
 
 const CategoryCard: React.FC<{ category: { title: string, icon: string } }> = ({ category }) => {
+    const colorScheme = useColorScheme() || "light"
+
     return (
-        <Pressable style={styles.cardContainer}>
+        <Pressable style={{...styles.cardContainer, ...generalStyle.background[colorScheme]}}>
             <Image style={styles.cardIcon} source={category?.icon as ImageSourcePropType} />
-            <Text>{category?.title}</Text>
+            <Text style={{ ...generalStyle.text[colorScheme]}}>{category?.title}</Text>
         </Pressable>
     )
 }

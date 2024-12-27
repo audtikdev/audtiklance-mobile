@@ -52,7 +52,7 @@ const Login = () => {
             <Modalize
                 ref={modalizeRef}
                 adjustToContentHeight={true}
-                modalStyle={generalStyle.background[colorScheme]}
+                modalStyle={generalStyle.modalBackground[colorScheme]}
             >
                 <View style={styles.modalContent}>
                     <Pressable onPress={() => router.push("/userRegister")} style={{ ...styles.loginButton, marginTop: 40 }}><Text style={{ ...styles.buttonText, ...generalStyle.buttonText.light }}>I am looking for service providers</Text></Pressable>

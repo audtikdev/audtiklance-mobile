@@ -121,7 +121,7 @@ const ProviderRegister3 = () => {
             <Modalize
                 ref={modalizeRef}
                 adjustToContentHeight={true}
-                modalStyle={generalStyle.background[colorScheme]}
+                modalStyle={generalStyle.modalBackground[colorScheme]}
                 closeOnOverlayTap={false}
             >
                 <View style={styles.modalContent}>

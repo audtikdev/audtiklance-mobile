@@ -1,3 +1,4 @@
+import { Service } from "@/types/service"
 
 export const popularCategories = [
     {
@@ -25,3 +26,42 @@ export const popularCategories = [
         icon: require("../assets/images/electrical-icon.png")
     },
 ]
+
+export const fakeServices: Service[] = [
+    {
+        name: "Plumbing",
+        business_name: "Rejoice Plumbing",
+        price: "3000",
+        image: "https://res.cloudinary.com/duqgr7s10/image/upload/v1733419858/samples/imagecon-group.jpg"
+    },
+    {
+        name: "Plumbing",
+        business_name: "Rejoice Plumbing",
+        price: "3000",
+        image: "https://res.cloudinary.com/duqgr7s10/image/upload/v1733419858/samples/imagecon-group.jpg"
+    },
+    {
+        name: "Plumbing",
+        business_name: "Rejoice Plumbing",
+        price: "3000",
+        image: "https://res.cloudinary.com/duqgr7s10/image/upload/v1733419858/samples/imagecon-group.jpg"
+    },
+    {
+        name: "Plumbing",
+        business_name: "Rejoice Plumbing",
+        price: "3000",
+        image: "https://res.cloudinary.com/duqgr7s10/image/upload/v1733419858/samples/imagecon-group.jpg"
+    },
+    {
+        name: "Plumbing",
+        business_name: "Rejoice Plumbing",
+        price: "3000",
+        image: "https://res.cloudinary.com/duqgr7s10/image/upload/v1733419858/samples/imagecon-group.jpg"
+    },
+    {
+        name: "Plumbing",
+        business_name: "Rejoice Plumbing",
+        price: "3000",
+        image: "https://res.cloudinary.com/duqgr7s10/image/upload/v1733419858/samples/imagecon-group.jpg"
+    },
+]   

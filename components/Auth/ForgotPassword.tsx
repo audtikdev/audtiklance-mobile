@@ -28,7 +28,7 @@ const ForgotPassword = () => {
             <Modalize
                 ref={modalizeRef}
                 adjustToContentHeight={true}
-                modalStyle={generalStyle.background[colorScheme]}
+                modalStyle={generalStyle.modalBackground[colorScheme]}
             >
                 <View style={styles.modalContent}>
                    <Text style={{...styles.emailTitle, ...generalStyle.text[colorScheme]}}>Reset Password Email Sent</Text>

@@ -1,6 +1,5 @@
-import { View, Text, TouchableOpacity, StyleSheet, TextInput, useColorScheme, FlatList, Pressable } from 'react-native'
+import { View, Text, TouchableOpacity, StyleSheet, TextInput, useColorScheme, FlatList, Pressable, Keyboard } from 'react-native'
 import React, { useState } from 'react'
-import Autocomplete from "react-native-autocomplete-input";
 import { generalStyle } from '@/style/generalStyle';
 
 const AutoSearch: React.FC<{ data: any, query: string, onChangeText: any, objectKey: string, onChangeValue: any, placeholder: string }> = ({ data, query, onChangeText, objectKey, onChangeValue, placeholder }) => {
@@ -8,7 +7,7 @@ const AutoSearch: React.FC<{ data: any, query: string, onChangeText: any, object
     const [showList, setShowList] = useState(false)
 
     const renderItem = ({ item }: { item: any }) => (
-        <Pressable onPress={()=> {setShowList(false); onChangeValue(item)}} style={styles.item}>
+        <Pressable onPress={()=> {Keyboard.dismiss; setShowList(false); onChangeValue(item)}} style={styles.item}>
             <Text>{item?.[objectKey]}</Text>
         </Pressable>
     );
