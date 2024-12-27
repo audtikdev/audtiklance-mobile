@@ -21,8 +21,11 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Install EAS CLI
+        run: npm install -g eas-cli
+
       - name: Build and upload with EAS Update
         env:
           EXPO_TOKEN: kmBhZO3-kKk5rN7l3RirNx9E2q-4aHz0O_eMYv9u
         run: |
-          npx eas update --platform all --message "Automatic update via GitHub Actions"
+          eas update --platform all --message "Automatic update via GitHub Actions"
