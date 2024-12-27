@@ -8,6 +8,16 @@
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
+    "extra": {
+      "MAPBOX_KEY": "pk.eyJ1IjoidmlrdG9oIiwiYSI6ImNrcmpyamM1ZjA1ZG8ydnBjbWRpOWtjN2kifQ.auBvgsbud2l08nrj8lXZfg",
+      "BASE_API": "https://api.audtiklance.com/api",
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "99a4064b-a946-47ac-b868-2346aead1e58"
+      }
+    },
     "ios": {
       "supportsTablet": true
     },
@@ -32,10 +42,22 @@
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
         }
+      ],
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Allow Audtiklance to use your location."
+        }
       ]
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/99a4064b-a946-47ac-b868-2346aead1e58"
     }
   }
 }
