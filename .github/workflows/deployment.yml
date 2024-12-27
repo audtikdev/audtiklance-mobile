@@ -3,27 +3,26 @@ name: Deploy to Expo Go with EAS Update
 on:
   push:
     branches:
-      - main  # or your preferred branch
+      - main  # Replace with your branch name if not 'main'
 
 jobs:
   eas-update:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
-    uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '20'  # or your required Node.js version
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'  # Replace with your required Node.js version
 
-    - name: Install dependencies
-      run: npm install
+      - name: Install dependencies
+        run: npm install
 
-    - name: Build and upload with EAS Update
-      env:
-        EXPO_TOKEN: kmBhZO3-kKk5rN7l3RirNx9E2q-4aHz0O_eMYv9u
-      run: |
-        npx eas update --platform all --message "Automatic update via GitHub Actions"
-
+      - name: Build and upload with EAS Update
+        env:
+          EXPO_TOKEN: kmBhZO3-kKk5rN7l3RirNx9E2q-4aHz0O_eMYv9u
+        run: |
+          npx eas update --platform all --message "Automatic update via GitHub Actions"
