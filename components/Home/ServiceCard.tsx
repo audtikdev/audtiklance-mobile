@@ -15,13 +15,13 @@ const ServiceCard: React.FC<{ service: Service, width?: DimensionValue }> = ({ s
                 <Pressable style={styles.iconContainer}>
                     <AntDesign name="hearto" size={14} color="black" />
                 </Pressable>
-                <Pressable onPress={()=> router.push("/service-detail/1")}>
-                    <Image style={styles.image} source={{ uri: service?.image }} />
+                <Pressable onPress={()=> router.push(`/service-detail/${service?.id}`)}>
+                    <Image style={styles.image} source={{ uri: service?.profile_picture }} />
                 </Pressable>
             </View>
-            <Text onPress={()=> router.push("/service-detail/1")} numberOfLines={1} style={{ fontSize: 15, fontWeight: 600, marginTop: 10, marginBottom: 3, ...generalStyle.text[colorScheme] }}>{service?.business_name}</Text>
-            <Text onPress={()=> router.push("/service-detail/1")} style={{ fontSize: 13, fontWeight: 400, ...generalStyle.text[colorScheme] }}>{service?.name}</Text>
-            <Text onPress={()=> router.push("/service-detail/1")} style={{ fontSize: 15, fontWeight: 600, marginTop: 5, ...generalStyle.text[colorScheme] }}>{formatCurrency("en-US", "USD", Number(service?.price!))}</Text>
+            <Text onPress={()=> router.push(`/service-detail/${service?.id}`)} numberOfLines={1} style={{ fontSize: 15, fontWeight: 600, marginTop: 10, marginBottom: 3, ...generalStyle.text[colorScheme] }}>{service?.business_name}</Text>
+            <Text onPress={()=> router.push(`/service-detail/${service?.id}`)} style={{ fontSize: 13, fontWeight: 400, ...generalStyle.text[colorScheme] }}>{service?.sub_category?.[0]?.sub_category}</Text>
+            <Text onPress={()=> router.push(`/service-detail/${service?.id}`)} style={{ fontSize: 15, fontWeight: 600, marginTop: 5, ...generalStyle.text[colorScheme] }}>{formatCurrency("en-US", "USD", Number(service?.sub_category?.[0]?.cost))}</Text>
         </View>
     )
 }

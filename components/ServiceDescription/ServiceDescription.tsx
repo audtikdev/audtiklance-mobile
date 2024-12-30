@@ -1,55 +1,83 @@
-import { View, Text, StyleSheet, Image, Pressable, ScrollView } from 'react-native'
-import React from 'react'
+import { View, Text, StyleSheet, Image, Pressable, ScrollView, useColorScheme } from 'react-native'
+import React, { useEffect, useState } from 'react'
 import { AntDesign, EvilIcons, Ionicons } from '@expo/vector-icons'
-
+import Constants from 'expo-constants'
 import { formatCurrency } from '@/utils/helper'
 import { router } from 'expo-router'
+import { generalStyle } from '@/style/generalStyle'
+import ReviewCard from '../Review/ReviewCard'
+import { Service } from '@/types/service'
+import axios from 'axios'
+import LottieView from 'lottie-react-native'
 
 const ServiceDescription: React.FC<{ id: string }> = ({ id }) => {
+    const colorScheme = useColorScheme() || "light"
+    const [service, setService] = useState<Service | null>(null)
+    const [load, setLoad] = useState(true)
+    const baseUrl = Constants.expoConfig?.extra?.BASE_API
+
+    console.log(id);
+    useEffect(() => {
+        setLoad(true)
+        const url = `${baseUrl}/service/${id}`;
+        axios.get(url)
+            .then((response: any) => {
+                setService(response?.data);
+                setLoad(false)
+            })
+            .catch((error: any) => {
+                setService(null)
+                console.error("getServices", error);
+                setLoad(false)
+            });
+    }, [id])
     return (
         <ScrollView style={styles.container}>
-            <View style={styles.heroText}>
-                <View style={{ width: "100%", paddingHorizontal: 20 }}>
-                    <Pressable onPress={()=> router.back()} style={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
-                        <Ionicons name="chevron-back-outline" size={24} color="black" />
-                        <Text style={{ fontSize: 18 }}>Back</Text>
-                    </Pressable>
-                    <Text style={{ marginTop: 50, fontSize: 20 }}>Rejoice Plumbing Service</Text>
-                    <Text style={{ marginTop: 10, fontSize: 30 }}>{formatCurrency("en-US", "USD", 367)}</Text>
-                    <View style={{ display: "flex", flexDirection: "row", alignItems: "center", marginTop: 10 }}>
-                        <EvilIcons name="location" size={24} color="black" />
-                        <Text style={{ fontSize: 16 }}>47 Dubai Circuit, UAE</Text>
+            {
+                load ?
+                    <View>
+                        <Pressable onPress={() => router.back()} style={{ display: "flex", flexDirection: "row", alignItems: "center", paddingTop: 90, paddingLeft: 20 }}>
+                            <Ionicons name="chevron-back-outline" size={24} color="black" />
+                            <Text style={{ fontSize: 18 }}>Back</Text>
+                        </Pressable>
+                        <View style={{ display: "flex", justifyContent: "center", alignItems: "center", height: 750, width: "100%" }}>
+                            <LottieView source={require("../../assets/images/service2.json")} loop={true} autoPlay style={{ width: 300, height: 350 }} />
+                        </View>
+                    </View> :
+                    <View>
+                        <View style={styles.heroText}>
+                            <View style={{ width: "100%", paddingHorizontal: 20 }}>
+                                <Pressable onPress={() => router.back()} style={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
+                                    <Ionicons name="chevron-back-outline" size={24} color="black" />
+                                    <Text style={{ fontSize: 18 }}>Back</Text>
+                                </Pressable>
+                                <Text style={{ marginTop: 50, fontSize: 20 }}>{service?.business_name}</Text>
+                                <Text style={{ marginTop: 10, fontSize: 30 }}>{formatCurrency("en-US", "USD", service?.sub_category?.[0]?.cost!)}</Text>
+                                <View style={{ display: "flex", flexDirection: "row", alignItems: "center", marginTop: 10 }}>
+                                    <EvilIcons name="location" size={24} color="black" />
+                                    <Text style={{ fontSize: 16 }}>{service?.address}</Text>
+                                </View>
+                                <View style={styles.ratingView}>
+                                    <AntDesign name="star" size={20} color="gold" />
+                                    <Text>6.4</Text>
+                                </View>
+                            </View>
+                            <View style={styles.imageContainer}>
+                                <Image style={styles.image} source={{ uri: service?.profile_picture }} />
+                            </View>
+                        </View>
+                        <View style={{ width: "100%", paddingHorizontal: 20, marginTop: 20 }}>
+                            <Text style={{ fontSize: 20, fontWeight: 600, ...generalStyle.text[colorScheme] }}>About me</Text>
+                            <Text style={{ fontSize: 16, marginTop: 10, lineHeight: 23, ...generalStyle.text[colorScheme] }}>{service?.about_me}</Text>
+                            <View style={{ marginTop: 25, display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
+                                <Text style={{ fontSize: 20, fontWeight: 600, ...generalStyle.text[colorScheme] }}>Review From Client</Text>
+                                <Text onPress={() => router.push("/reviews/1234")} style={{ textDecorationLine: "underline", ...generalStyle.text[colorScheme] }}>View all</Text>
+                            </View>
+                            <ReviewCard />
+                            <Pressable style={styles.bookButton}><Text style={{ color: "white", fontSize: 16 }}>Book Now</Text></Pressable>
+                        </View>
                     </View>
-                    <View style={styles.ratingView}>
-                        <AntDesign name="star" size={20} color="gold" />
-                        <Text>6.4</Text>
-                    </View>
-                </View>
-                <View style={styles.imageContainer}>
-                    <Image style={styles.image} source={{ uri: "https://res.cloudinary.com/duqgr7s10/image/upload/v1735312473/pexels-karolina-grabowska-4239037_kavpbg.jpg" }} />
-                </View>
-            </View>
-            <View style={{ width: "100%", paddingHorizontal: 20, marginTop: 20 }}>
-                <Text style={{ fontSize: 20, fontWeight: 600 }}>About me</Text>
-                <Text style={{ fontSize: 16, marginTop: 10, lineHeight: 23 }}>With over half decade of experience in cleaning services, we offer all kind of cleaning service, such as deep cleaning, window cleaning, couch and rug cleaning, bathroom and toilet cleaning, using various advance maching to get the job done</Text>
-                <View style={{ marginTop: 25, display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
-                    <Text style={{ fontSize: 20, fontWeight: 600 }}>Review From Client</Text>
-                    <Text style={{ textDecorationLine: "underline" }}>View all</Text>
-                </View>
-                <View style={styles.reviewContainer}>
-                    <View style={{ display: "flex", flexDirection: "row", columnGap: 5 }}>
-                        {
-                            Array(5).fill("")?.map((_, i) => (
-                                <AntDesign key={i} name="star" size={20} color="blue" />
-                            ))
-                        }
-                    </View>
-                    <Text style={{ fontSize: 18, marginTop: 10 }}>This is what i was looking for</Text>
-                    <Text style={{ marginVertical: 5, color: "grey" }}>David Beckham | May 05 2024</Text>
-                    <Text style={{ marginTop: 5, lineHeight: 20 }}>This was my first time trying this service provider, and they did exceedingly well</Text>
-                </View>
-                <Pressable style={styles.bookButton}><Text style={{ color: "white", fontSize: 16 }}>Book Now</Text></Pressable>
-            </View>
+            }
         </ScrollView>
     )
 }
@@ -89,14 +117,6 @@ const styles = StyleSheet.create({
     image: {
         width: "100%",
         height: "100%",
-    },
-    reviewContainer: {
-        width: "100%",
-        marginTop: 14,
-        padding: 14,
-        borderRadius: 6,
-        borderWidth: 0.5,
-        borderColor: "#08080830"
     },
     bookButton: {
         width: "100%",

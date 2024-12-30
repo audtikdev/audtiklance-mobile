@@ -11,6 +11,7 @@ import ServiceCard from '../Home/ServiceCard';
 import { useSelector } from 'react-redux';
 import { RootState } from '../Store/store';
 import { LocationData } from '../Context/types';
+import LottieView from 'lottie-react-native';
 
 const Search = () => {
     const colorScheme = useColorScheme() || "light"
@@ -21,13 +22,13 @@ const Search = () => {
     const [location, setLocation] = useState<LocationData>();
     const [services, setServices] = useState<Service[]>([])
     const [serviceSearch, setServiceSearch] = useState<Service[]>([])
-    const [service, setService] = useState<Service>()
+    const [service, setService] = useState<{ name: string }>()
     const [load, setLoad] = useState(false)
 
     const mapKey = Constants.expoConfig?.extra?.MAPBOX_KEY
     const baseUrl = Constants.expoConfig?.extra?.BASE_API
 
-    useEffect(()=> {
+    useEffect(() => {
         if (userLocation) {
             setLocationQuery("Your Location")
             setLocation(userLocation)
@@ -74,7 +75,7 @@ const Search = () => {
                     });
             } else {
                 setServiceSearch([]);
-                setService({name: ""})
+                setService({ name: "" })
             }
         }, 300);
 
@@ -84,17 +85,18 @@ const Search = () => {
         return () => delayedSearch.cancel();
     }, [serviceQuery])
 
-    useEffect(()=> {
+    useEffect(() => {
         setLoad(true)
         const url = `${baseUrl}/service/`;
         axios.get(url)
             .then((response: any) => {
                 setServices(response.data.results);
+                setLoad(false)
             })
             .catch((error: any) => {
                 console.error("getServices", error);
+                setLoad(false)
             });
-        setLoad(false)
     }, [location, service])
 
     const handleLocationSearch = (text: string) => {
@@ -142,20 +144,26 @@ const Search = () => {
                     onChangeValue={handleServiceSelect}
                     objectKey='name'
                 />
-                <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollViewContent}>
-                    <View style={styles.serviceTitleContainer}>
-                        <Text style={{ ...styles.title, ...generalStyle.text[colorScheme] }}>Search Result(10)</Text>
-                        <Text style={{ textDecorationLine: "underline", ...generalStyle.text[colorScheme] }}>See All</Text>
-                    </View>
-                    <View style={styles.serviceList}>
-                        {
-                            load ? <Text>Loading...</Text> :
-                            services?.map((service, i) => (
-                                <ServiceCard service={service} key={i} width={"47%"} />
-                            ))
-                        }
-                    </View>
-                </ScrollView>
+                {
+                    load ?
+                        <View style={{ display: "flex", justifyContent: "center", alignItems: "center", height: 750, width: "100%" }}>
+                            <LottieView source={require("../../assets/images/service2.json")} loop={true} autoPlay style={{ width: 300, height: 350 }} />
+                        </View> :
+                        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollViewContent}>
+                            <View style={styles.serviceTitleContainer}>
+                                <Text style={{ ...styles.title, ...generalStyle.text[colorScheme] }}>Search Result({services?.length})</Text>
+                                <Text style={{ textDecorationLine: "underline", ...generalStyle.text[colorScheme] }}>See All</Text>
+                            </View>
+                            <View style={styles.serviceList}>
+                                {
+                                    load ? <Text>Loading...</Text> :
+                                        services?.map((service, i) => (
+                                            <ServiceCard service={service} key={i} width={"47%"} />
+                                        ))
+                                }
+                            </View>
+                        </ScrollView>
+                }
             </View>
         </View>
     )

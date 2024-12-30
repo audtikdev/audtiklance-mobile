@@ -11,6 +11,7 @@ import { updateLocation } from '../Context/locationProvider'
 import { RootState } from '../Store/store'
 import { Service } from '@/types/service'
 import axios from 'axios'
+import LottieView from 'lottie-react-native'
 
 const Home = () => {
     const userLocation = useSelector((state: RootState) => state.locationProvider.location)
@@ -18,37 +19,40 @@ const Home = () => {
     const [status, requestPermission] = Location.useForegroundPermissions();
     const [load, setLoad] = useState(false)
     const [services, setServices] = useState<Service[]>([])
+    const [topServices, setTopServices] = useState<Service[]>([])
     const dispatch = useDispatch()
 
     const baseUrl = Constants.expoConfig?.extra?.BASE_API
 
-    useEffect(()=> {
+    useEffect(() => {
         if (!status?.granted) {
             requestPermission()
-            .then(async (response)=> {
-                if (response.granted) {
-                    const location = await Location.getCurrentPositionAsync({});
-                    console.log(location);
-                    dispatch(updateLocation({location: location}))
-                } else {
-                    Alert.alert("We Need Your Location To Show Nearby Services")
-                }
-            })
+                .then(async (response) => {
+                    if (response.granted) {
+                        const location = await Location.getCurrentPositionAsync({});
+                        console.log(location);
+                        dispatch(updateLocation({ location: location }))
+                    } else {
+                        Alert.alert("We Need Your Location To Show Nearby Services")
+                    }
+                })
         }
     }, [])
 
-    useEffect(()=> {
+    useEffect(() => {
         setLoad(true)
         const url = `${baseUrl}/service/`;
         axios.get(url)
             .then((response: any) => {
-                setServices(response.data.results);
+                setServices(response?.data.results);
+                setTopServices(response?.data?.results)
+                setLoad(false)
             })
             .catch((error: any) => {
                 setServices([])
+                setLoad(false)
                 console.error("getServices", error);
             });
-        setLoad(false)
     }, [userLocation])
 
     return (
@@ -72,27 +76,38 @@ const Home = () => {
                     <Text style={{ ...styles.title, ...generalStyle.text[colorScheme] }}>Top Service Providers</Text>
                     <Text style={{ textDecorationLine: "underline", ...generalStyle.text[colorScheme] }}>See All</Text>
                 </View>
-                <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.serviceList}>
-                    {
-                        fakeServices?.map((service, i) => (
-                            <ServiceCard service={service} key={i} />
-                        ))
-                    }
-                </ScrollView>
+                {
+                    load ?
+                        <View style={{ display: "flex", justifyContent: "center", alignItems: "center", height: 200, width: "100%" }}>
+                            <LottieView source={require("../../assets/images/loading.json")} loop={true} autoPlay style={{ width: 200, height: 250 }} />
+                        </View> :
+                        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.serviceList}>
+                            {
+                                topServices?.map((service, i) => (
+                                    <ServiceCard service={service} key={i} />
+                                ))
+                            }
+                        </ScrollView>
+                }
             </View>
             <View style={{ paddingHorizontal: 20, marginTop: 30 }}>
                 <View style={styles.serviceTitleContainer}>
                     <Text style={{ ...styles.title, ...generalStyle.text[colorScheme] }}>Services Near You</Text>
-                    <Text style={{ textDecorationLine: "underline",  ...generalStyle.text[colorScheme] }}>See All</Text>
+                    <Text style={{ textDecorationLine: "underline", ...generalStyle.text[colorScheme] }}>See All</Text>
                 </View>
-                <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.serviceList}>
-                    {
-                        load ? <Text>Loading</Text> :
-                        services?.map((service, i) => (
-                            <ServiceCard service={service} key={i} />
-                        ))
-                    }
-                </ScrollView>
+                {
+                    load ?
+                        <View style={{ display: "flex", justifyContent: "center", alignItems: "center", height: 200, width: "100%" }}>
+                            <LottieView source={require("../../assets/images/loading.json")} loop={true} autoPlay style={{ width: 200, height: 250 }} />
+                        </View> :
+                        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.serviceList}>
+                            {
+                                services?.map((service, i) => (
+                                    <ServiceCard service={service} key={i} />
+                                ))
+                            }
+                        </ScrollView>
+                }
             </View>
         </ScrollView>
     )
