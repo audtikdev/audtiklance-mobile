@@ -6,14 +6,13 @@ import axios from 'axios';
 import Constants from 'expo-constants'
 import { Service } from '@/types/service';
 import { generalStyle } from '@/style/generalStyle';
-import { fakeServices } from '@/data/home';
 import ServiceCard from '../Home/ServiceCard';
 import { useSelector } from 'react-redux';
 import { RootState } from '../Store/store';
 import { LocationData } from '../Context/types';
 import LottieView from 'lottie-react-native';
 
-const Search = () => {
+const Search: React.FC<{query: string}> = ({query}) => {
     const colorScheme = useColorScheme() || "light"
     const userLocation = useSelector((state: RootState) => state.locationProvider.location)
     const [locationQuery, setLocationQuery] = useState("");
@@ -24,6 +23,7 @@ const Search = () => {
     const [serviceSearch, setServiceSearch] = useState<Service[]>([])
     const [service, setService] = useState<{ name: string }>()
     const [load, setLoad] = useState(false)
+    const [topService, setTopService] = useState(false)
 
     const mapKey = Constants.expoConfig?.extra?.MAPBOX_KEY
     const baseUrl = Constants.expoConfig?.extra?.BASE_API
@@ -34,6 +34,32 @@ const Search = () => {
             setLocation(userLocation)
         }
     }, [userLocation])
+
+    useEffect(()=> {
+        if (query) {
+            const getQuery = query?.split("&")
+            const getType = getQuery?.[0]?.split("=")
+            const getValue = getQuery?.[1]?.split("=")
+            if (getType?.[1] === "category") {
+                setService({name: getValue[1]})
+                setServiceQuery(getValue[1])
+                setTopService(false)
+            }
+            if (getType?.[1] === "location") {
+                setLocation(userLocation!)
+                setService({name: "a"})
+                setServiceQuery("")
+                setTopService(false)
+            }
+            if (getType?.[1] === "top") {
+                setTopService(true)
+                setServiceQuery("")
+                setService({name: ""})
+            }
+        } else {
+            setService({name: "a"})
+        }
+    }, [query])
 
     useEffect(() => {
         // Debounce the search function to reduce API calls
@@ -87,7 +113,9 @@ const Search = () => {
 
     useEffect(() => {
         setLoad(true)
-        const url = `${baseUrl}/service/`;
+        console.log(service);
+        
+        const url = topService ? `${baseUrl}/service/` : `${baseUrl}/service/?search=${service?.name}&longitude=${location?.coords?.longitude}&latitude=${location?.coords?.latitude}&page=1`;
         axios.get(url)
             .then((response: any) => {
                 setServices(response.data.results);

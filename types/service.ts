@@ -1,3 +1,13 @@
+export type GoogleReview = {
+    authorAttribution?: {
+        displayName: string
+    },
+    originalText?: {
+        text: string
+    },
+    rating?: number,
+    relativePublishTimeDescription?: string
+}
 
 export type Service = {
     id?: string,
@@ -6,10 +16,13 @@ export type Service = {
     business_name?: string,
     about_me?: string,
     sub_category?: Array<{
-        cost: number,
+        cost: string,
         sub_category: string,
         id: string,
         time_frame: string
     }>,
-    address?: string
+    address?: string,
+    is_google_place?: boolean,
+    external_rating?: string,
+    external_reviews?: Array<GoogleReview>
 }

@@ -2,22 +2,23 @@ import { View, Text, StyleSheet, useColorScheme } from 'react-native'
 import React from 'react'
 import { AntDesign } from '@expo/vector-icons'
 import { generalStyle } from '@/style/generalStyle'
+import { GoogleReview } from '@/types/service'
 
-const ReviewCard = () => {
+const ReviewCard: React.FC<{review: GoogleReview, truncate?: boolean}> = ({review, truncate = true}) => {
     const colorScheme = useColorScheme() || "light"
 
     return (
         <View style={styles.reviewContainer}>
             <View style={{ display: "flex", flexDirection: "row", columnGap: 5 }}>
                 {
-                    Array(5).fill("")?.map((_, i) => (
+                    Array(review?.rating || 0).fill("")?.map((_, i) => (
                         <AntDesign key={i} name="star" size={20} color="blue" />
                     ))
                 }
             </View>
-            <Text style={{ fontSize: 18, marginTop: 10, ...generalStyle.text[colorScheme] }}>This is what i was looking for</Text>
-            <Text style={{ marginVertical: 5, color: colorScheme === "dark" ? "white" : "grey", }}>David Beckham | May 05 2024</Text>
-            <Text style={{ marginTop: 5, lineHeight: 20, ...generalStyle.text[colorScheme] }}>This was my first time trying this service provider, and they did exceedingly well</Text>
+            {/* <Text style={{ fontSize: 18, marginTop: 10, ...generalStyle.text[colorScheme] }}>This is what i was looking for</Text> */}
+            <Text style={{ marginVertical: 5, color: colorScheme === "dark" ? "white" : "grey", }}>{review?.authorAttribution?.displayName} | {review?.relativePublishTimeDescription}</Text>
+            <Text numberOfLines={truncate ? 5 : undefined} style={{ marginTop: 5, lineHeight: 20, ...generalStyle.text[colorScheme] }}>{review?.originalText?.text}</Text>
         </View>
     )
 }

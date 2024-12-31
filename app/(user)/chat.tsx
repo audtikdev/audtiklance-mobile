@@ -1,13 +1,13 @@
 import { View, Text } from 'react-native'
 import React from 'react'
-import Search from '@/components/Search/Search'
+import Chat from '@/components/Chat/Chat'
 
-const search = () => {
+const chat = () => {
   return (
     <View>
-      <Search />
+      <Chat />
     </View>
   )
 }
 
-export default search
+export default chat

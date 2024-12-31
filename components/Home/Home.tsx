@@ -2,7 +2,7 @@ import { View, Text, StyleSheet, useColorScheme, ScrollView, Alert } from 'react
 import React, { useEffect, useState } from 'react'
 import { generalStyle } from '@/style/generalStyle'
 import Constants from 'expo-constants'
-import { fakeServices, popularCategories } from '@/data/home'
+import { popularCategories } from '@/data/home'
 import CategoryCard from './CategoryCard'
 import ServiceCard from './ServiceCard'
 import * as Location from 'expo-location';
@@ -12,6 +12,7 @@ import { RootState } from '../Store/store'
 import { Service } from '@/types/service'
 import axios from 'axios'
 import LottieView from 'lottie-react-native'
+import { router } from 'expo-router'
 
 const Home = () => {
     const userLocation = useSelector((state: RootState) => state.locationProvider.location)
@@ -40,19 +41,15 @@ const Home = () => {
     }, [])
 
     useEffect(() => {
-        setLoad(true)
-        const url = `${baseUrl}/service/`;
-        axios.get(url)
-            .then((response: any) => {
-                setServices(response?.data.results);
-                setTopServices(response?.data?.results)
-                setLoad(false)
-            })
-            .catch((error: any) => {
-                setServices([])
-                setLoad(false)
-                console.error("getServices", error);
-            });
+        (async ()=> {
+            setLoad(true)
+            const url = `${baseUrl}/service/?search=a&longitude=${userLocation?.coords?.longitude}&latitude=${userLocation?.coords?.latitude}&page=1`;
+            const url2 = `${baseUrl}/service/`;
+            const [response1, response2] = await Promise.all([axios.get(url), axios.get(url2)])
+            setServices(response1?.data.results);
+            setTopServices(response2?.data?.results)
+            setLoad(false)
+        })()
     }, [userLocation])
 
     return (
@@ -74,7 +71,7 @@ const Home = () => {
             <View style={{ paddingHorizontal: 20, marginTop: 30 }}>
                 <View style={styles.serviceTitleContainer}>
                     <Text style={{ ...styles.title, ...generalStyle.text[colorScheme] }}>Top Service Providers</Text>
-                    <Text style={{ textDecorationLine: "underline", ...generalStyle.text[colorScheme] }}>See All</Text>
+                    <Text onPress={()=> router.push("/(user)/search/type=top")} style={{ textDecorationLine: "underline", ...generalStyle.text[colorScheme] }}>See All</Text>
                 </View>
                 {
                     load ?
@@ -93,7 +90,7 @@ const Home = () => {
             <View style={{ paddingHorizontal: 20, marginTop: 30 }}>
                 <View style={styles.serviceTitleContainer}>
                     <Text style={{ ...styles.title, ...generalStyle.text[colorScheme] }}>Services Near You</Text>
-                    <Text style={{ textDecorationLine: "underline", ...generalStyle.text[colorScheme] }}>See All</Text>
+                    <Text onPress={()=> router.push("/(user)/search/type=location&value=near")} style={{ textDecorationLine: "underline", ...generalStyle.text[colorScheme] }}>See All</Text>
                 </View>
                 {
                     load ?

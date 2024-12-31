@@ -46,7 +46,7 @@ const ProviderRegister1 = () => {
           <Text style={{ ...styles.loginText, ...generalStyle.text[colorScheme] }}>Already have an account? <Text onPress={() => router.push("/login")} style={{ color: "#F0594C" }}>Log In</Text></Text>
           <View style={styles.termsContainer}>
             <Text style={{ textAlign: "center", ...generalStyle.text[colorScheme] }}>By signing up for an account, you agree to</Text>
-            <Text style={{ ...styles.termsText, ...generalStyle.text[colorScheme] }}>ChaimBase’s Terms of Service and Privacy Policy.</Text>
+            <Text style={{ ...styles.termsText, ...generalStyle.text[colorScheme] }}>Audtiklance’s Terms of Service and Privacy Policy.</Text>
           </View>
         </View>
       </TouchableWithoutFeedback>
