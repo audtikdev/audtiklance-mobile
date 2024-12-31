@@ -35,7 +35,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="search"
+        name="search/[query]"
         options={{
           title: 'Search',
           tabBarIcon: ({ color }) => <AntDesign name="search1" size={24} color={color} />,

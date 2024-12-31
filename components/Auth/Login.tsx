@@ -18,7 +18,7 @@ const Login = () => {
     }
 
     const handleSubmit = () => {
-        router.push("/(tabs)")
+        router.push("/(user)")
     }
 
     return (
@@ -28,8 +28,8 @@ const Login = () => {
                     <View style={styles.registerMain}>
                         <Image source={require("../../assets/images/logo.png")} />
                         <Text style={{ ...styles.profileText, ...generalStyle.text[colorScheme] }}>Welcome Back Rejoice!</Text>
-                        <TextInput placeholderTextColor={generalStyle.text[colorScheme].color} onChangeText={(text) => handleInput("email", text)} value={userInfo?.email} keyboardType='phone-pad' style={{ ...styles.registerInput, ...generalStyle.border[colorScheme], ...generalStyle.text[colorScheme] }} placeholder='Email' />
-                        <TextInput placeholderTextColor={generalStyle.text[colorScheme].color} onChangeText={(text) => handleInput("password", text)} value={userInfo?.password} keyboardType='phone-pad' style={{ ...styles.registerInput, ...generalStyle.border[colorScheme], ...generalStyle.text[colorScheme] }} placeholder='Password' />
+                        <TextInput placeholderTextColor={generalStyle.text[colorScheme].color} onChangeText={(text) => handleInput("email", text)} value={userInfo?.email} style={{ ...styles.registerInput, ...generalStyle.border[colorScheme], ...generalStyle.text[colorScheme] }} placeholder='Email' />
+                        <TextInput placeholderTextColor={generalStyle.text[colorScheme].color} onChangeText={(text) => handleInput("password", text)} value={userInfo?.password} style={{ ...styles.registerInput, ...generalStyle.border[colorScheme], ...generalStyle.text[colorScheme] }} placeholder='Password' />
                         <Text onPress={()=> router.push("/forgotPassword")} style={{ alignSelf: "flex-end", fontSize: 14, textDecorationLine: "underline", marginTop: -15, ...generalStyle.text[colorScheme] }}>Forgot Password?</Text>
                         <Pressable onPress={handleSubmit} style={{ ...styles.loginButton, ...(colorScheme === "light" && generalStyle.button.active), ...(colorScheme === "dark" && generalStyle.button.dark) }}><Text style={{ ...styles.buttonText, ...generalStyle.text["dark"] }}>Login</Text></Pressable>
                         <View style={styles.registerDivider}>

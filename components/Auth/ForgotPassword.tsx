@@ -20,7 +20,7 @@ const ForgotPassword = () => {
                     <View style={styles.registerMain}>
                         <Image source={require("../../assets/images/logo.png")} />
                         <Text style={{ ...styles.profileText, ...generalStyle.text[colorScheme] }}>Forgot Your Password? Request A Reset Link</Text>
-                        <TextInput placeholderTextColor={generalStyle.text[colorScheme].color} onChangeText={(text) => setEmail(text)} value={email} keyboardType='phone-pad' style={{ ...styles.registerInput, ...generalStyle.border[colorScheme], ...generalStyle.text[colorScheme] }} placeholder='Email' />
+                        <TextInput placeholderTextColor={generalStyle.text[colorScheme].color} onChangeText={(text) => setEmail(text)} value={email} style={{ ...styles.registerInput, ...generalStyle.border[colorScheme], ...generalStyle.text[colorScheme] }} placeholder='Email' />
                         <Pressable onPress={handleSubmit} style={{ ...styles.loginButton, ...(colorScheme === "light" && generalStyle.button.active), ...(colorScheme === "dark" && generalStyle.button.dark) }}><Text style={{ ...styles.buttonText, ...generalStyle.text["dark"] }}>Send Link</Text></Pressable>
                     </View>
                 </TouchableWithoutFeedback>

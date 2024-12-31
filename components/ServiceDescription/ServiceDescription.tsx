@@ -16,7 +16,6 @@ const ServiceDescription: React.FC<{ id: string }> = ({ id }) => {
     const [load, setLoad] = useState(true)
     const baseUrl = Constants.expoConfig?.extra?.BASE_API
 
-    console.log(id);
     useEffect(() => {
         setLoad(true)
         const url = `${baseUrl}/service/${id}`;
@@ -52,15 +51,15 @@ const ServiceDescription: React.FC<{ id: string }> = ({ id }) => {
                                     <Text style={{ fontSize: 18 }}>Back</Text>
                                 </Pressable>
                                 <Text style={{ marginTop: 50, fontSize: 20 }}>{service?.business_name}</Text>
-                                <Text style={{ marginTop: 10, fontSize: 30 }}>{formatCurrency("en-US", "USD", service?.sub_category?.[0]?.cost!)}</Text>
+                                {!service?.is_google_place && <Text style={{ marginTop: 10, fontSize: 30 }}>{formatCurrency("en-US", "USD", service?.sub_category?.[0]?.cost!)}</Text>}
                                 <View style={{ display: "flex", flexDirection: "row", alignItems: "center", marginTop: 10 }}>
                                     <EvilIcons name="location" size={24} color="black" />
                                     <Text style={{ fontSize: 16 }}>{service?.address}</Text>
                                 </View>
-                                <View style={styles.ratingView}>
+                                {service?.external_rating && <View style={styles.ratingView}>
                                     <AntDesign name="star" size={20} color="gold" />
-                                    <Text>6.4</Text>
-                                </View>
+                                    <Text>{!service?.is_google_place ? "5.5" : service?.external_rating}</Text>
+                                </View>}
                             </View>
                             <View style={styles.imageContainer}>
                                 <Image style={styles.image} source={{ uri: service?.profile_picture }} />
@@ -71,9 +70,13 @@ const ServiceDescription: React.FC<{ id: string }> = ({ id }) => {
                             <Text style={{ fontSize: 16, marginTop: 10, lineHeight: 23, ...generalStyle.text[colorScheme] }}>{service?.about_me}</Text>
                             <View style={{ marginTop: 25, display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
                                 <Text style={{ fontSize: 20, fontWeight: 600, ...generalStyle.text[colorScheme] }}>Review From Client</Text>
-                                <Text onPress={() => router.push("/reviews/1234")} style={{ textDecorationLine: "underline", ...generalStyle.text[colorScheme] }}>View all</Text>
+                                <Text onPress={() => router.push(`/reviews/${service?.id}`)} style={{ textDecorationLine: "underline", ...generalStyle.text[colorScheme] }}>View all</Text>
                             </View>
-                            <ReviewCard />
+                            {
+                                !service?.external_reviews || service?.external_reviews?.length < 1 ?
+                                    <Text style={{ marginVertical: 30, textAlign: "center" }}>No Review Yet</Text> :
+                                    <ReviewCard review={service?.external_reviews?.[0]!} />
+                            }
                             <Pressable style={styles.bookButton}><Text style={{ color: "white", fontSize: 16 }}>Book Now</Text></Pressable>
                         </View>
                     </View>

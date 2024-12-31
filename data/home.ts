@@ -3,65 +3,32 @@ import { Service } from "@/types/service"
 export const popularCategories = [
     {
         title: "Plumbing",
+        keyWord: "plumber",
         icon: require("../assets/images/plumbing-icon.png")
     },
     {
         title: "Painting",
+        keyWord: "painter",
         icon: require("../assets/images/painting-icon.png")
     },
     {
         title: "Moving",
+        keyWord: "moving company",
         icon: require("../assets/images/moving-icon.png")
     },
     {
         title: "Cleaning",
+        keyWord: "cleaner",
         icon: require("../assets/images/cleaning-icon.png")
     },
     {
         title: "HVAC",
+        keyWord: "roof",
         icon: require("../assets/images/hvac-icon.png")
     },
     {
         title: "Electrical",
+        keyWord: "electrician",
         icon: require("../assets/images/electrical-icon.png")
     },
 ]
-
-export const fakeServices: Service[] = [
-    {
-        name: "Plumbing",
-        business_name: "Rejoice Plumbing",
-        price: "3000",
-        image: "https://res.cloudinary.com/duqgr7s10/image/upload/v1733419858/samples/imagecon-group.jpg"
-    },
-    {
-        name: "Plumbing",
-        business_name: "Rejoice Plumbing",
-        price: "3000",
-        image: "https://res.cloudinary.com/duqgr7s10/image/upload/v1733419858/samples/imagecon-group.jpg"
-    },
-    {
-        name: "Plumbing",
-        business_name: "Rejoice Plumbing",
-        price: "3000",
-        image: "https://res.cloudinary.com/duqgr7s10/image/upload/v1733419858/samples/imagecon-group.jpg"
-    },
-    {
-        name: "Plumbing",
-        business_name: "Rejoice Plumbing",
-        price: "3000",
-        image: "https://res.cloudinary.com/duqgr7s10/image/upload/v1733419858/samples/imagecon-group.jpg"
-    },
-    {
-        name: "Plumbing",
-        business_name: "Rejoice Plumbing",
-        price: "3000",
-        image: "https://res.cloudinary.com/duqgr7s10/image/upload/v1733419858/samples/imagecon-group.jpg"
-    },
-    {
-        name: "Plumbing",
-        business_name: "Rejoice Plumbing",
-        price: "3000",
-        image: "https://res.cloudinary.com/duqgr7s10/image/upload/v1733419858/samples/imagecon-group.jpg"
-    },
-]   

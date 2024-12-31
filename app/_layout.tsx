@@ -45,7 +45,7 @@ export default function RootLayout() {
               <Stack.Screen name="providerRegister3" options={{ headerShown: false }} />
               <Stack.Screen name="providerRegister4" options={{ headerShown: false }} />
               <Stack.Screen name="forgotPassword" options={{ headerShown: false }} />
-              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              <Stack.Screen name="(user)" options={{ headerShown: false }} />
               <Stack.Screen name="service-detail/[id]" options={{ headerShown: false }} />
               <Stack.Screen name="reviews/[id]" options={{ headerShown: false }} />
               <Stack.Screen name="+not-found" />
