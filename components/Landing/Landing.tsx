@@ -1,11 +1,12 @@
 import { View, Text, Image, Pressable, StyleSheet, useColorScheme } from 'react-native'
-import React, { useRef } from 'react'
+import React, { useEffect, useRef } from 'react'
 import { generalStyle } from '@/style/generalStyle'
 import LottieView from 'lottie-react-native'
 import Swiper from 'react-native-swiper'
 import { carouselData } from '@/data/landing'
 import { Modalize } from 'react-native-modalize';
 import { router } from 'expo-router'
+import { getUser } from '@/api/auth'
 
 const Landing = () => {
     const colorScheme = useColorScheme() || "light"
@@ -15,6 +16,15 @@ const Landing = () => {
     const slideAnimationFinish = () => {
         swiperRef.current?.scrollBy(1)
     }
+
+    useEffect(() => {
+        (async () => {
+            const response = await getUser()
+            if (response?.status === 201 || response?.status === 200) {
+                router.push("/(user)")
+            }
+        })()
+    }, [])
 
     return (
         <>
@@ -33,7 +43,7 @@ const Landing = () => {
                 <View style={styles.landingSecond}>
                     <Pressable onPress={()=> router.push("/login")} style={styles.loginButton}><Text style={{ ...styles.buttonText, color: "white" }}>Login</Text></Pressable>
                     <Pressable onPress={()=> modalizeRef.current?.open()} style={{ ...styles.registerButton, ...generalStyle.border[colorScheme] }}><Text style={{ ...styles.buttonText, ...generalStyle.text[colorScheme] }}>Create An Account</Text></Pressable>
-                    <Text style={styles.guestText}>Login as a guest</Text>
+                    <Text onPress={()=> router.push("/(user)")} style={{...styles.guestText, ...generalStyle.text[colorScheme]}}>Login as a guest</Text>
                 </View>
             </View>
             <Modalize

@@ -1,10 +1,16 @@
 import { Service } from "./service";
 
 export type RegisterUserInfo = {
-    fullName: string,
+    firstname: string,
+    lastname: string,
     email: string,
     password: string,
-    confirmPassword: string
+    confirmPassword: string,
+    otp?: string,
+    phone?: string,
+    country_code?: string,
+    post_code?: string,
+    secret_key?: string
 }
 
 export type Location = {
@@ -12,7 +18,8 @@ export type Location = {
 }
 
 export type RegisterProvider = {
-    fullName?: string;
+    firstname?: string;
+    lastname?: string;
     email?: string;
     password?: string;
     confirmPassword?: string;
@@ -24,5 +31,10 @@ export type RegisterProvider = {
     previousWorkImages?: Array<string>
     services?: Array<Service>
 }
+
+export type AuthUser = {
+    access?: string;
+    refresh?: string;
+} & RegisterProvider
 
 export type LoginUserInfo = Pick<RegisterUserInfo, "email" | "password">

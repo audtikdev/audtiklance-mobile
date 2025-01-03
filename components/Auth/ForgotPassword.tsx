@@ -1,16 +1,30 @@
-import { View, Text, KeyboardAvoidingView, TouchableWithoutFeedback, Image, TextInput, Pressable, useColorScheme, StyleSheet, Keyboard } from 'react-native'
-import React, { useRef, useState } from 'react'
-import { Modalize } from 'react-native-modalize';
+import { View, Text, KeyboardAvoidingView, TouchableWithoutFeedback, Image, TextInput, Pressable, useColorScheme, StyleSheet, Keyboard, ActivityIndicator } from 'react-native'
+import React, { useState } from 'react'
 import { generalStyle } from '@/style/generalStyle'
 import { router } from 'expo-router'
+import { sendForgotPasswordOtp } from '@/api/auth'
+import Toast from 'react-native-toast-message'
 
 const ForgotPassword = () => {
     const colorScheme = useColorScheme() || "light"
     const [email, setEmail] = useState("")
-    const modalizeRef = useRef<Modalize>(null)
+    const [load, setLoad] = useState(false)
 
-    const handleSubmit = () => {
-        modalizeRef.current?.open()
+    const handleSubmit = async () => {
+        setLoad(true)
+        const body = {
+            email: email
+        }
+        const response = await sendForgotPasswordOtp(body)
+        if (response?.status === 201 || response?.status === 200) {
+            router.push(`/resetPasswordOtp/email=${email}&secret=${response.data?.data}`)
+        } else {
+            Toast.show({
+                type: "error",
+                text1: response?.data
+            })
+        }
+        setLoad(false)
     }
 
     return (
@@ -20,22 +34,17 @@ const ForgotPassword = () => {
                     <View style={styles.registerMain}>
                         <Image source={require("../../assets/images/logo.png")} />
                         <Text style={{ ...styles.profileText, ...generalStyle.text[colorScheme] }}>Forgot Your Password? Request A Reset Link</Text>
-                        <TextInput placeholderTextColor={generalStyle.text[colorScheme].color} onChangeText={(text) => setEmail(text)} value={email} style={{ ...styles.registerInput, ...generalStyle.border[colorScheme], ...generalStyle.text[colorScheme] }} placeholder='Email' />
-                        <Pressable onPress={handleSubmit} style={{ ...styles.loginButton, ...(colorScheme === "light" && generalStyle.button.active), ...(colorScheme === "dark" && generalStyle.button.dark) }}><Text style={{ ...styles.buttonText, ...generalStyle.text["dark"] }}>Send Link</Text></Pressable>
+                        <TextInput textContentType="emailAddress" autoCapitalize='none' autoCorrect={false} keyboardType='email-address' placeholderTextColor={generalStyle.text[colorScheme].color} onChangeText={(text) => setEmail(text)} value={email} style={{ ...styles.registerInput, ...generalStyle.border[colorScheme], ...generalStyle.text[colorScheme] }} placeholder='Email' />
+                        <Pressable onPress={handleSubmit} style={{ ...styles.loginButton, ...(colorScheme === "light" && generalStyle.button.active), ...(colorScheme === "dark" && generalStyle.button.dark) }}>
+                            {
+                                load ?
+                                    <ActivityIndicator size={"large"} /> :
+                                    <Text style={{ ...styles.buttonText, ...generalStyle.text["dark"] }}>Send Link</Text>
+                            }
+                        </Pressable>
                     </View>
                 </TouchableWithoutFeedback>
             </KeyboardAvoidingView>
-            <Modalize
-                ref={modalizeRef}
-                adjustToContentHeight={true}
-                modalStyle={generalStyle.modalBackground[colorScheme]}
-            >
-                <View style={styles.modalContent}>
-                   <Text style={{...styles.emailTitle, ...generalStyle.text[colorScheme]}}>Reset Password Email Sent</Text>
-                   <Image style={{width: 150, height: 150}} source={require("../../assets/images/email.png")} />
-                   <Text style={{...styles.emailText, ...generalStyle.text[colorScheme]}}>Check Your Email For The Link To Reset Your Password</Text>
-                </View>
-            </Modalize>
         </>
     )
 }
@@ -59,17 +68,11 @@ const styles = StyleSheet.create({
         width: "100%",
         height: "100%"
     },
-    modalContent: {
-        padding: 25,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        height: 280
-    },
     profileText: {
-        fontSize: 18,
+        fontSize: 16,
         fontWeight: 600,
         marginTop: 10,
+        textAlign: "center",
         marginBottom: 20
     },
     registerInput: {

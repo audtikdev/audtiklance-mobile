@@ -11,6 +11,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Provider } from 'react-redux';
 import { persistor, store } from '@/components/Store/store';
 import { PersistGate } from 'redux-persist/integration/react';
+import Toast from 'react-native-toast-message';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -45,12 +46,15 @@ export default function RootLayout() {
               <Stack.Screen name="providerRegister3" options={{ headerShown: false }} />
               <Stack.Screen name="providerRegister4" options={{ headerShown: false }} />
               <Stack.Screen name="forgotPassword" options={{ headerShown: false }} />
+              <Stack.Screen name="resetPasswordOtp/[query]" options={{ headerShown: false }} />
+              <Stack.Screen name="resetPassword/[query]" options={{ headerShown: false }} />
               <Stack.Screen name="(user)" options={{ headerShown: false }} />
               <Stack.Screen name="service-detail/[id]" options={{ headerShown: false }} />
               <Stack.Screen name="reviews/[id]" options={{ headerShown: false }} />
               <Stack.Screen name="+not-found" />
             </Stack>
             <StatusBar style="auto" />
+            <Toast />
           </ThemeProvider>
         </GestureHandlerRootView>
       </PersistGate>

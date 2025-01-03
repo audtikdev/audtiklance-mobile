@@ -27,7 +27,6 @@ const Search: React.FC<{query: string}> = ({query}) => {
 
     const mapKey = Constants.expoConfig?.extra?.MAPBOX_KEY
     const baseUrl = Constants.expoConfig?.extra?.BASE_API
-
     useEffect(() => {
         if (userLocation) {
             setLocationQuery("Your Location")
@@ -87,35 +86,36 @@ const Search: React.FC<{query: string}> = ({query}) => {
         return () => delayedSearch.cancel();
     }, [locationQuery])
 
-    useEffect(() => {
-        // Debounce the search function to reduce API calls
-        const delayedSearch = debounce(() => {
-            if (serviceQuery.trim() !== "") {
-                const url = `${baseUrl}/category/?search=${serviceQuery}`;
-                axios.get(url)
-                    .then((response: any) => {
-                        setServiceSearch(response.data.results);
-                    })
-                    .catch((error: any) => {
-                        console.error(error);
-                    });
-            } else {
-                setServiceSearch([]);
-                setService({ name: "" })
-            }
-        }, 300);
+    // useEffect(() => {
+    //     // Debounce the search function to reduce API calls
+    //     const delayedSearch = debounce(() => {
+    //         if (serviceQuery.trim() !== "") {
+    //             const url = `${baseUrl}/category/?search=${serviceQuery}`;
+    //             axios.get(url)
+    //                 .then((response: any) => {
+    //                     setServiceSearch(response.data.results);
+    //                 })
+    //                 .catch((error: any) => {
+    //                     console.error(error);
+    //                 });
+    //         } else {
+    //             setServiceSearch([]);
+    //             setService({ name: "" })
+    //         }
+    //     }, 300);
 
-        delayedSearch();
+    //     delayedSearch();
 
-        // Clean up the debounce function on unmount
-        return () => delayedSearch.cancel();
-    }, [serviceQuery])
+    //     // Clean up the debounce function on unmount
+    //     return () => delayedSearch.cancel();
+    // }, [serviceQuery])
 
     useEffect(() => {
         setLoad(true)
-        console.log(service);
-        
-        const url = topService ? `${baseUrl}/service/` : `${baseUrl}/service/?search=${service?.name}&longitude=${location?.coords?.longitude}&latitude=${location?.coords?.latitude}&page=1`;
+        console.log(serviceQuery);
+            console.log(location);
+            
+        const url = topService ? `${baseUrl}/service/` : `${baseUrl}/service/?search=${serviceQuery || "a"}&longitude=${location?.coords?.longitude}&latitude=${location?.coords?.latitude}&page=1`;
         axios.get(url)
             .then((response: any) => {
                 setServices(response.data.results);
@@ -125,7 +125,7 @@ const Search: React.FC<{query: string}> = ({query}) => {
                 console.error("getServices", error);
                 setLoad(false)
             });
-    }, [location, service])
+    }, [location, serviceQuery])
 
     const handleLocationSearch = (text: string) => {
         setLocationQuery(text);
