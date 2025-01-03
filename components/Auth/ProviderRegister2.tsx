@@ -102,7 +102,7 @@ const ProviderRegister2 = () => {
 
                     <Text style={{ ...styles.profileText, ...generalStyle.text[colorScheme] }}>Business Information</Text>
 
-                    <TextInput placeholderTextColor={generalStyle.text[colorScheme].color} onChangeText={(text) => handleInput("businessName", text)} value={userInfo?.fullName} style={{ ...styles.registerInput, ...generalStyle.border[colorScheme], ...generalStyle.text[colorScheme] }} placeholder='Business Name' />
+                    <TextInput placeholderTextColor={generalStyle.text[colorScheme].color} onChangeText={(text) => handleInput("businessName", text)} value={userInfo?.businessName} style={{ ...styles.registerInput, ...generalStyle.border[colorScheme], ...generalStyle.text[colorScheme] }} placeholder='Business Name' />
 
                     <TextInput placeholderTextColor={generalStyle.text[colorScheme].color} onChangeText={(text) => handleInput("phoneNumber", text)} value={userInfo?.phoneNumber} keyboardType='phone-pad' style={{ ...styles.registerInput, ...generalStyle.border[colorScheme], ...generalStyle.text[colorScheme] }} placeholder='Phone Number' />
 

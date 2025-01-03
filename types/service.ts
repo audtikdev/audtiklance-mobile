@@ -15,6 +15,7 @@ export type Service = {
     profile_picture?: string,
     business_name?: string,
     about_me?: string,
+    phone?: string,
     sub_category?: Array<{
         cost: string,
         sub_category: string,

@@ -13,17 +13,31 @@ import { Service } from '@/types/service'
 import axios from 'axios'
 import LottieView from 'lottie-react-native'
 import { router } from 'expo-router'
+import { getUser } from '@/api/auth'
+import { updateAuth } from '../Context/authProvider'
 
 const Home = () => {
+    const authUser = useSelector((state: RootState) => state.authProvider.auth)
     const userLocation = useSelector((state: RootState) => state.locationProvider.location)
     const colorScheme = useColorScheme() || "light"
     const [status, requestPermission] = Location.useForegroundPermissions();
     const [load, setLoad] = useState(false)
+    const [loadTop, setLoadTop] = useState(false)
     const [services, setServices] = useState<Service[]>([])
     const [topServices, setTopServices] = useState<Service[]>([])
     const dispatch = useDispatch()
 
     const baseUrl = Constants.expoConfig?.extra?.BASE_API
+
+    useEffect(() => {
+        (async () => {
+            const response = await getUser()
+            if (response?.status === 201 || response?.status === 200) {
+                const data = response.data?.data
+                dispatch(updateAuth({ auth: data }))
+            }
+        })()
+    }, [])
 
     useEffect(() => {
         if (!status?.granted) {
@@ -41,21 +55,29 @@ const Home = () => {
     }, [])
 
     useEffect(() => {
-        (async ()=> {
+        (async () => {
             setLoad(true)
             const url = `${baseUrl}/service/?search=a&longitude=${userLocation?.coords?.longitude}&latitude=${userLocation?.coords?.latitude}&page=1`;
-            const url2 = `${baseUrl}/service/`;
-            const [response1, response2] = await Promise.all([axios.get(url), axios.get(url2)])
+            const response1 = await axios.get(url)
             setServices(response1?.data.results);
-            setTopServices(response2?.data?.results)
             setLoad(false)
         })()
     }, [userLocation])
 
+    useEffect(()=> {
+        (async ()=> {
+            setLoadTop(true)
+            const url2 = `${baseUrl}/service/`;
+            const response2 = await axios.get(url2)
+            setTopServices(response2?.data?.results)
+            setLoadTop(false)
+        })()
+    }, [])
+
     return (
         <ScrollView style={styles.container}>
             <View style={styles.heroText}>
-                <Text style={{ ...styles.title, ...generalStyle.text.light }}>Hi Rejoice</Text>
+                <Text style={{ ...styles.title, ...generalStyle.text.light }}>Hi {authUser?.firstname}</Text>
                 <Text style={{ ...styles.greeting, ...generalStyle.text.light }}>What services do you need?</Text>
             </View>
             <View style={{ paddingHorizontal: 20, marginTop: 20 }}>
@@ -71,10 +93,10 @@ const Home = () => {
             <View style={{ paddingHorizontal: 20, marginTop: 30 }}>
                 <View style={styles.serviceTitleContainer}>
                     <Text style={{ ...styles.title, ...generalStyle.text[colorScheme] }}>Top Service Providers</Text>
-                    <Text onPress={()=> router.push("/(user)/search/type=top")} style={{ textDecorationLine: "underline", ...generalStyle.text[colorScheme] }}>See All</Text>
+                    <Text onPress={() => router.push("/(user)/search/type=top")} style={{ textDecorationLine: "underline", ...generalStyle.text[colorScheme] }}>See All</Text>
                 </View>
                 {
-                    load ?
+                    loadTop ?
                         <View style={{ display: "flex", justifyContent: "center", alignItems: "center", height: 200, width: "100%" }}>
                             <LottieView source={require("../../assets/images/loading.json")} loop={true} autoPlay style={{ width: 200, height: 250 }} />
                         </View> :
@@ -90,7 +112,7 @@ const Home = () => {
             <View style={{ paddingHorizontal: 20, marginTop: 30 }}>
                 <View style={styles.serviceTitleContainer}>
                     <Text style={{ ...styles.title, ...generalStyle.text[colorScheme] }}>Services Near You</Text>
-                    <Text onPress={()=> router.push("/(user)/search/type=location&value=near")} style={{ textDecorationLine: "underline", ...generalStyle.text[colorScheme] }}>See All</Text>
+                    <Text onPress={() => router.push("/(user)/search/type=location&value=near")} style={{ textDecorationLine: "underline", ...generalStyle.text[colorScheme] }}>See All</Text>
                 </View>
                 {
                     load ?

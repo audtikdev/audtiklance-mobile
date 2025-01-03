@@ -1,14 +1,20 @@
-import { View, Text, KeyboardAvoidingView, TouchableWithoutFeedback, Image, TextInput, Pressable, useColorScheme, StyleSheet, Keyboard } from 'react-native'
+import { View, Text, KeyboardAvoidingView, TouchableWithoutFeedback, Image, TextInput, Pressable, useColorScheme, StyleSheet, Keyboard, ActivityIndicator } from 'react-native'
 import React, { useRef, useState } from 'react'
 import { generalStyle } from '@/style/generalStyle'
 import { LoginUserInfo } from '@/types/auth'
 import { router } from 'expo-router'
 import { Modalize } from 'react-native-modalize';
+import { loginUser } from '@/api/auth'
+import { useDispatch } from 'react-redux'
+import { updateAuth } from '../Context/authProvider'
+import Toast from 'react-native-toast-message'
 
 const Login = () => {
     const colorScheme = useColorScheme() || "light"
     const [userInfo, setUserInfo] = useState<LoginUserInfo>()
+    const [load, setLoad] = useState(false)
     const modalizeRef = useRef<Modalize>(null)
+    const dispatch = useDispatch()
 
     const handleInput = (type: string, value: string) => {
         setUserInfo((prevUserInfo) => ({
@@ -17,8 +23,23 @@ const Login = () => {
         }));
     }
 
-    const handleSubmit = () => {
-        router.push("/(user)")
+    const handleSubmit = async () => {
+        if (userInfo?.email?.length! < 4 || userInfo?.password?.length! < 4) {
+            return
+        }
+        setLoad(true)
+        const response = await loginUser(userInfo!)
+        if (response?.status === 201 || response?.status === 200) {
+            const data = response?.data?.data
+            dispatch(updateAuth({auth: data}))
+            router.push("/(user)")
+        } else {
+            Toast.show({
+                type: "error",
+                text1: "Email or password incorrect"
+            })
+        }
+        setLoad(false)
     }
 
     return (
@@ -28,10 +49,16 @@ const Login = () => {
                     <View style={styles.registerMain}>
                         <Image source={require("../../assets/images/logo.png")} />
                         <Text style={{ ...styles.profileText, ...generalStyle.text[colorScheme] }}>Welcome Back Rejoice!</Text>
-                        <TextInput placeholderTextColor={generalStyle.text[colorScheme].color} onChangeText={(text) => handleInput("email", text)} value={userInfo?.email} style={{ ...styles.registerInput, ...generalStyle.border[colorScheme], ...generalStyle.text[colorScheme] }} placeholder='Email' />
-                        <TextInput placeholderTextColor={generalStyle.text[colorScheme].color} onChangeText={(text) => handleInput("password", text)} value={userInfo?.password} style={{ ...styles.registerInput, ...generalStyle.border[colorScheme], ...generalStyle.text[colorScheme] }} placeholder='Password' />
+                        <TextInput textContentType="emailAddress" autoCapitalize='none' autoCorrect={false} keyboardType='email-address' placeholderTextColor={generalStyle.text[colorScheme].color} onChangeText={(text) => handleInput("email", text)} value={userInfo?.email} style={{ ...styles.registerInput, ...generalStyle.border[colorScheme], ...generalStyle.text[colorScheme] }} placeholder='Email' />
+                        <TextInput textContentType="password" placeholderTextColor={generalStyle.text[colorScheme].color} onChangeText={(text) => handleInput("password", text)} value={userInfo?.password} style={{ ...styles.registerInput, ...generalStyle.border[colorScheme], ...generalStyle.text[colorScheme] }} placeholder='Password' />
                         <Text onPress={()=> router.push("/forgotPassword")} style={{ alignSelf: "flex-end", fontSize: 14, textDecorationLine: "underline", marginTop: -15, ...generalStyle.text[colorScheme] }}>Forgot Password?</Text>
-                        <Pressable onPress={handleSubmit} style={{ ...styles.loginButton, ...(colorScheme === "light" && generalStyle.button.active), ...(colorScheme === "dark" && generalStyle.button.dark) }}><Text style={{ ...styles.buttonText, ...generalStyle.text["dark"] }}>Login</Text></Pressable>
+                        <Pressable onPress={handleSubmit} style={{ ...styles.loginButton, ...(colorScheme === "light" && generalStyle.button.active), ...(colorScheme === "dark" && generalStyle.button.dark) }}> 
+                            {
+                                load ?
+                                <View><ActivityIndicator color={"white"} size="large" /></View> :
+                                <Text style={{ ...styles.buttonText, ...generalStyle.text["dark"] }}>Login</Text>
+                            }
+                        </Pressable>
                         <View style={styles.registerDivider}>
                             <View style={{ ...styles.dividerLine, ...generalStyle.divider[colorScheme] }}></View>
                             <Text style={{ ...styles.dividerText, ...generalStyle.text[colorScheme] }}>OR</Text>

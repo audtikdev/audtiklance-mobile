@@ -13,16 +13,18 @@ import { combineReducers } from "redux";
 import registerProvider from "../Context/registerProvider";
 import locationProvider from "../Context/locationProvider";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import authProvider from "../Context/authProvider";
 
 const persistConfig = {
   key: "root",
   storage: AsyncStorage,
-  whitelist: ["registerProvider", "location"],
+  whitelist: ["registerProvider", "location", "auth"],
 };
 
 const rootReducer = combineReducers({
   registerProvider: registerProvider,
-  locationProvider: locationProvider
+  locationProvider: locationProvider,
+  authProvider: authProvider
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
