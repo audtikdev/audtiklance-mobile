@@ -91,7 +91,7 @@ const ProfileMain = () => {
                     <Pressable onPress={() => router.push("/providerRegister1")} style={{ display: "flex", justifyContent: "space-between", flexDirection: "row", alignItems: "baseline" }}>
                         <View style={styles.box}>
                             <View style={{ ...styles.iconView, ...(colorScheme === "dark" && generalStyle.background.light) }}>
-                                <MaterialIcons name="home-repair-service" size={24} color={colorScheme === "light" ? "black" : "white"} />
+                                <MaterialIcons name="home-repair-service" size={24} color="black" />
                             </View>
                             <Text style={{ fontSize: 18, fontWeight: 600, ...generalStyle.text[colorScheme] }}>Become a provider</Text>
                         </View>
