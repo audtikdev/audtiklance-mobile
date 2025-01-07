@@ -35,7 +35,7 @@ const UserRegister = () => {
       ...userInfo!,
       otp: otp,
       secret_key: secret,
-      country_code: "+234"
+      country_code: "1"
     }
     console.log(body);
 

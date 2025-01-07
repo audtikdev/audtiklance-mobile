@@ -32,3 +32,15 @@ export const makeCall = (number: string) => {
     }
   });
 };
+
+export const openLink = async (url: string) => {
+  // Check if the URL can be opened
+  const supported = await Linking.canOpenURL(url);
+
+  if (supported) {
+    // Open the URL in the browser
+    await Linking.openURL(url);
+  } else {
+    Alert.alert(`Don't know how to open this URL: ${url}`);
+  }
+};

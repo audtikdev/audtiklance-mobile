@@ -1,15 +1,15 @@
-// @ts-nocheck
-import { View, Text, StyleSheet, ScrollView, TextInput, useColorScheme, Image } from 'react-native'
+import { View, Text, StyleSheet, ScrollView, TextInput, useColorScheme, Image, Pressable } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { generalStyle } from '@/style/generalStyle'
 import { getChatList } from '@/api/chat'
 import LottieView from 'lottie-react-native'
 import { router } from 'expo-router'
+import { CHAT } from './type'
 
 const ChatList = () => {
     const colorScheme = useColorScheme() || "light"
     const [searchValue, setSearchValue] = useState("")
-    const [chatList, setChatList] = useState([])
+    const [chatList, setChatList] = useState<Array<CHAT>>([])
     const [load, setLoad] = useState(true)
 
     useEffect(() => {
@@ -18,7 +18,6 @@ const ChatList = () => {
             const response = await getChatList()
             if (response?.status === 201 || response?.status === 200) {
                 const data = response?.data?.results
-                console.log(data);
                 setChatList(data)
             } else {
                 router.push("/login")
@@ -39,7 +38,7 @@ const ChatList = () => {
                     <ScrollView showsVerticalScrollIndicator={false} style={{ width: "100%" }}>
                         {
                             chatList?.map((chat, i) => (
-                                <View key={i} style={styles.chatContainer}>
+                                <Pressable onPress={()=> router.push(`/chat/${chat?.recipient?.id}/${chat?.id}`)} key={i} style={styles.chatContainer}>
                                     <Image style={styles.image} source={{uri: chat?.recipient?.profile_picture}} />
                                     <View style={{ width: "100%" }}> 
                                         <View style={styles.nameView}>
@@ -48,7 +47,7 @@ const ChatList = () => {
                                         </View>
                                         <Text style={{ ...styles.text, ...generalStyle.text[colorScheme] }} numberOfLines={1}>{chat?.last_message_content}</Text>
                                     </View>
-                                </View>
+                                </Pressable>
                             ))
                         }
                     </ScrollView>

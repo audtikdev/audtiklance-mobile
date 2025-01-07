@@ -24,7 +24,7 @@ const Login = () => {
     }
 
     const handleSubmit = async () => {
-        if (userInfo?.email?.length! < 4 || userInfo?.password?.length! < 4) {
+        if ((!userInfo?.email || userInfo?.email?.length! < 4) || (!userInfo?.password || userInfo?.password?.length! < 4)) {
             return
         }
         setLoad(true)
