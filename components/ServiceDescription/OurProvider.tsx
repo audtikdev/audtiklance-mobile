@@ -6,6 +6,7 @@ import { IHandles } from 'react-native-modalize/lib/options'
 import { AntDesign } from '@expo/vector-icons'
 import { Service } from '@/types/service'
 import { makeCall } from '@/utils/helper'
+import { router } from 'expo-router'
 
 const OurProvider: React.FC<{ ourProviderRef: React.RefObject<IHandles>, service: Service }> = ({ ourProviderRef, service }) => {
     const colorScheme = useColorScheme() || "light"
@@ -25,7 +26,7 @@ const OurProvider: React.FC<{ ourProviderRef: React.RefObject<IHandles>, service
                     </View> :
                     <View style={styles.modalContent}>
                         <Text style={{ ...generalStyle.text[colorScheme], marginVertical: 20, fontSize: 16, fontWeight: 500, textAlign: "center", borderBottomWidth: 0.5, paddingBottom: 15 }}>You can communicate with the service provider using the following method</Text>
-                        <Pressable style={styles.bookButton}><Text style={{ color: "white", fontSize: 16 }}>Chat Service</Text></Pressable>
+                        <Pressable onPress={()=> router.push(`/chat/${service?.owner_id}/null`)} style={styles.bookButton}><Text style={{ color: "white", fontSize: 16 }}>Chat Service</Text></Pressable>
                         <Pressable onPress={()=> makeCall(service?.phone!)} style={styles.bookButton}><Text style={{ color: "white", fontSize: 16 }}>Call Service</Text></Pressable>
                     </View>
             }

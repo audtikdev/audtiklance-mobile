@@ -134,3 +134,61 @@ export const getUser = async () => {
     }
   }
 };
+
+export const getUserByID = async (id: string) => {
+  try {
+    const res = await apiAxios.get(`/user/${id}/`);
+    return {
+      status: res.status,
+      data: res.data,
+    };
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      return {
+        status: error?.response?.status,
+        data: error?.response?.data?.error,
+      };
+    } else {
+      console.log(error);
+    }
+  }
+};
+
+
+export const updateUser = async (body: Pick<RegisterUserInfo, "firstname" | "lastname" | "phone" | "country_code">) => {
+  try {
+    const res = await apiAxios.put("/user/update-profile/", body);
+    return {
+      status: res.status,
+      data: res.data,
+    };
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      return {
+        status: error?.response?.status,
+        data: error?.response?.data?.error,
+      };
+    } else {
+      console.log(error);
+    }
+  }
+};
+
+export const updatePassword = async (body: {old_password: string, new_password: string}) => {
+  try {
+    const res = await apiAxios.post("/user/update-password/", body);
+    return {
+      status: res.status,
+      data: res.data,
+    };
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      return {
+        status: error?.response?.status,
+        data: error?.response?.data?.error,
+      };
+    } else {
+      console.log(error);
+    }
+  }
+};
