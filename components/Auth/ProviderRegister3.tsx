@@ -12,6 +12,7 @@ import { Modalize } from 'react-native-modalize';
 import { debounce } from 'lodash';
 import Constants from 'expo-constants'
 import axios from 'axios';
+import { updateRegisterProvider } from '../Context/registerProvider';
 
 const ProviderRegister3 = () => {
     const colorScheme = useColorScheme() || "light"
@@ -20,6 +21,7 @@ const ProviderRegister3 = () => {
     const [activeService, setActiveService] = useState<Service>()
     const [selectedServices, setSelectedServices] = useState<Service[]>([])
     const [query, setQuery] = useState("");
+    const dispatch = useDispatch()
     const modalizeRef = useRef<Modalize>(null)
     const baseUrl = Constants.expoConfig?.extra?.BASE_API
 
@@ -53,11 +55,12 @@ const ProviderRegister3 = () => {
     const handleServiceSelect = (service: Service) => {
         setActiveService(service)
         setQuery(service?.name)
+        Keyboard.dismiss()
         modalizeRef.current?.open()
     }
 
     const addService = () => {
-        const filteredServices = selectedServices?.filter((service)=> service.name !== activeService?.name)
+        const filteredServices = selectedServices?.filter((service) => service.name !== activeService?.name)
         setSelectedServices([...filteredServices, activeService!])
         modalizeRef.current?.close()
         setQuery("")
@@ -69,16 +72,27 @@ const ProviderRegister3 = () => {
     }
 
     const removeService = (service: Service) => {
-        const filteredServices = selectedServices?.filter((serv)=> serv.name !== service?.name)
+        const filteredServices = selectedServices?.filter((serv) => serv.name !== service?.name)
         setSelectedServices(filteredServices)
-    } 
+    }
 
     const handlePriceinput = (text: string) => {
-        setActiveService((prev)=> ({...prev, price: text}))
+        setActiveService((prev) => ({ ...prev!, price: Number(text) }))
     }
 
     const handleSubmit = () => {
-        // dispatch(updateRegisterProvider({ provider: userInfo! }))
+        if (selectedServices?.length < 1) {
+            return
+        }
+        const skill_data = selectedServices?.map((service) => {
+            return {
+                skill: service?.id,
+                cost: service?.price,
+                time_frame: "HOURLY"
+            }
+        })
+
+        dispatch(updateRegisterProvider({ provider: { skill_data: skill_data } }))
         router.push("/providerRegister4")
     }
 
@@ -90,10 +104,10 @@ const ProviderRegister3 = () => {
                         <Image source={require("../../assets/images/logo.png")} />
                         <Text style={{ ...styles.profileText, ...generalStyle.text[colorScheme] }}>Service Provider Profile Creation</Text>
                         <Text style={{ ...styles.profileText, ...generalStyle.text[colorScheme] }}>Choose Your Services</Text>
-                        <Text style={{ ...styles.profileText, ...generalStyle.text[colorScheme], marginTop: 25 }}>{providerDetails?.businessName}</Text>
+                        <Text style={{ ...styles.profileText, ...generalStyle.text[colorScheme], marginTop: 25 }}>{providerDetails?.business_name}</Text>
                         <View style={{ display: 'flex', alignItems: 'flex-end', flexDirection: 'row', columnGap: 10, marginBottom: 40 }}>
                             <Ionicons name="location-sharp" size={24} color="black" />
-                            <Text style={{ ...styles.profileText, ...generalStyle.text[colorScheme] }}>{providerDetails?.location?.place_name}</Text>
+                            <Text style={{ ...styles.profileText, ...generalStyle.text[colorScheme] }}>{providerDetails?.address}</Text>
                         </View>
                         <AutoSearch
                             key={"autoSearch"}
@@ -107,9 +121,9 @@ const ProviderRegister3 = () => {
                         <View style={styles.selectedServiceContainer}>
                             {
                                 selectedServices?.map((service, i) => (
-                                    <Pressable onPress={()=> editService(service)} key={i} style={styles.selectedService}>
+                                    <Pressable onPress={() => editService(service)} key={i} style={styles.selectedService}>
                                         <Text>{service?.name}</Text>
-                                        <MaterialIcons onPress={()=> removeService(service)} name="cancel" size={18} color="black" />
+                                        <MaterialIcons onPress={() => removeService(service)} name="cancel" size={18} color="black" />
                                     </Pressable>
                                 ))
                             }
@@ -130,10 +144,10 @@ const ProviderRegister3 = () => {
                     </View>
                     <Text style={styles.activeServiceText}>Pros with upfront pricing get hired more on Audtiklance.</Text>
                     <Text style={styles.activeServiceText}>Add a base price to help you get contacted and hired more, The price will include: Labor (excludes cost of parts).</Text>
-                    <Text style={{marginBottom: 5, marginTop: 10}}>Enter your base price</Text>
+                    <Text style={{ marginBottom: 5, marginTop: 10 }}>Enter your base price</Text>
                     <TextInput placeholderTextColor={generalStyle.text[colorScheme].color} onChangeText={(text) => handlePriceinput(text)} value={activeService?.sub_category?.[0]?.cost} keyboardType='phone-pad' style={{ ...styles.registerInput, ...generalStyle.border[colorScheme], ...generalStyle.text[colorScheme] }} placeholder='$0.00' />
                     <View style={styles.buttonContainer}>
-                        <Pressable onPress={()=> modalizeRef.current?.close()} style={{ ...styles.registerButton, marginTop: 0, backgroundColor: "white", borderWidth: 1, ...generalStyle.border[colorScheme] }}><Text style={{ ...styles.buttonText, ...generalStyle.text["light"] }}>Cancel</Text></Pressable>
+                        <Pressable onPress={() => modalizeRef.current?.close()} style={{ ...styles.registerButton, marginTop: 0, backgroundColor: "white", borderWidth: 1, ...generalStyle.border[colorScheme] }}><Text style={{ ...styles.buttonText, ...generalStyle.text["light"] }}>Cancel</Text></Pressable>
                         <Pressable onPress={addService} style={{ ...styles.registerButton, marginTop: 0, ...(colorScheme === "light" && generalStyle.button.active), ...(colorScheme === "dark" && generalStyle.button.dark) }}><Text style={{ ...styles.buttonText, ...generalStyle.text["dark"] }}>Submit</Text></Pressable>
                     </View>
                 </View>

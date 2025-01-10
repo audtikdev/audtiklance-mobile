@@ -1,14 +1,14 @@
 import { View, Text, StyleSheet, useColorScheme, Pressable } from 'react-native'
 import React, { useEffect, useRef } from 'react'
-import { AntDesign, Feather, Ionicons, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons'
+import { AntDesign, Feather, FontAwesome, Ionicons, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons'
 import { generalStyle } from '@/style/generalStyle'
 import { Modalize } from 'react-native-modalize'
 import { AccountModal, NotifyModal, PasswordModal } from './ProfileModal'
 import { openLink } from '@/utils/helper'
 import { useDispatch, useSelector } from 'react-redux'
-import { resetAuth } from '../Context/authProvider'
+import { resetAuth } from '../../Context/authProvider'
 import { router } from 'expo-router'
-import { RootState } from '../Store/store'
+import { RootState } from '../../Store/store'
 
 const ProfileMain = () => {
     const authUser = useSelector((state: RootState) => state.authProvider.auth)
@@ -52,12 +52,39 @@ const ProfileMain = () => {
                         </View>
                         <AntDesign name="right" size={20} color={colorScheme === "light" ? "black" : "white"} />
                     </Pressable>
-                    <Pressable onPress={()=> router.push("/history")} style={{ display: "flex", justifyContent: "space-between", flexDirection: "row", alignItems: "baseline" }}>
+                    <Pressable onPress={() => router.push("/history")} style={{ display: "flex", justifyContent: "space-between", flexDirection: "row", alignItems: "baseline" }}>
                         <View style={styles.box}>
                             <View style={{ ...styles.iconView, ...(colorScheme === "dark" && generalStyle.background.light) }}>
                                 <MaterialCommunityIcons name="history" size={24} color="black" />
                             </View>
                             <Text style={{ fontSize: 18, fontWeight: 600, ...generalStyle.text[colorScheme] }}>History</Text>
+                        </View>
+                        <AntDesign name="right" size={20} color={colorScheme === "light" ? "black" : "white"} />
+                    </Pressable>
+                    <Pressable onPress={()=> router.push("/leads")} style={{ display: "flex", justifyContent: "space-between", flexDirection: "row", alignItems: "baseline" }}>
+                        <View style={styles.box}>
+                            <View style={{ ...styles.iconView, ...(colorScheme === "dark" && generalStyle.background.light) }}>
+                                <FontAwesome name="users" size={24} color="black" />
+                            </View>
+                            <Text style={{ fontSize: 18, fontWeight: 600, ...generalStyle.text[colorScheme] }}>Leads</Text>
+                        </View>
+                        <AntDesign name="right" size={20} color={colorScheme === "light" ? "black" : "white"} />
+                    </Pressable>
+                    <Pressable onPress={() => router.push("/providerRegister1")} style={{ display: "flex", justifyContent: "space-between", flexDirection: "row", alignItems: "baseline" }}>
+                        <View style={styles.box}>
+                            <View style={{ ...styles.iconView, ...(colorScheme === "dark" && generalStyle.background.light) }}>
+                                <AntDesign name="creditcard" size={24} color="black" />
+                            </View>
+                            <Text style={{ fontSize: 18, fontWeight: 600, ...generalStyle.text[colorScheme] }}>Payment Method</Text>
+                        </View>
+                        <AntDesign name="right" size={20} color={colorScheme === "light" ? "black" : "white"} />
+                    </Pressable>
+                    <Pressable onPress={() => router.push("/providerRegister1")} style={{ display: "flex", justifyContent: "space-between", flexDirection: "row", alignItems: "baseline" }}>
+                        <View style={styles.box}>
+                            <View style={{ ...styles.iconView, ...(colorScheme === "dark" && generalStyle.background.light) }}>
+                                <MaterialCommunityIcons name="advertisements" size={24} color="black" />
+                            </View>
+                            <Text style={{ fontSize: 18, fontWeight: 600, ...generalStyle.text[colorScheme] }}>Featured Ads</Text>
                         </View>
                         <AntDesign name="right" size={20} color={colorScheme === "light" ? "black" : "white"} />
                     </Pressable>
@@ -76,24 +103,6 @@ const ProfileMain = () => {
                                 <Ionicons name="help-circle-outline" size={24} color="black" />
                             </View>
                             <Text style={{ fontSize: 18, fontWeight: 600, ...generalStyle.text[colorScheme] }}>Help</Text>
-                        </View>
-                        <AntDesign name="right" size={20} color={colorScheme === "light" ? "black" : "white"} />
-                    </Pressable>
-                    <Pressable onPress={() => openLink("https://app.audtiklance.com/terms")} style={{ display: "flex", justifyContent: "space-between", flexDirection: "row", alignItems: "baseline" }}>
-                        <View style={styles.box}>
-                            <View style={{ ...styles.iconView, ...(colorScheme === "dark" && generalStyle.background.light) }}>
-                                <Feather name="file-text" size={24} color="black" />
-                            </View>
-                            <Text style={{ fontSize: 18, fontWeight: 600, ...generalStyle.text[colorScheme] }}>Terms & Condition</Text>
-                        </View>
-                        <AntDesign name="right" size={20} color={colorScheme === "light" ? "black" : "white"} />
-                    </Pressable>
-                    <Pressable onPress={() => router.push("/providerRegister1")} style={{ display: "flex", justifyContent: "space-between", flexDirection: "row", alignItems: "baseline" }}>
-                        <View style={styles.box}>
-                            <View style={{ ...styles.iconView, ...(colorScheme === "dark" && generalStyle.background.light) }}>
-                                <MaterialIcons name="home-repair-service" size={24} color="black" />
-                            </View>
-                            <Text style={{ fontSize: 18, fontWeight: 600, ...generalStyle.text[colorScheme] }}>Become a provider</Text>
                         </View>
                         <AntDesign name="right" size={20} color={colorScheme === "light" ? "black" : "white"} />
                     </Pressable>

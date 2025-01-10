@@ -32,7 +32,11 @@ const Login = () => {
         if (response?.status === 201 || response?.status === 200) {
             const data = response?.data?.data
             dispatch(updateAuth({auth: data}))
-            router.push("/(user)")
+            if (data?.service_profile) {
+                router.push("/(provider)")
+            } else {
+                router.push("/(user)")
+            }
         } else {
             Toast.show({
                 type: "error",

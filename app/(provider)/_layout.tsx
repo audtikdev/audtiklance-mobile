@@ -7,7 +7,7 @@ import { IconSymbol } from '@/components/ui/IconSymbol';
 import TabBarBackground from '@/components/ui/TabBarBackground';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
-import { AntDesign, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { AntDesign, Ionicons, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
@@ -35,10 +35,10 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="search/[query]"
+        name="service"
         options={{
-          title: 'Search',
-          tabBarIcon: ({ color }) => <AntDesign name="search1" size={24} color={color} />,
+          title: 'Service',
+          tabBarIcon: ({ color }) => <MaterialIcons name="home-repair-service" size={24} color={color} />,
         }}
       />
       <Tabs.Screen

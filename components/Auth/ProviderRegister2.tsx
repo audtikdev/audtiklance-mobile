@@ -60,7 +60,9 @@ const ProviderRegister2 = () => {
     const handleLocationSelect = (location: any) => {
         setUserInfo((prevUserInfo) => ({
             ...prevUserInfo!,
-            location: location!,
+            address: location?.place_name!,
+            longitude: location?.geometry?.coordinates[0],
+            latitude: location?.geometry?.coordinates[1]
         }));
         setQuery(location?.place_name)
     }
@@ -81,7 +83,7 @@ const ProviderRegister2 = () => {
             setImage(result.assets[0].uri)
             setUserInfo((prevUserInfo) => ({
                 ...prevUserInfo!,
-                pictures: [image!],
+                profile_picture_string: result.assets[0].uri!,
             }));
         }
     }
@@ -102,9 +104,9 @@ const ProviderRegister2 = () => {
 
                     <Text style={{ ...styles.profileText, ...generalStyle.text[colorScheme] }}>Business Information</Text>
 
-                    <TextInput placeholderTextColor={generalStyle.text[colorScheme].color} onChangeText={(text) => handleInput("businessName", text)} value={userInfo?.businessName} style={{ ...styles.registerInput, ...generalStyle.border[colorScheme], ...generalStyle.text[colorScheme] }} placeholder='Business Name' />
+                    <TextInput placeholderTextColor={generalStyle.text[colorScheme].color} onChangeText={(text) => handleInput("business_name", text)} value={userInfo?.business_name} style={{ ...styles.registerInput, ...generalStyle.border[colorScheme], ...generalStyle.text[colorScheme] }} placeholder='Business Name' />
 
-                    <TextInput placeholderTextColor={generalStyle.text[colorScheme].color} onChangeText={(text) => handleInput("phoneNumber", text)} value={userInfo?.phoneNumber} keyboardType='phone-pad' style={{ ...styles.registerInput, ...generalStyle.border[colorScheme], ...generalStyle.text[colorScheme] }} placeholder='Phone Number' />
+                    <TextInput placeholderTextColor={generalStyle.text[colorScheme].color} onChangeText={(text) => handleInput("phone", text)} value={userInfo?.phone} keyboardType='phone-pad' style={{ ...styles.registerInput, ...generalStyle.border[colorScheme], ...generalStyle.text[colorScheme] }} placeholder='Phone Number' />
 
                     <AutoSearch
                         key={"autoSearch"}

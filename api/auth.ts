@@ -1,4 +1,4 @@
-import { LoginUserInfo, RegisterUserInfo } from "@/types/auth";
+import { LoginUserInfo, RegisterProvider, RegisterUserInfo } from "@/types/auth";
 import { AxiosError } from "axios";
 import apiAxios from ".";
 
@@ -43,6 +43,25 @@ export const sendOtp = async (body: {email: string}) => {
 export const registerUser = async (body: RegisterUserInfo) => {
   try {
     const res = await apiAxios.post("/user/", body);
+    return {
+      status: res.status,
+      data: res.data,
+    };
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      return {
+        status: error?.response?.status,
+        data: error?.response?.data?.error,
+      };
+    } else {
+      console.log(error);
+    }
+  }
+};
+
+export const registerProvider = async (body: FormData) => {
+  try {
+    const res = await apiAxios.post("/service/", body);
     return {
       status: res.status,
       data: res.data,

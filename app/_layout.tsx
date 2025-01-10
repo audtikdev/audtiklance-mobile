@@ -49,8 +49,11 @@ export default function RootLayout() {
               <Stack.Screen name="resetPasswordOtp/[query]" options={{ headerShown: false }} />
               <Stack.Screen name="resetPassword/[query]" options={{ headerShown: false }} />
               <Stack.Screen name="(user)" options={{ headerShown: false }} />
+              <Stack.Screen name="(provider)" options={{ headerShown: false }} />
               <Stack.Screen name="service-detail/[id]" options={{ headerShown: false }} />
               <Stack.Screen name="reviews/[id]" options={{ headerShown: false }} />
+              <Stack.Screen name="history" options={{ headerShown: false }} />
+              <Stack.Screen name="leads" options={{ headerShown: false }} />
               <Stack.Screen name="chat/[recipientId]/[convoId]" options={{ headerShown: false }} />
               <Stack.Screen name="+not-found" />
             </Stack>

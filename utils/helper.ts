@@ -44,3 +44,12 @@ export const openLink = async (url: string) => {
     Alert.alert(`Don't know how to open this URL: ${url}`);
   }
 };
+
+export async function uriToFile(uri: string, fileName: string) {
+  const response = await fetch(uri);
+  const blob = await response.blob();
+
+  // Create a File object from the Blob
+  const file = new File([blob], fileName, { type: blob.type });
+  return file;
+}

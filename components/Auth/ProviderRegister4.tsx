@@ -3,21 +3,49 @@ import { AntDesign, MaterialIcons } from '@expo/vector-icons'
 import * as ImagePicker from 'expo-image-picker';
 import { router } from 'expo-router';
 import React, { useRef, useState } from 'react'
-import { Alert, Image, Keyboard, KeyboardAvoidingView, Pressable, StyleSheet, Text, TouchableWithoutFeedback, useColorScheme, View } from 'react-native'
+import { ActivityIndicator, Alert, Image, Keyboard, KeyboardAvoidingView, Pressable, StyleSheet, Text, TouchableWithoutFeedback, useColorScheme, View } from 'react-native'
 import { Modalize } from 'react-native-modalize'
 import OtpTextInput from 'react-native-otp-textinput';
+import { RootState } from '../Store/store';
+import { useDispatch, useSelector } from 'react-redux';
+import { registerProvider, sendOtp } from '@/api/auth';
+import Toast from 'react-native-toast-message';
+import { updateRegisterProvider } from '../Context/registerProvider';
+import { RegisterProvider } from '@/types/auth';
+import { uriToFile } from '@/utils/helper';
 
 
 const ProviderRegister4 = () => {
+    const providerDetails = useSelector((state: RootState) => state.registerProvider.provider)
+    const [load, setLoad] = useState(false)
     const colorScheme = useColorScheme() || "light"
     const modalizeRef = useRef<Modalize>(null)
     const [images, setImages] = useState<Array<string>>([])
     const [otp, setOtp] = useState("")
     const [created, setCreated] = useState(false)
+    const dispatch = useDispatch()
 
-    const handleSubmit = () => {
-        // dispatch(updateRegisterProvider({ provider: userInfo! }))
-        modalizeRef.current?.open()
+    const handleSubmit = async () => {
+        setLoad(true)
+        const response = await sendOtp({ email: providerDetails?.email! })
+        console.log(response);
+
+        if (response?.status === 201 || response?.status === 200) {
+            console.log(response?.data?.data);
+            dispatch(updateRegisterProvider({ provider: { secret_key: response?.data?.data } }))
+            Keyboard.dismiss()
+            Toast.show({
+                type: "success",
+                text1: "OTP Code Sent To Your Email"
+            })
+            modalizeRef.current?.open()
+        } else {
+            Toast.show({
+                type: "error",
+                text1: response?.data
+            })
+        }
+        setLoad(false)
     }
 
     const handleImageSelect = async () => {
@@ -42,8 +70,50 @@ const ProviderRegister4 = () => {
         setImages(filteredImage)
     }
 
-    const verifyOTP = () => {
-        setCreated(true)
+    const createAccount = async () => {
+        setLoad(true)
+        const imageFile = await uriToFile(providerDetails?.profile_picture_string!, "providerDP")
+        console.log(imageFile);
+        const formData = new FormData()
+        // @ts-ignore
+        formData.append("profile_picture", {
+            // @ts-ignore
+            uri: `file:///${imageFile._data.blobId}`, // File URI
+            // @ts-ignore
+            name: imageFile._data.name,
+            // @ts-ignore
+            filename: imageFile._data.name,
+            // @ts-ignore
+            type: imageFile._data.type,
+        })
+        formData.append("email", providerDetails?.email!)
+        formData.append("password", providerDetails?.password!)
+        formData.append("otp", otp)
+        formData.append("secret_key", providerDetails?.secret_key!)
+        formData.append("longitude", providerDetails?.longitude!)
+        formData.append("latitude", providerDetails?.latitude!)
+        formData.append("business_name", providerDetails?.business_name!)
+        formData.append("phone", providerDetails?.phone!)
+        formData.append("address", providerDetails?.address!)
+        formData.append("about_me", providerDetails?.about_me!)
+        formData.append("is_active", "true")
+        console.log(formData.get("profile_picture"));
+        const response = await registerProvider(formData)
+        console.log(response);
+        if (response?.status === 201 || response?.status === 200) {
+            console.log(response?.data);
+            Toast.show({
+                type: "success",
+                text1: "Registration Successful"
+            })
+        } else {
+            Toast.show({
+                type: "error",
+                text1: response?.data
+            })
+        }
+        setLoad(false)
+        // setCreated(true)
     }
 
     return (
@@ -68,7 +138,13 @@ const ProviderRegister4 = () => {
                                 ))
                             }
                         </View>
-                        <Pressable onPress={handleSubmit} style={{ ...styles.registerButton, ...(colorScheme === "light" && generalStyle.button.active), ...(colorScheme === "dark" && generalStyle.button.dark) }}><Text style={{ ...styles.buttonText, ...generalStyle.text["dark"] }}>Continue</Text></Pressable>
+                        <Pressable onPress={handleSubmit} style={{ ...styles.registerButton, ...(colorScheme === "light" && generalStyle.button.active), ...(colorScheme === "dark" && generalStyle.button.dark) }}>
+                            {
+                                load ?
+                                    <ActivityIndicator size={"large"} color={"white"} /> :
+                                    <Text style={{ ...styles.buttonText, ...generalStyle.text["dark"] }}>Continue</Text>
+                            }
+                        </Pressable>
                     </View>
                 </TouchableWithoutFeedback>
             </KeyboardAvoidingView>
@@ -89,13 +165,19 @@ const ProviderRegister4 = () => {
                                 textInputStyle={{ ...styles.otpInputBox, ...generalStyle.background[colorScheme], ...generalStyle.text[colorScheme] }}
                                 handleTextChange={(otp) => setOtp(otp)}
                             />
-                            <Pressable onPress={verifyOTP} style={{ ...styles.registerButton, marginTop: 40, ...(colorScheme === "light" && generalStyle.button.active), ...(colorScheme === "dark" && generalStyle.button.dark) }}><Text style={{ ...styles.buttonText, ...generalStyle.text["dark"] }}>Verify</Text></Pressable>
+                            <Pressable onPress={createAccount} style={{ ...styles.registerButton, marginTop: 40, ...(colorScheme === "light" && generalStyle.button.active), ...(colorScheme === "dark" && generalStyle.button.dark) }}>
+                                {
+                                    load ?
+                                        <ActivityIndicator size={"large"} color={"white"} /> :
+                                        <Text style={{ ...styles.buttonText, ...generalStyle.text["dark"] }}>Verify</Text>
+                                }
+                            </Pressable>
                         </View> :
                         <View style={styles.modalContent}>
                             <Text style={{ fontSize: 20, fontWeight: 700, textAlign: "center" }}>OTP Verified Successfully</Text>
                             <Text style={{ fontSize: 16, marginTop: 10, fontWeight: 600, textAlign: "center" }}>Your Service Provider Account Has Been Created Successfully</Text>
-                            <AntDesign style={{textAlign: "center", marginVertical: 20}} name="checkcircle" size={60} color="green" />
-                            <Pressable onPress={()=> router.push("/(user)")} style={{ ...styles.registerButton, marginTop: 10, ...(colorScheme === "light" && generalStyle.button.active), ...(colorScheme === "dark" && generalStyle.button.dark) }}><Text style={{ ...styles.buttonText, ...generalStyle.text["dark"] }}>Go To Dashboard</Text></Pressable>
+                            <AntDesign style={{ textAlign: "center", marginVertical: 20 }} name="checkcircle" size={60} color="green" />
+                            <Pressable onPress={() => router.push("/(user)")} style={{ ...styles.registerButton, marginTop: 10, ...(colorScheme === "light" && generalStyle.button.active), ...(colorScheme === "dark" && generalStyle.button.dark) }}><Text style={{ ...styles.buttonText, ...generalStyle.text["dark"] }}>Go To Dashboard</Text></Pressable>
                         </View>
                 }
             </Modalize>
