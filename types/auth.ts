@@ -4,6 +4,9 @@ export type RegisterUserInfo = {
     firstname: string,
     lastname: string,
     email: string,
+    gender?: string,
+    about_me?: string;
+    dob?: string;
     password: string,
     confirmPassword: string,
     otp?: string,
@@ -22,15 +25,25 @@ export type RegisterProvider = {
     lastname?: string;
     email?: string;
     phone?: string,
+    gender?: string;
     password?: string;
     confirmPassword?: string;
-    businessName?: string;
-    phoneNumber?: string;
-    location?: Location;
-    description?: string;
-    pictures?: Array<string>;
-    previousWorkImages?: Array<string>
-    services?: Array<Service>
+    business_name?: string;
+    address?: string;
+    longitude?: string;
+    latitude?: string;
+    otp?: string;
+    dob?: string;
+    secret_key?: string;
+    about_me?: string;
+    images?: Array<string>;
+    profile_picture?: File;
+    profile_picture_string?: string;
+    skill_data?: Array<{
+        skill?: string;
+        cost?: number;
+        time_frame?: string;
+    }>
 }
 
 export type AuthUser = {

@@ -1,0 +1,10 @@
+import Home from '@/components/Provider/Home/Home';
+import { View } from 'react-native';
+
+export default function HomeScreen() {
+  return (
+    <View>
+      <Home />
+    </View>
+  );
+}

@@ -1,5 +1,5 @@
-import { View, Text, StyleSheet, ScrollView, TextInput, KeyboardAvoidingView, TouchableNativeFeedback, Keyboard, useColorScheme, Pressable, ActivityIndicator } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import { View, Text, StyleSheet, ScrollView, TextInput, KeyboardAvoidingView, TouchableNativeFeedback, Keyboard, useColorScheme, Pressable, ActivityIndicator, Platform } from 'react-native'
+import React, { useEffect, useRef, useState } from 'react'
 import { MESSAGE } from './type'
 import { createConversation, getPreviousConversation, sendMessage } from '@/api/chat'
 import Toast from 'react-native-toast-message'
@@ -7,8 +7,16 @@ import { Feather, Fontisto, Ionicons } from '@expo/vector-icons'
 import { generalStyle } from '@/style/generalStyle'
 import { router } from 'expo-router'
 import LottieView from 'lottie-react-native'
+import * as Notifications from 'expo-notifications';
+import { RootState } from '../Store/store'
+import { useSelector } from 'react-redux'
+import { getUserByID } from '@/api/auth'
 
 const ChatContent: React.FC<{ convoId: string, recipientId: string }> = ({ convoId, recipientId }) => {
+    const authUser = useSelector((state: RootState) => state.authProvider.auth)
+    const [socket, setSocket] = useState<WebSocket | null>(null);
+    const [expoPushToken, setExpoPushToken] = useState('');
+    const [notification, setNotification] = useState(false);
     const [conversationID, setConversationID] = useState(convoId)
     const [recipient, setRecipient] = useState()
     const colorScheme = useColorScheme() || "light"
@@ -16,22 +24,114 @@ const ChatContent: React.FC<{ convoId: string, recipientId: string }> = ({ convo
     const [inputValue, setInputValue] = useState("")
     const [load, setLoad] = useState(false)
     const [sendLoad, setSendLoad] = useState(false)
+    const scrollViewRef = useRef<ScrollView>(null);
     // console.log(convoId, recipientId);
+
+    const getConversation = async () => {
+        const response = await getPreviousConversation(conversationID)
+        if (response?.status === 201 || response?.status === 200) {
+            const data = response.data?.data
+            setMessages(data)
+        } else {
+            Toast.show({
+                type: "error",
+                text1: "Error fetching conversation"
+            })
+        }
+    }
+
+    const getRecipient = async () => {
+        const response = await getUserByID(recipientId)
+        console.log(response);
+
+    }
+
+    async function registerForPushNotificationsAsync() {
+        let token;
+        if (Platform.OS === 'ios') {
+            const { status } = await Notifications.requestPermissionsAsync();
+            if (status !== 'granted') {
+                alert('Permission for notifications required!');
+                return;
+            }
+        }
+        token = (await Notifications.getExpoPushTokenAsync()).data;
+        console.log(token);
+        return token;
+    }
+
+    async function sendTestNotification(name: string, message: string) {
+        await Notifications.scheduleNotificationAsync({
+            content: {
+                title: name,
+                body: message,
+            },
+            // @ts-ignore
+            trigger: { seconds: 0 },
+        });
+    }
+
+    useEffect(() => {
+        registerForPushNotificationsAsync().then(token => setExpoPushToken(token as string));
+
+        // Listener for foreground notifications
+        const subscription = Notifications.addNotificationReceivedListener(notification => {
+            // @ts-ignore
+            setNotification(notification);
+        });
+        const responeReceiver = Notifications.addNotificationResponseReceivedListener(response => {
+            console.log('Notification clicked:', response);
+        });
+
+        const createSocket = () => {
+            const newSocket = new WebSocket(
+                `https://api.audtiklance.com/ws/chat/?token=${authUser?.access}`
+            );
+
+            newSocket.onopen = () => {
+                console.log("WebSocket connection established hook");
+            };
+
+            newSocket.onclose = () => {
+                console.log("WebSocket connection closed");
+            };
+
+            newSocket.onerror = (error) => {
+                console.error("WebSocket error:", error);
+            };
+
+            newSocket.onmessage = (event) => {
+                console.log("WebSocket message received:", event.data);
+                const { type: eventName, content, sender } = JSON.parse(event.data);
+                console.log(eventName, content, sender);
+                if (eventName === "chat") {
+                    sendTestNotification(sender, content)
+                    getConversation()
+                }
+            };
+
+            setSocket(newSocket);
+        };
+
+        if (convoId) {
+            createSocket();
+        }
+
+        return () => {
+            if (socket) {
+                socket.close();
+            }
+            subscription.remove()
+            responeReceiver.remove()
+        };
+    }, [convoId])
 
     useEffect(() => {
         (async () => {
             setLoad(true)
             if (conversationID !== "null") {
-                const response = await getPreviousConversation(conversationID)
-                if (response?.status === 201 || response?.status === 200) {
-                    const data = response.data?.data
-                    setMessages(data)
-                } else {
-                    Toast.show({
-                        type: "error",
-                        text1: "Error fetching conversation"
-                    })
-                }
+                await getConversation()
+                // await getRecipient()
             } else {
                 const response = await createConversation({ user: recipientId })
                 if (response?.status === 201 || response?.status === 200) {
@@ -47,6 +147,12 @@ const ChatContent: React.FC<{ convoId: string, recipientId: string }> = ({ convo
             setLoad(false)
         })()
     }, [conversationID])
+
+    useEffect(()=> {
+        setTimeout(() => {
+            scrollViewRef.current?.scrollToEnd({ animated: true })
+        }, 100);
+    }, [messages?.length])
 
     const sendUserMessage = async () => {
         if (!inputValue) {
@@ -71,50 +177,51 @@ const ChatContent: React.FC<{ convoId: string, recipientId: string }> = ({ convo
     }
 
     return (
-        <KeyboardAvoidingView>
-            <TouchableNativeFeedback onPress={Keyboard.dismiss}>
-                {
-                    load ?
-                        <View style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100%", width: "100%" }}>
-                            <LottieView source={require("../../assets/images/service2.json")} loop={true} autoPlay style={{ width: 300, height: 350 }} />
-                        </View> :
-                        <View style={styles.container}>
-                            <View style={styles.heading}>
-                                <Pressable onPress={() => router.back()} style={styles.buttons}>
-                                    <Ionicons name="arrow-back" size={24} color="black" />
-                                    <Text>Back</Text>
-                                </Pressable>
-                                <Text style={{ fontSize: 18 }}>Receiver</Text>
-                                <View style={{ ...styles.buttons, columnGap: 20 }}>
-                                    <Ionicons name="call-outline" size={24} color="black" />
-                                    <Fontisto name="email" size={24} color="black" />
-                                </View>
+        <View>
+            {
+                load ?
+                    <View style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100%", width: "100%" }}>
+                        <LottieView source={require("../../assets/images/service2.json")} loop={true} autoPlay style={{ width: 300, height: 350 }} />
+                    </View> :
+                    <View style={styles.container}>
+                        <View style={styles.heading}>
+                            <Pressable onPress={() => router.back()} style={styles.buttons}>
+                                <Ionicons name="arrow-back" size={24} color={colorScheme === "light" ? "black" : "white"} />
+                                <Text style={{ ...generalStyle.text[colorScheme] }}>Back</Text>
+                            </Pressable>
+                            <Text style={{ fontSize: 18, ...generalStyle.text[colorScheme], textTransform: "capitalize" }}>{messages[0]?.receiver?.firstname} {messages[0]?.receiver?.lastname}</Text>
+                            <View style={{ ...styles.buttons, columnGap: 20 }}>
+                                <Ionicons name="call-outline" size={24} color={colorScheme === "light" ? "black" : "white"} />
+                                <Fontisto name="email" size={24} color={colorScheme === "light" ? "black" : "white"} />
                             </View>
-                            <ScrollView contentContainerStyle={styles.chatContainer}>
+                        </View>
+                        <View style={styles.chatContainer}>
+                            <ScrollView ref={scrollViewRef} showsVerticalScrollIndicator={false} style={{ width: "100%" }}>
                                 {
                                     messages?.map((message, i) => (
                                         <View key={i} style={{ ...styles.chatView, alignSelf: message?.is_sender ? "flex-end" : "flex-start" }}>
-                                            <Text style={{ width: "80%", color: "white" }}>{message?.content}</Text>
-                                            <Text style={{ color: "white", fontSize: 12 }}>{new Date(message?.updated_at)?.toLocaleTimeString()}</Text>
+                                            <View style={{ display: "flex", width: "75%", flexDirection: 'row', flexWrap: 'wrap' }}>
+                                                <Text style={{ width: "100%", color: "white" }}>{message?.content}</Text>
+                                            </View>
+                                            <Text style={{ color: "white", fontSize: 10 }}>{new Date(message?.updated_at)?.toLocaleTimeString()}</Text>
                                         </View>
                                     ))
                                 }
                             </ScrollView>
-                            <View style={styles.inputView}>
-                                <TextInput value={inputValue} multiline onChangeText={(text) => setInputValue(text)} placeholderTextColor={generalStyle.text[colorScheme].color} placeholder='Enter your message' style={{ ...styles.input, ...generalStyle.border[colorScheme] }} />
-                                <Pressable onPress={() => sendUserMessage()} style={styles.sendView}>
-                                    {
-                                        sendLoad ?
-                                            <ActivityIndicator /> :
-                                            <Feather name="send" size={20} color="white" />
-                                    }
-                                </Pressable>
-                            </View>
-
                         </View>
-                }
-            </TouchableNativeFeedback>
-        </KeyboardAvoidingView>
+                        <View style={styles.inputView}>
+                            <TextInput value={inputValue} multiline onChangeText={(text) => setInputValue(text)} placeholderTextColor={generalStyle.text[colorScheme].color} placeholder='Enter your message' style={{ ...styles.input, ...generalStyle.border[colorScheme], ...generalStyle.text[colorScheme] }} />
+                            <Pressable onPress={() => sendUserMessage()} style={styles.sendView}>
+                                {
+                                    sendLoad ?
+                                        <ActivityIndicator /> :
+                                        <Feather name="send" size={20} color="white" />
+                                }
+                            </Pressable>
+                        </View>
+                    </View>
+            }
+        </View>
     )
 }
 
@@ -141,15 +248,18 @@ const styles = StyleSheet.create({
         marginBottom: 20
     },
     chatContainer: {
-        marginVertical: 10,
         display: "flex",
-        alignItems: "center"
+        justifyContent: "flex-start",
+        alignItems: "flex-start",
+        height: "85%",
+        paddingBottom: 10
     },
     chatView: {
         display: "flex",
         columnGap: 10,
         flexDirection: "row",
         alignItems: "flex-end",
+        justifyContent: "space-between",
         width: "80%",
         padding: 8,
         marginVertical: 10,

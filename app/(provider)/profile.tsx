@@ -1,5 +1,5 @@
+import ProfileMain from '@/components/Provider/Profile/ProfileMain'
 import React from 'react'
-import ProfileMain from '@/components/Profile/ProfileMain'
 
 const profile = () => {
   return (
