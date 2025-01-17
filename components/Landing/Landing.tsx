@@ -21,7 +21,12 @@ const Landing = () => {
         (async () => {
             const response = await getUser()
             if (response?.status === 201 || response?.status === 200) {
-                router.push("/(user)")
+                const data = response?.data?.data
+                if (data?.service_profile) {
+                    router.push("/(provider)")
+                } else {
+                    router.push("/(user)")
+                }
             }
         })()
     }, [])
@@ -41,9 +46,9 @@ const Landing = () => {
                     }
                 </Swiper>
                 <View style={styles.landingSecond}>
-                    <Pressable onPress={()=> router.push("/login")} style={styles.loginButton}><Text style={{ ...styles.buttonText, color: "white" }}>Login</Text></Pressable>
-                    <Pressable onPress={()=> modalizeRef.current?.open()} style={{ ...styles.registerButton, ...generalStyle.border[colorScheme] }}><Text style={{ ...styles.buttonText, ...generalStyle.text[colorScheme] }}>Create An Account</Text></Pressable>
-                    <Text onPress={()=> router.push("/(user)")} style={{...styles.guestText, ...generalStyle.text[colorScheme]}}>Login as a guest</Text>
+                    <Pressable onPress={() => router.push("/login")} style={styles.loginButton}><Text style={{ ...styles.buttonText, color: "white" }}>Login</Text></Pressable>
+                    <Pressable onPress={() => modalizeRef.current?.open()} style={{ ...styles.registerButton, ...generalStyle.border[colorScheme] }}><Text style={{ ...styles.buttonText, ...generalStyle.text[colorScheme] }}>Create An Account</Text></Pressable>
+                    <Text onPress={() => router.push("/(user)")} style={{ ...styles.guestText, ...generalStyle.text[colorScheme] }}>Login as a guest</Text>
                 </View>
             </View>
             <Modalize
@@ -52,8 +57,8 @@ const Landing = () => {
                 modalStyle={generalStyle.background[colorScheme]}
             >
                 <View style={styles.modalContent}>
-                    <Pressable onPress={()=> router.push("/userRegister")} style={{ ...styles.loginButton, marginTop: 40 }}><Text style={{ ...styles.buttonText, ...generalStyle.buttonText.light }}>I am looking for service providers</Text></Pressable>
-                    <Pressable onPress={()=> router.push("/providerRegister1")} style={{ ...styles.registerButton, ...generalStyle.border[colorScheme] }}><Text style={{ ...styles.buttonText, ...generalStyle.text[colorScheme] }}>I am a service provider</Text></Pressable>
+                    <Pressable onPress={() => router.push("/userRegister")} style={{ ...styles.loginButton, marginTop: 40 }}><Text style={{ ...styles.buttonText, ...generalStyle.buttonText.light }}>I am looking for service providers</Text></Pressable>
+                    <Pressable onPress={() => router.push("/providerRegister1")} style={{ ...styles.registerButton, ...generalStyle.border[colorScheme] }}><Text style={{ ...styles.buttonText, ...generalStyle.text[colorScheme] }}>I am a service provider</Text></Pressable>
                 </View>
             </Modalize>
         </>

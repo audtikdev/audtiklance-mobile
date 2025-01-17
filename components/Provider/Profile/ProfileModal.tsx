@@ -13,8 +13,6 @@ import { updateAuth } from "../../Context/authProvider"
 
 export const AccountModal: React.FC<{ accountRef: React.RefObject<IHandles> }> = ({ accountRef }) => {
     const authUser = useSelector((state: RootState) => state.authProvider.auth)
-    console.log(authUser);
-    
     const colorScheme = useColorScheme() || "light"
     const [userInfo, setUserInfo] = useState<Pick<RegisterUserInfo, "firstname" | "lastname" | "phone" | "gender" | "dob" | "about_me">>()
     const [load, setLoad] = useState(false)

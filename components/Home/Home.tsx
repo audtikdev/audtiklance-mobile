@@ -57,9 +57,15 @@ const Home = () => {
     useEffect(() => {
         (async () => {
             setLoad(true)
-            const url = `${baseUrl}/service/?search=a&longitude=${userLocation?.coords?.longitude}&latitude=${userLocation?.coords?.latitude}&page=1`;
-            const response1 = await axios.get(url)
-            setServices(response1?.data.results);
+            if (userLocation?.coords?.longitude && userLocation?.coords?.latitude) {
+                const url = `${baseUrl}/service/?longitude=${userLocation?.coords?.longitude}&latitude=${userLocation?.coords?.latitude}&page=1`;
+                const response1 = await axios.get(url)
+                setServices(response1?.data.results);
+            } else {
+                const url = `${baseUrl}/service/?page=3`;
+                const response1 = await axios.get(url)
+                setServices(response1?.data.results);
+            }
             setLoad(false)
         })()
     }, [userLocation])

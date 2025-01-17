@@ -7,6 +7,9 @@ import { Modalize } from 'react-native-modalize';
 import { loginUser } from '@/api/auth'
 import { useDispatch } from 'react-redux'
 import { updateAuth } from '../Context/authProvider'
+import * as Google from 'expo-auth-session/providers/google';
+import { useAuthRequest } from 'expo-auth-session';
+import * as AuthSession from 'expo-auth-session';
 import Toast from 'react-native-toast-message'
 
 const Login = () => {
@@ -15,6 +18,12 @@ const Login = () => {
     const [load, setLoad] = useState(false)
     const modalizeRef = useRef<Modalize>(null)
     const dispatch = useDispatch()
+    const redirectUri = AuthSession.makeRedirectUri();
+    const [request, response, promptAsync] = Google.useAuthRequest({
+        clientId: '295762912332-3b8phemu55ggkb5m976osibehsuji6rt.apps.googleusercontent.com',
+        redirectUri: redirectUri,
+      });
+    
 
     const handleInput = (type: string, value: string) => {
         setUserInfo((prevUserInfo) => ({
@@ -68,7 +77,7 @@ const Login = () => {
                             <Text style={{ ...styles.dividerText, ...generalStyle.text[colorScheme] }}>OR</Text>
                             <View style={{ ...styles.dividerLine, ...generalStyle.divider[colorScheme] }}></View>
                         </View>
-                        <Pressable style={{ ...styles.oauthButton, ...generalStyle.border[colorScheme] }}>
+                        <Pressable onPress={()=> promptAsync()} style={{ ...styles.oauthButton, ...generalStyle.border[colorScheme] }}>
                             <Image source={require("../../assets/images/google.png")} />
                             <Text style={{ ...styles.oauthText, ...generalStyle.text[colorScheme] }}>Continue with Google</Text>
                         </Pressable>

@@ -1,10 +1,11 @@
 import { View, Text } from 'react-native'
 import React from 'react'
+import ServiceMain from '@/components/Provider/Service/ServiceMain'
 
 const service = () => {
   return (
     <View>
-      <Text>service</Text>
+      <ServiceMain />
     </View>
   )
 }

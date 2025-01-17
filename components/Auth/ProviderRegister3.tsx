@@ -29,7 +29,7 @@ const ProviderRegister3 = () => {
         // Debounce the search function to reduce API calls
         const delayedSearch = debounce(() => {
             if (query.trim() !== "") {
-                const url = `${baseUrl}/category/?search=${query}`;
+                const url = `${baseUrl}/category/?search=${query}&is_subcategory=true`;
                 axios.get(url)
                     .then((response: any) => {
                         setServices(response.data.results);

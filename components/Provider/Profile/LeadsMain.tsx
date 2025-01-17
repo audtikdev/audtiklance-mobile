@@ -1,18 +1,36 @@
 import { View, Text, useColorScheme, ScrollView, StyleSheet, Pressable, Image, TextInput } from 'react-native'
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { generalStyle } from '@/style/generalStyle'
-import { formatCurrency } from '@/utils/helper'
 import { Modalize } from 'react-native-modalize'
 import { IHandles } from 'react-native-modalize/lib/options'
-import StarRating from '../../StarRating'
 import { AntDesign, Ionicons } from '@expo/vector-icons'
 import { router } from 'expo-router'
+import { getLeads } from '@/api/leads'
+import Plan from './Plan'
+import { LEAD } from '@/types/leads'
+import LottieView from 'lottie-react-native'
 
 const LeadsMain = () => {
     const colorScheme = useColorScheme() || "light"
     const leadRef = useRef<Modalize>(null)
+    const planRef = useRef<Modalize>(null)
+    const [leads, setLeads] = useState<Array<LEAD>>([])
+    const [load, setLoad] = useState(false)
+    const [selectedLead, setSelectedLead] = useState<LEAD>()
 
-    const openLeadModal = () => {
+    useEffect(() => {
+        (async () => {
+            setLoad(true)
+            const response = await getLeads()
+            if (response?.status === 200) {
+                setLeads(response?.data?.results)
+            }
+            setLoad(false)
+        })()
+    }, [])
+
+    const openLeadModal = (lead: LEAD) => {
+        setSelectedLead(lead)
         leadRef.current?.open()
     }
 
@@ -25,32 +43,39 @@ const LeadsMain = () => {
                 </Pressable>
                 <Text style={{ fontSize: 18, fontWeight: 600, textAlign: "center", ...generalStyle.text[colorScheme] }}>Customer Leads</Text>
             </View>
-            <View style={styles.scrollContainer}>
-                <ScrollView>
-                    {
-                        Array(8).fill("").map((_, i) => (
-                            <Pressable onPress={openLeadModal} key={i} style={{ display: "flex", marginTop: 10, justifyContent: "space-between", flexDirection: "row", alignItems: "center" }}>
-                                <View style={styles.box}>
-                                    <Image source={require("../../../assets/images/react-logo.png")} style={styles.iconView} />
-                                    <View>
-                                        <Text style={{ fontSize: 18, fontWeight: 600, ...generalStyle.text[colorScheme] }}>Jean Marc</Text>
-                                        <Text style={{ fontSize: 16, fontWeight: 400, ...generalStyle.text[colorScheme] }}>Brief service description</Text>
-                                    </View>
-                                </View>
-                                <AntDesign name="right" size={24} color={colorScheme === "dark" ? "white" : "black"} />
-                            </Pressable>
-                        ))
-                    }
-                </ScrollView>
-            </View>
-            <LeadModal leadRef={leadRef} />
+            {
+                load ?
+                    <View style={{ display: "flex", justifyContent: "center", alignItems: "center", height: 750, width: "100%" }}>
+                        <LottieView source={require("../../../assets/images/service2.json")} loop={true} autoPlay style={{ width: 300, height: 350 }} />
+                    </View> :
+                    <View style={styles.scrollContainer}>
+                        <ScrollView>
+                            {
+                                leads?.map((lead, i) => (
+                                    <Pressable onPress={() => openLeadModal(lead)} key={i} style={{ display: "flex", marginTop: 10, justifyContent: "space-between", flexDirection: "row", alignItems: "center" }}>
+                                        <View style={styles.box}>
+                                            <Image source={{ uri: lead?.user?.profile_picture }} style={styles.iconView} />
+                                            <View>
+                                                <Text style={{ fontSize: 18, fontWeight: 600, ...generalStyle.text[colorScheme] }}>{lead?.user?.firstname} {lead?.user?.lastname}</Text>
+                                                <Text style={{ fontSize: 16, fontWeight: 400, ...generalStyle.text[colorScheme] }}>{lead?.message}</Text>
+                                            </View>
+                                        </View>
+                                        <AntDesign name="right" size={24} color={colorScheme === "dark" ? "white" : "black"} />
+                                    </Pressable>
+                                ))
+                            }
+                        </ScrollView>
+                    </View>
+            }
+            <LeadModal leadRef={leadRef} planRef={planRef} lead={selectedLead!} />
+            <Plan planRef={planRef} />
         </View>
     )
 }
 
 export default LeadsMain
 
-const LeadModal: React.FC<{ leadRef: React.RefObject<IHandles> }> = ({ leadRef }) => {
+const LeadModal: React.FC<{ leadRef: React.RefObject<IHandles>, planRef: React.RefObject<IHandles>, lead: LEAD }> = ({ leadRef, planRef, lead }) => {
     const colorScheme = useColorScheme() || "light"
 
     return (
@@ -60,18 +85,19 @@ const LeadModal: React.FC<{ leadRef: React.RefObject<IHandles> }> = ({ leadRef }
             modalStyle={{ ...generalStyle.modalBackground[colorScheme] }}
         >
             {
-                true ?
-                    <View style={{ ...styles.shareModalContent, height: 260, paddingTop: 30 }}>
-                        <Text style={{ fontSize: 18, fontWeight: 700, textAlign: "center", marginBottom: 10, ...generalStyle.text[colorScheme] }}>Jean Marc</Text>
-                        <Text style={{ fontSize: 16, fontWeight: 500, ...generalStyle.text[colorScheme] }}>Brief service description</Text>
-                        <Text style={{ fontSize: 16, fontWeight: 600, ...generalStyle.text[colorScheme], textAlign: "center", marginTop: 20 }}>Subscribe to get access to the customer contact details and many others like this</Text>
-                        <Pressable style={{ ...styles.numberButton, ...generalStyle.button.active }}><Text style={{ ...styles.buttonText, ...generalStyle.text.dark }}>Subscribe</Text></Pressable>
-                    </View> :
+                lead?.paid ?
                     <View style={styles.modalContent}>
                         <Text style={{ ...generalStyle.text[colorScheme], marginVertical: 20, fontSize: 16, fontWeight: 500, textAlign: "center", borderBottomWidth: 0.5, paddingBottom: 15 }}>You can communicate with this customer using the following method</Text>
                         <Pressable style={styles.bookButton}><Text style={{ color: "white", fontSize: 16 }}>Chat with customer</Text></Pressable>
                         <Pressable style={styles.bookButton}><Text style={{ color: "white", fontSize: 16 }}>Call customer</Text></Pressable>
+                    </View> :
+                    <View style={{ ...styles.shareModalContent, height: 260, paddingTop: 30 }}>
+                        <Text style={{ fontSize: 18, fontWeight: 700, textAlign: "center", marginBottom: 10, ...generalStyle.text[colorScheme] }}>{lead?.user?.firstname} {lead?.user?.lastname}</Text>
+                        <Text style={{ fontSize: 16, fontWeight: 500, ...generalStyle.text[colorScheme] }}>{lead?.message}</Text>
+                        <Text style={{ fontSize: 16, fontWeight: 600, ...generalStyle.text[colorScheme], textAlign: "center", marginTop: 20 }}>Subscribe to get access to the customer contact details and many others like this</Text>
+                        <Pressable onPress={() => planRef.current?.open()} style={{ ...styles.numberButton, ...generalStyle.button.active }}><Text style={{ ...styles.buttonText, ...generalStyle.text.dark }}>Subscribe</Text></Pressable>
                     </View>
+
             }
         </Modalize>
     )

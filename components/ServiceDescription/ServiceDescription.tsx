@@ -37,6 +37,7 @@ const ServiceDescription: React.FC<{ id: string }> = ({ id }) => {
                 console.error("getServices", error);
                 setLoad(false)
             });
+            
     }, [id])
 
     const bookService = () => {

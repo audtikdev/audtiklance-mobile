@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, StyleSheet, useColorScheme } from 'react-native'
+import { View, Text, ScrollView, StyleSheet, useColorScheme, FlatList, ActivityIndicator } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import AutoSearch from '../AutoComplete'
 import { debounce } from 'lodash';
@@ -12,7 +12,7 @@ import { RootState } from '../Store/store';
 import { LocationData } from '../Context/types';
 import LottieView from 'lottie-react-native';
 
-const Search: React.FC<{query: string}> = ({query}) => {
+const Search: React.FC<{ query: string }> = ({ query }) => {
     const colorScheme = useColorScheme() || "light"
     const userLocation = useSelector((state: RootState) => state.locationProvider.location)
     const [locationQuery, setLocationQuery] = useState("");
@@ -23,7 +23,9 @@ const Search: React.FC<{query: string}> = ({query}) => {
     const [serviceSearch, setServiceSearch] = useState<Service[]>([])
     const [service, setService] = useState<{ name: string }>()
     const [load, setLoad] = useState(false)
+    const [isLoading, setisLoading] = useState(false)
     const [topService, setTopService] = useState(false)
+    const [page, setPage] = useState(1)
 
     const mapKey = Constants.expoConfig?.extra?.MAPBOX_KEY
     const baseUrl = Constants.expoConfig?.extra?.BASE_API
@@ -34,29 +36,29 @@ const Search: React.FC<{query: string}> = ({query}) => {
         }
     }, [userLocation])
 
-    useEffect(()=> {
+    useEffect(() => {
         if (query) {
             const getQuery = query?.split("&")
             const getType = getQuery?.[0]?.split("=")
             const getValue = getQuery?.[1]?.split("=")
             if (getType?.[1] === "category") {
-                setService({name: getValue[1]})
+                setService({ name: getValue[1] })
                 setServiceQuery(getValue[1])
                 setTopService(false)
             }
             if (getType?.[1] === "location") {
                 setLocation(userLocation!)
-                setService({name: "a"})
+                setService({ name: "a" })
                 setServiceQuery("")
                 setTopService(false)
             }
             if (getType?.[1] === "top") {
                 setTopService(true)
                 setServiceQuery("")
-                setService({name: ""})
+                setService({ name: "" })
             }
         } else {
-            setService({name: "a"})
+            setService({ name: "a" })
         }
     }, [query])
 
@@ -112,10 +114,13 @@ const Search: React.FC<{query: string}> = ({query}) => {
 
     useEffect(() => {
         setLoad(true)
-        console.log(serviceQuery);
-            console.log(location);
-            
-        const url = topService ? `${baseUrl}/service/` : `${baseUrl}/service/?search=${serviceQuery || "a"}&longitude=${location?.coords?.longitude}&latitude=${location?.coords?.latitude}&page=1`;
+        setPage(1)
+        let url = ""
+        if (location?.coords?.longitude && location?.coords?.latitude) {
+            url = topService ? `${baseUrl}/service/` : `${baseUrl}/service/?search=${serviceQuery || ""}&longitude=${location?.coords?.longitude}&latitude=${location?.coords?.latitude}&page=1`;
+        } else {
+            url = `${baseUrl}/service/?page=`
+        }
         axios.get(url)
             .then((response: any) => {
                 setServices(response.data.results);
@@ -127,8 +132,34 @@ const Search: React.FC<{query: string}> = ({query}) => {
             });
     }, [location, serviceQuery])
 
+    useEffect(() => {
+        if (page > 1) {
+            setisLoading(true)
+            let url = ""
+            if (location?.coords?.longitude && location?.coords?.latitude) {
+                url = topService ? `${baseUrl}/service/` : `${baseUrl}/service/?search=${serviceQuery || ""}&longitude=${location?.coords?.longitude}&latitude=${location?.coords?.latitude}&page=${page}`;
+            } else {
+                url = `${baseUrl}/service/?page=${page}`
+            }
+            axios.get(url)
+                .then((response: any) => {
+                    setServices([...services, ...response.data.results]);
+                    setLoad(false)
+                })
+                .catch((error: any) => {
+                    console.error("getServices", error);
+                    setLoad(false)
+                });
+            setisLoading(false)
+        }
+
+    }, [page])
+
     const handleLocationSearch = (text: string) => {
         setLocationQuery(text);
+        if (text === "") {
+            setLocation(undefined)
+        }
     };
 
     const handleLocationSelect = (location: any) => {
@@ -149,6 +180,12 @@ const Search: React.FC<{query: string}> = ({query}) => {
         setService(service)
         setServiceQuery(service?.name)
     }
+
+
+    const renderFooter = () => {
+        if (!isLoading) return null;
+        return <ActivityIndicator size="large" color="#0000ff" />;
+    };
 
     return (
         <View>
@@ -177,20 +214,23 @@ const Search: React.FC<{query: string}> = ({query}) => {
                         <View style={{ display: "flex", justifyContent: "center", alignItems: "center", height: 750, width: "100%" }}>
                             <LottieView source={require("../../assets/images/service2.json")} loop={true} autoPlay style={{ width: 300, height: 350 }} />
                         </View> :
-                        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollViewContent}>
+                        <View style={{ marginBottom: 200, paddingBottom: 200 }}>
                             <View style={styles.serviceTitleContainer}>
                                 <Text style={{ ...styles.title, ...generalStyle.text[colorScheme] }}>Search Result({services?.length})</Text>
                                 <Text style={{ textDecorationLine: "underline", ...generalStyle.text[colorScheme] }}>See All</Text>
                             </View>
-                            <View style={styles.serviceList}>
-                                {
-                                    load ? <Text>Loading...</Text> :
-                                        services?.map((service, i) => (
-                                            <ServiceCard service={service} key={i} width={"47%"} />
-                                        ))
-                                }
-                            </View>
-                        </ScrollView>
+                            <FlatList
+                                data={services}
+                                keyExtractor={(item, index) => index.toString()}
+                                renderItem={({ item }) => <ServiceCard service={item} width={"50%"} />}
+                                onEndReached={() => setPage(page + 1)}
+                                onEndReachedThreshold={0.2}
+                                ListFooterComponent={renderFooter}
+                                numColumns={2}
+                                contentContainerStyle={styles.listContainer}
+                                showsVerticalScrollIndicator={false}
+                            />
+                        </View>
                 }
             </View>
         </View>
@@ -202,6 +242,11 @@ export default Search
 const styles = StyleSheet.create({
     scrollViewContent: {
         paddingBottom: 320
+    },
+    listContainer: {
+        // padding: 10
+        // height: "138%"
+        paddingBottom: 500
     },
     searchContainer: {
         padding: 20,

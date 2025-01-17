@@ -61,7 +61,11 @@ export const registerUser = async (body: RegisterUserInfo) => {
 
 export const registerProvider = async (body: FormData) => {
   try {
-    const res = await apiAxios.post("/service/", body);
+    const res = await apiAxios.post("/service/", body, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
     return {
       status: res.status,
       data: res.data,

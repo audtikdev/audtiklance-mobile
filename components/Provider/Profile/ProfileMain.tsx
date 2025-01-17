@@ -9,6 +9,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { resetAuth } from '../../Context/authProvider'
 import { router } from 'expo-router'
 import { RootState } from '../../Store/store'
+import Plan from './Plan'
 
 const ProfileMain = () => {
     const authUser = useSelector((state: RootState) => state.authProvider.auth)
@@ -17,6 +18,7 @@ const ProfileMain = () => {
     const accountRef = useRef<Modalize>(null)
     const passwordRef = useRef<Modalize>(null)
     const notifyRef = useRef<Modalize>(null)
+    const planRef = useRef<Modalize>(null)
 
     useEffect(() => {
         if (!authUser?.access) {
@@ -52,7 +54,16 @@ const ProfileMain = () => {
                         </View>
                         <AntDesign name="right" size={20} color={colorScheme === "light" ? "black" : "white"} />
                     </Pressable>
-                    <Pressable onPress={() => router.push("/history")} style={{ display: "flex", justifyContent: "space-between", flexDirection: "row", alignItems: "baseline" }}>
+                    <Pressable onPress={() => planRef.current?.open()} style={{ display: "flex", justifyContent: "space-between", flexDirection: "row", alignItems: "baseline" }}>
+                        <View style={styles.box}>
+                            <View style={{ ...styles.iconView, ...(colorScheme === "dark" && generalStyle.background.light) }}>
+                                <MaterialIcons name="upgrade" size={24} color="black" />
+                            </View>
+                            <Text style={{ fontSize: 18, fontWeight: 600, ...generalStyle.text[colorScheme] }}>Upgrade Plan</Text>
+                        </View>
+                        <AntDesign name="right" size={20} color={colorScheme === "light" ? "black" : "white"} />
+                    </Pressable>
+                    <Pressable onPress={() => router.push("/providerHistory")} style={{ display: "flex", justifyContent: "space-between", flexDirection: "row", alignItems: "baseline" }}>
                         <View style={styles.box}>
                             <View style={{ ...styles.iconView, ...(colorScheme === "dark" && generalStyle.background.light) }}>
                                 <MaterialCommunityIcons name="history" size={24} color="black" />
@@ -61,30 +72,12 @@ const ProfileMain = () => {
                         </View>
                         <AntDesign name="right" size={20} color={colorScheme === "light" ? "black" : "white"} />
                     </Pressable>
-                    <Pressable onPress={()=> router.push("/leads")} style={{ display: "flex", justifyContent: "space-between", flexDirection: "row", alignItems: "baseline" }}>
+                    <Pressable onPress={() => router.push("/leads")} style={{ display: "flex", justifyContent: "space-between", flexDirection: "row", alignItems: "baseline" }}>
                         <View style={styles.box}>
                             <View style={{ ...styles.iconView, ...(colorScheme === "dark" && generalStyle.background.light) }}>
                                 <FontAwesome name="users" size={24} color="black" />
                             </View>
                             <Text style={{ fontSize: 18, fontWeight: 600, ...generalStyle.text[colorScheme] }}>Leads</Text>
-                        </View>
-                        <AntDesign name="right" size={20} color={colorScheme === "light" ? "black" : "white"} />
-                    </Pressable>
-                    <Pressable onPress={() => router.push("/providerRegister1")} style={{ display: "flex", justifyContent: "space-between", flexDirection: "row", alignItems: "baseline" }}>
-                        <View style={styles.box}>
-                            <View style={{ ...styles.iconView, ...(colorScheme === "dark" && generalStyle.background.light) }}>
-                                <AntDesign name="creditcard" size={24} color="black" />
-                            </View>
-                            <Text style={{ fontSize: 18, fontWeight: 600, ...generalStyle.text[colorScheme] }}>Payment Method</Text>
-                        </View>
-                        <AntDesign name="right" size={20} color={colorScheme === "light" ? "black" : "white"} />
-                    </Pressable>
-                    <Pressable onPress={() => router.push("/providerRegister1")} style={{ display: "flex", justifyContent: "space-between", flexDirection: "row", alignItems: "baseline" }}>
-                        <View style={styles.box}>
-                            <View style={{ ...styles.iconView, ...(colorScheme === "dark" && generalStyle.background.light) }}>
-                                <MaterialCommunityIcons name="advertisements" size={24} color="black" />
-                            </View>
-                            <Text style={{ fontSize: 18, fontWeight: 600, ...generalStyle.text[colorScheme] }}>Featured Ads</Text>
                         </View>
                         <AntDesign name="right" size={20} color={colorScheme === "light" ? "black" : "white"} />
                     </Pressable>
@@ -120,6 +113,7 @@ const ProfileMain = () => {
             <AccountModal accountRef={accountRef} />
             <PasswordModal passwordRef={passwordRef} />
             <NotifyModal notifyRef={notifyRef} />
+            <Plan planRef={planRef} />
         </>
     )
 }
