@@ -83,7 +83,7 @@ const ProviderRegister2 = () => {
             setImage(result.assets[0].uri)
             setUserInfo((prevUserInfo) => ({
                 ...prevUserInfo!,
-                profile_picture_string: result.assets[0].uri!,
+                profile_picture: result.assets[0].uri!,
             }));
         }
     }
@@ -118,7 +118,7 @@ const ProviderRegister2 = () => {
                         objectKey='place_name'
                     />
 
-                    <TextInput multiline={true} numberOfLines={5} textAlignVertical='top' placeholderTextColor={generalStyle.text[colorScheme].color} onChangeText={(text) => handleInput("description", text)} value={userInfo?.email} style={{ ...styles.registerInput, height: 100, paddingTop: 10, ...generalStyle.border[colorScheme], ...generalStyle.text[colorScheme] }} placeholder='Business Description' />
+                    <TextInput multiline={true} numberOfLines={5} textAlignVertical='top' placeholderTextColor={generalStyle.text[colorScheme].color} onChangeText={(text) => handleInput("about_me", text)} value={userInfo?.email} style={{ ...styles.registerInput, height: 100, paddingTop: 10, ...generalStyle.border[colorScheme], ...generalStyle.text[colorScheme] }} placeholder='Business Description' />
 
                     <Pressable onPress={handleImageSelect} style={{ ...styles.uploadView, ...generalStyle.border[colorScheme] }}>
                         {

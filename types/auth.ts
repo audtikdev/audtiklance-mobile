@@ -1,4 +1,4 @@
-import { Service } from "./service";
+import { SubCategory } from "./service";
 
 export type RegisterUserInfo = {
     firstname: string,
@@ -36,9 +36,8 @@ export type RegisterProvider = {
     dob?: string;
     secret_key?: string;
     about_me?: string;
-    images?: Array<string>;
-    profile_picture?: File;
-    profile_picture_string?: string;
+    images?: Array<{image_url: string}>;
+    profile_picture?: string;
     skill_data?: Array<{
         skill?: string;
         cost?: number;
@@ -49,6 +48,7 @@ export type RegisterProvider = {
 export type AuthUser = {
     access?: string;
     refresh?: string;
+    sub_category?: Array<SubCategory>
 } & RegisterProvider
 
 export type LoginUserInfo = Pick<RegisterUserInfo, "email" | "password">

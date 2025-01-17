@@ -10,11 +10,17 @@ import { ScrollView } from 'react-native-gesture-handler'
 import { generalStyle } from '@/style/generalStyle'
 import LottieView from 'lottie-react-native'
 import { router } from 'expo-router'
+import { getServiceProfile } from '@/api/service'
+import { CHAT } from '@/components/Chat/type'
+import { getChatList } from '@/api/chat'
+import { getLeads } from '@/api/leads'
 
 const Home = () => {
     const authUser = useSelector((state: RootState) => state.authProvider.auth)
     const dispatch = useDispatch()
     const [load, setLoad] = useState(true)
+    const [chatNum, setChatNum] = useState<number>(0)
+    const [leadNum, setLeadNum] = useState<number>(0)
     const colorScheme = useColorScheme() || "light"
 
 
@@ -22,9 +28,16 @@ const Home = () => {
         (async () => {
             setLoad(true)
             const response = await getUser()
+            const chatRes = await getChatList()
+            const leadRes = await getLeads()
+
             if (response?.status === 201 || response?.status === 200) {
+                setChatNum(chatRes?.data?.count)
+                setLeadNum(leadRes?.data?.count)
                 const data = response.data?.data
                 dispatch(updateAuth({ auth: data }))
+                const res = await getServiceProfile(data?.service_profile)
+                dispatch(updateAuth({ auth: res?.data }))
             } else {
                 router.push("/login")
             }
@@ -57,7 +70,7 @@ const Home = () => {
                                             <Text style={{ fontSize: 16, fontWeight: 500 }}>Total Messages</Text>
                                             <MaterialCommunityIcons name="android-messages" size={30} color="black" />
                                         </View>
-                                        <Text style={{ fontSize: 24, fontWeight: 700, textTransform: "capitalize", marginTop: 40 }}>24</Text>
+                                        <Text style={{ fontSize: 24, fontWeight: 700, textTransform: "capitalize", marginTop: 40 }}>{chatNum}</Text>
                                     </View>
                                 </View>
                                 <View style={styles.firstContainer}>
@@ -73,7 +86,7 @@ const Home = () => {
                                             <Text style={{ fontSize: 16, fontWeight: 500 }}>Total Leads</Text>
                                             <FontAwesome name="users" size={30} color="black" />
                                         </View>
-                                        <Text style={{ fontSize: 24, fontWeight: 700, textTransform: "capitalize", marginTop: 40 }}>240</Text>
+                                        <Text style={{ fontSize: 24, fontWeight: 700, textTransform: "capitalize", marginTop: 40 }}>{leadNum}</Text>
                                     </View>
                                 </View>
                                 <View style={{ ...styles.smallContainer, width: "100%", marginTop: 20 }}>
@@ -99,13 +112,13 @@ const Home = () => {
                                         <MaterialIcons name="home-repair-service" size={30} color="black" />
                                     </View>
                                     {
-                                        Array(3).fill("").map((_, i) => (
+                                        authUser?.sub_category?.map((serv, i) => (
                                             <View key={i} style={{ display: "flex", marginTop: 15, flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
                                                 <View>
-                                                    <Text style={{ fontSize: 18, fontWeight: 600 }}>Plumbing</Text>
-                                                    <Text style={{ marginTop: 5 }}>{formatCurrency("en-US", "USD", 500)}</Text>
+                                                    <Text style={{ fontSize: 18, fontWeight: 600 }}>{serv?.sub_category}</Text>
+                                                    <Text style={{ marginTop: 5 }}>{formatCurrency("en-US", "USD", Number(serv?.cost))}</Text>
                                                 </View>
-                                                <Text>FIXED</Text>
+                                                <Text>{serv?.time_frame}</Text>
                                             </View>
                                         ))
                                     }

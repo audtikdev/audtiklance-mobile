@@ -11,8 +11,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { registerProvider, sendOtp } from '@/api/auth';
 import Toast from 'react-native-toast-message';
 import { updateRegisterProvider } from '../Context/registerProvider';
-import { RegisterProvider } from '@/types/auth';
-import { uriToFile } from '@/utils/helper';
+import { updateAuth } from '../Context/authProvider';
 
 
 const ProviderRegister4 = () => {
@@ -72,19 +71,27 @@ const ProviderRegister4 = () => {
 
     const createAccount = async () => {
         setLoad(true)
-        const imageFile = await uriToFile(providerDetails?.profile_picture_string!, "providerDP")
-        console.log(imageFile);
+
         const formData = new FormData()
+        let localUri = providerDetails?.profile_picture!;
+        let filename = localUri.split('/').pop();
+
+        let match = /\.(\w+)$/.exec(filename!);
+        let type = match ? `image/${match[1]}` : `image`;
         // @ts-ignore
-        formData.append("profile_picture", {
+        formData.append('profile_picture', { uri: localUri, name: filename, type });
+        providerDetails?.skill_data?.forEach((skillData, index) => {
+            formData.append(`skill_data[${index}]skill`, skillData.skill!);
+            formData.append(`skill_data[${index}]cost`, `${skillData.cost}`);
+            formData.append(`skill_data[${index}]time_frame`, `${skillData.time_frame}`);
+        })
+        images?.forEach((image, i) => {
+            let filename = image?.split('/').pop();
+
+            let match = /\.(\w+)$/.exec(filename!);
+            let type = match ? `image/${match[1]}` : `image`;
             // @ts-ignore
-            uri: `file:///${imageFile._data.blobId}`, // File URI
-            // @ts-ignore
-            name: imageFile._data.name,
-            // @ts-ignore
-            filename: imageFile._data.name,
-            // @ts-ignore
-            type: imageFile._data.type,
+            formData.append(`images${i}`, { uri: image, name: filename, type });
         })
         formData.append("email", providerDetails?.email!)
         formData.append("password", providerDetails?.password!)
@@ -99,9 +106,8 @@ const ProviderRegister4 = () => {
         formData.append("is_active", "true")
         console.log(formData.get("profile_picture"));
         const response = await registerProvider(formData)
-        console.log(response);
         if (response?.status === 201 || response?.status === 200) {
-            console.log(response?.data);
+            dispatch(updateAuth({ auth: response?.data?.data }))
             Toast.show({
                 type: "success",
                 text1: "Registration Successful"
@@ -113,7 +119,7 @@ const ProviderRegister4 = () => {
             })
         }
         setLoad(false)
-        // setCreated(true)
+        setCreated(true)
     }
 
     return (
@@ -177,7 +183,7 @@ const ProviderRegister4 = () => {
                             <Text style={{ fontSize: 20, fontWeight: 700, textAlign: "center" }}>OTP Verified Successfully</Text>
                             <Text style={{ fontSize: 16, marginTop: 10, fontWeight: 600, textAlign: "center" }}>Your Service Provider Account Has Been Created Successfully</Text>
                             <AntDesign style={{ textAlign: "center", marginVertical: 20 }} name="checkcircle" size={60} color="green" />
-                            <Pressable onPress={() => router.push("/(user)")} style={{ ...styles.registerButton, marginTop: 10, ...(colorScheme === "light" && generalStyle.button.active), ...(colorScheme === "dark" && generalStyle.button.dark) }}><Text style={{ ...styles.buttonText, ...generalStyle.text["dark"] }}>Go To Dashboard</Text></Pressable>
+                            <Pressable onPress={() => router.push("/(provider)")} style={{ ...styles.registerButton, marginTop: 10, ...(colorScheme === "light" && generalStyle.button.active), ...(colorScheme === "dark" && generalStyle.button.dark) }}><Text style={{ ...styles.buttonText, ...generalStyle.text["dark"] }}>Go To Dashboard</Text></Pressable>
                         </View>
                 }
             </Modalize>
