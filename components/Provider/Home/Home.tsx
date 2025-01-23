@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, useColorScheme, Image } from 'react-native'
+import { View, Text, StyleSheet, useColorScheme, Image, Pressable } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '@/components/Store/store'
@@ -57,22 +57,15 @@ const Home = () => {
                         <Text style={{ fontSize: 15, fontWeight: 400, marginTop: 5, ...generalStyle.text[colorScheme] }}>Here's what's happening with your business today.</Text>
                         <View style={styles.scrollContainer}>
                             <ScrollView showsVerticalScrollIndicator={false}>
-                                <View style={styles.firstContainer}>
-                                    <View style={styles.smallContainer}>
-                                        <View style={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
-                                            <Text style={{ fontSize: 16, fontWeight: 500 }}>Total Net Income</Text>
-                                            <Ionicons name="cash-outline" size={30} color="black" />
-                                        </View>
-                                        <Text style={{ fontSize: 24, fontWeight: 700, textTransform: "capitalize", marginTop: 40 }}>{formatCurrency("en-US", "USD", 5000)}</Text>
-                                    </View>
-                                    <View style={styles.smallContainer}>
+                                <Pressable onPress={()=> router.push("/(provider)/chat")} style={styles.firstContainer}>
+                                    <View style={{...styles.smallContainer, width: "100%"}}>
                                         <View style={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
                                             <Text style={{ fontSize: 16, fontWeight: 500 }}>Total Messages</Text>
                                             <MaterialCommunityIcons name="android-messages" size={30} color="black" />
                                         </View>
                                         <Text style={{ fontSize: 24, fontWeight: 700, textTransform: "capitalize", marginTop: 40 }}>{chatNum}</Text>
                                     </View>
-                                </View>
+                                </Pressable>
                                 <View style={styles.firstContainer}>
                                     <View style={styles.smallContainer}>
                                         <View style={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
@@ -81,13 +74,13 @@ const Home = () => {
                                         </View>
                                         <Text style={{ fontSize: 24, fontWeight: 700, textTransform: "capitalize", marginTop: 40 }}>1250</Text>
                                     </View>
-                                    <View style={styles.smallContainer}>
+                                    <Pressable onPress={()=> router.push("/leads")} style={styles.smallContainer}>
                                         <View style={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
                                             <Text style={{ fontSize: 16, fontWeight: 500 }}>Total Leads</Text>
                                             <FontAwesome name="users" size={30} color="black" />
                                         </View>
                                         <Text style={{ fontSize: 24, fontWeight: 700, textTransform: "capitalize", marginTop: 40 }}>{leadNum}</Text>
-                                    </View>
+                                    </Pressable>
                                 </View>
                                 <View style={{ ...styles.smallContainer, width: "100%", marginTop: 20 }}>
                                     <View style={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>

@@ -55,6 +55,7 @@ export default function RootLayout() {
               <Stack.Screen name="history" options={{ headerShown: false }} />
               <Stack.Screen name="providerHistory" options={{ headerShown: false }} />
               <Stack.Screen name="leads" options={{ headerShown: false }} />
+              <Stack.Screen name="createListing" options={{ headerShown: false }} />
               <Stack.Screen name="chat/[recipientId]/[convoId]" options={{ headerShown: false }} />
               <Stack.Screen name="+not-found" />
             </Stack>

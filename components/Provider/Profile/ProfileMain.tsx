@@ -3,6 +3,7 @@ import React, { useEffect, useRef } from 'react'
 import { AntDesign, Feather, FontAwesome, Ionicons, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons'
 import { generalStyle } from '@/style/generalStyle'
 import { Modalize } from 'react-native-modalize'
+import * as Linking from 'expo-linking';
 import { AccountModal, NotifyModal, PasswordModal } from './ProfileModal'
 import { openLink } from '@/utils/helper'
 import { useDispatch, useSelector } from 'react-redux'
@@ -24,12 +25,27 @@ const ProfileMain = () => {
         if (!authUser?.access) {
             logOutUser()
         }
+
+        const handleDeepLink = (event: any) => {
+            const { url } = event;
+            console.log('Redirected to:', url);
+            // You can perform logic based on the deep link here
+        };
+
+        Linking.addEventListener('url', handleDeepLink);
+
     }, [])
 
     const logOutUser = () => {
         dispatch(resetAuth())
         router.push("/login")
     }
+
+    Linking.addEventListener('url', (event) => {
+        const { url } = event;
+        console.log('Redirected to:', url);
+        // Handle the URL logic
+    });
 
     return (
         <>
