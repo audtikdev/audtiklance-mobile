@@ -47,25 +47,31 @@ const LeadsMain = () => {
                 load ?
                     <View style={{ display: "flex", justifyContent: "center", alignItems: "center", height: 750, width: "100%" }}>
                         <LottieView source={require("../../../assets/images/service2.json")} loop={true} autoPlay style={{ width: 300, height: 350 }} />
-                    </View> :
-                    <View style={styles.scrollContainer}>
-                        <ScrollView>
-                            {
-                                leads?.map((lead, i) => (
-                                    <Pressable onPress={() => openLeadModal(lead)} key={i} style={{ display: "flex", marginTop: 10, justifyContent: "space-between", flexDirection: "row", alignItems: "center" }}>
-                                        <View style={styles.box}>
-                                            <Image source={{ uri: lead?.user?.profile_picture }} style={styles.iconView} />
-                                            <View>
-                                                <Text style={{ fontSize: 18, fontWeight: 600, ...generalStyle.text[colorScheme] }}>{lead?.user?.firstname} {lead?.user?.lastname}</Text>
-                                                <Text style={{ fontSize: 16, fontWeight: 400, ...generalStyle.text[colorScheme] }}>{lead?.message}</Text>
+                    </View> : leads.length < 1 ?
+                        <View style={{display: "flex", alignItems: "center", justifyContent: "center", padding: 20, height: "90%"}}>
+                            <Text style={{fontSize: 18, fontWeight: 500}}>You don't have any leads yet</Text>
+                            <Text style={{fontSize: 16, fontWeight: 600, textAlign: "center", paddingTop: 10}}>Subscribe to AudtikLance Preferred to rank higher in search</Text>
+                            <Image style={{width: 400, height: 300, paddingVertical: 40}} source={require("../../../assets/images/Empty-product.png")} />
+                            <Pressable onPress={()=> planRef.current?.open()} style={{...styles.numberButton, ...generalStyle.button.active}}><Text style={{color: "white", fontSize: 18}}>Subscribe</Text></Pressable>
+                        </View> :
+                        <View style={styles.scrollContainer}>
+                            <ScrollView>
+                                {
+                                    leads?.map((lead, i) => (
+                                        <Pressable onPress={() => openLeadModal(lead)} key={i} style={{ display: "flex", marginTop: 10, justifyContent: "space-between", flexDirection: "row", alignItems: "center" }}>
+                                            <View style={styles.box}>
+                                                <Image source={{ uri: lead?.user?.profile_picture }} style={styles.iconView} />
+                                                <View>
+                                                    <Text style={{ fontSize: 18, fontWeight: 600, ...generalStyle.text[colorScheme] }}>{lead?.user?.firstname} {lead?.user?.lastname}</Text>
+                                                    <Text style={{ fontSize: 16, fontWeight: 400, ...generalStyle.text[colorScheme] }}>{lead?.message}</Text>
+                                                </View>
                                             </View>
-                                        </View>
-                                        <AntDesign name="right" size={24} color={colorScheme === "dark" ? "white" : "black"} />
-                                    </Pressable>
-                                ))
-                            }
-                        </ScrollView>
-                    </View>
+                                            <AntDesign name="right" size={24} color={colorScheme === "dark" ? "white" : "black"} />
+                                        </Pressable>
+                                    ))
+                                }
+                            </ScrollView>
+                        </View>
             }
             <LeadModal leadRef={leadRef} planRef={planRef} lead={selectedLead!} />
             <Plan planRef={planRef} />
@@ -107,6 +113,7 @@ const styles = StyleSheet.create({
     container: {
         padding: 15,
         paddingTop: 80,
+        height: "100%"
     },
     modalContent: {
         padding: 20,

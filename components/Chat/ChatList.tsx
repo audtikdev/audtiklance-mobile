@@ -1,13 +1,19 @@
 import { View, Text, StyleSheet, ScrollView, TextInput, useColorScheme, Image, Pressable } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { generalStyle } from '@/style/generalStyle'
 import { getChatList } from '@/api/chat'
 import LottieView from 'lottie-react-native'
 import { router } from 'expo-router'
 import { CHAT } from './type'
+import Plan from '../Provider/Profile/Plan'
+import { RootState } from '../Store/store'
+import { useSelector } from 'react-redux'
+import { Modalize } from 'react-native-modalize'
 
 const ChatList = () => {
     const colorScheme = useColorScheme() || "light"
+    const authUser = useSelector((state: RootState) => state.authProvider.auth)
+    const planRef = useRef<Modalize>(null)
     const [searchValue, setSearchValue] = useState("")
     const [chatList, setChatList] = useState<Array<CHAT>>([])
     const [load, setLoad] = useState(true)
@@ -34,24 +40,37 @@ const ChatList = () => {
                 load ?
                     <View style={{ display: "flex", justifyContent: "center", alignItems: "center", height: 500, width: "100%" }}>
                         <LottieView source={require("../../assets/images/service2.json")} loop={true} autoPlay style={{ width: 300, height: 350 }} />
-                    </View> :
-                    <ScrollView showsVerticalScrollIndicator={false} style={{ width: "100%" }}>
-                        {
-                            chatList?.map((chat, i) => (
-                                <Pressable onPress={()=> router.push(`/chat/${chat?.recipient?.id}/${chat?.id}`)} key={i} style={styles.chatContainer}>
-                                    <Image style={styles.image} source={{uri: chat?.recipient?.profile_picture}} />
-                                    <View style={{ width: "100%" }}> 
-                                        <View style={styles.nameView}>
-                                            <Text style={{ ...generalStyle.text[colorScheme] }}>{chat?.recipient?.firstname}</Text>
-                                            <Text style={{ ...generalStyle.text[colorScheme] }}>{new Date(chat?.updated_at).getHours()}:{new Date(chat?.updated_at).getMinutes()}</Text>
+                    </View> : chatList.length < 1 ?
+                        <View style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: 20, height: "80%", width: "100%" }}>
+                            <Text style={{ fontSize: 18, fontWeight: 500 }}>You don't have any chats yet</Text>
+                            {
+                                authUser?.service_profile &&
+                                <Text style={{ fontSize: 16, fontWeight: 600, textAlign: "center", paddingTop: 10 }}>Subscribe to AudtikLance Preferred to rank higher in search</Text>
+                            }
+                            <Image style={{ width: 400, height: 300, paddingVertical: 40 }} source={require("../../assets/images/Empty-product.png")} />
+                            {
+                                authUser?.service_profile &&
+                                <Pressable onPress={()=> planRef.current?.open()} style={{ ...styles.numberButton, ...generalStyle.button.active }}><Text style={{ color: "white" }}>Subscribe</Text></Pressable>
+                            }
+                        </View> :
+                        <ScrollView showsVerticalScrollIndicator={false} style={{ width: "100%" }}>
+                            {
+                                chatList?.map((chat, i) => (
+                                    <Pressable onPress={() => router.push(`/chat/${chat?.recipient?.id}/${chat?.id}`)} key={i} style={styles.chatContainer}>
+                                        <Image style={styles.image} source={{ uri: chat?.recipient?.profile_picture }} />
+                                        <View style={{ width: "100%" }}>
+                                            <View style={styles.nameView}>
+                                                <Text style={{ ...generalStyle.text[colorScheme] }}>{chat?.recipient?.firstname}</Text>
+                                                <Text style={{ ...generalStyle.text[colorScheme] }}>{new Date(chat?.updated_at).getHours()}:{new Date(chat?.updated_at).getMinutes()}</Text>
+                                            </View>
+                                            <Text style={{ ...styles.text, ...generalStyle.text[colorScheme] }} numberOfLines={1}>{chat?.last_message_content}</Text>
                                         </View>
-                                        <Text style={{ ...styles.text, ...generalStyle.text[colorScheme] }} numberOfLines={1}>{chat?.last_message_content}</Text>
-                                    </View>
-                                </Pressable>
-                            ))
-                        }
-                    </ScrollView>
+                                    </Pressable>
+                                ))
+                            }
+                        </ScrollView>
             }
+            <Plan planRef={planRef} />
         </View>
     )
 }
@@ -86,6 +105,16 @@ const styles = StyleSheet.create({
         alignItems: "center",
         width: "100%",
         padding: 10
+    },
+    numberButton: {
+        width: "100%",
+        height: 52,
+        borderRadius: 10,
+        backgroundColor: "#B8BBBC",
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: 40
     },
     nameView: {
         display: "flex",

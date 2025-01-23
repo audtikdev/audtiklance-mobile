@@ -48,6 +48,7 @@ export type RegisterProvider = {
 export type AuthUser = {
     access?: string;
     refresh?: string;
+    service_profile?: string;
     sub_category?: Array<SubCategory>
 } & RegisterProvider
 

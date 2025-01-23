@@ -63,6 +63,7 @@ const SubscribeModal: React.FC<{ subscribeRef: React.RefObject<IHandles>, plan: 
             openLink(response?.data?.data)
         }
         setLoad(false)
+        subscribeRef.current?.close()
     }
 
     return (
@@ -87,6 +88,25 @@ const SubscribeModal: React.FC<{ subscribeRef: React.RefObject<IHandles>, plan: 
                                 <Text style={{ ...styles.buttonText, ...generalStyle.text["dark"] }}>Continue</Text>
                         }
                     </Pressable>
+                </View>
+            </View>
+        </Modalize>
+    )
+}
+
+export const SuccessModal: React.FC<{ successRef: React.RefObject<IHandles> }> = ({ successRef }) => {
+    const colorScheme = useColorScheme() || "light"
+
+    return (
+        <Modalize
+            ref={successRef}
+            adjustToContentHeight={true}
+            modalStyle={generalStyle.modalBackground[colorScheme]}
+        >
+            <View style={{ ...styles.modalContent, height: 350 }}>
+                <View style={{ display: "flex", alignItems: "center", justifyContent: "center", width: "100%" }}>
+                    <AntDesign name="checkcircle" size={24} color="green" />
+                    <Text>Payment Successful</Text>
                 </View>
             </View>
         </Modalize>
