@@ -37,7 +37,7 @@ const ServiceHistory = () => {
                                     <Text style={{ fontSize: 14, fontWeight: 400, ...generalStyle.text[colorScheme] }}>{new Date().toLocaleString()}</Text>
                                 </View>
                             </View>
-                            <Pressable onPress={openRateModal} style={styles.button}><Text style={{ fontSize: 14, fontWeight: 400, ...generalStyle.text[colorScheme] }}>Rate</Text></Pressable>
+                            <Pressable onPress={openRateModal} style={styles.button}><Text style={{ fontSize: 14, fontWeight: 400, ...generalStyle.text.dark }}>Rate</Text></Pressable>
                         </Pressable>
                     ))
                 }
@@ -73,6 +73,7 @@ const styles = StyleSheet.create({
     container: {
         padding: 15,
         paddingTop: 80,
+        height: "98%"
     },
     scrollContainer: {
         marginTop: 40

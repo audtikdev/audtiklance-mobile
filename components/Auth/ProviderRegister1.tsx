@@ -27,7 +27,7 @@ const ProviderRegister1 = () => {
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View style={styles.registerMain}>
           <Image source={require("../../assets/images/logo.png")} />
-          <Text style={{ ...styles.profileText, ...generalStyle.text[colorScheme] }}>Service Provider Profile Creation</Text>
+          <Text style={{ ...styles.profileText, ...generalStyle.text[colorScheme], marginBottom: 0 }}>Service Provider Profile Creation</Text>
           <Text style={{ ...styles.profileText, ...generalStyle.text[colorScheme] }}>Personal Information</Text>
           <TextInput placeholderTextColor={generalStyle.text[colorScheme].color} onChangeText={(text) => handleInput("firstname", text)} value={userInfo?.firstname} style={{ ...styles.registerInput, ...generalStyle.border[colorScheme], ...generalStyle.text[colorScheme] }} placeholder='First Name' />
           <TextInput placeholderTextColor={generalStyle.text[colorScheme].color} onChangeText={(text) => handleInput("lastname", text)} value={userInfo?.lastname} style={{ ...styles.registerInput, ...generalStyle.border[colorScheme], ...generalStyle.text[colorScheme] }} placeholder='Last Name' />
@@ -35,19 +35,10 @@ const ProviderRegister1 = () => {
           <TextInput placeholderTextColor={generalStyle.text[colorScheme].color} onChangeText={(text) => handleInput("password", text)} value={userInfo?.password} style={{ ...styles.registerInput, ...generalStyle.border[colorScheme], ...generalStyle.text[colorScheme] }} placeholder='Password' />
           <TextInput placeholderTextColor={generalStyle.text[colorScheme].color} onChangeText={(text) => handleInput("confirmPassword", text)} value={userInfo?.confirmPassword} style={{ ...styles.registerInput, ...generalStyle.border[colorScheme], ...generalStyle.text[colorScheme] }} placeholder='Confirm Password' />
           <Pressable onPress={handleSubmit} style={{ ...styles.registerButton, ...(colorScheme === "light" && generalStyle.button.active), ...(colorScheme === "dark" && generalStyle.button.dark) }}><Text style={{ ...styles.buttonText, ...generalStyle.text["dark"] }}>Continue</Text></Pressable>
-          <View style={styles.registerDivider}>
-            <View style={{ ...styles.dividerLine, ...generalStyle.divider[colorScheme] }}></View>
-            <Text style={{ ...styles.dividerText, ...generalStyle.text[colorScheme] }}>OR</Text>
-            <View style={{ ...styles.dividerLine, ...generalStyle.divider[colorScheme] }}></View>
-          </View>
-          <Pressable style={{ ...styles.oauthButton, ...generalStyle.border[colorScheme] }}>
-            <Image source={require("../../assets/images/google.png")} />
-            <Text style={{ ...styles.oauthText, ...generalStyle.text[colorScheme] }}>Continue with Google</Text>
-          </Pressable>
           <Text style={{ ...styles.loginText, ...generalStyle.text[colorScheme] }}>Already have an account? <Text onPress={() => router.push("/login")} style={{ color: "#F0594C" }}>Log In</Text></Text>
           <View style={styles.termsContainer}>
-            <Text style={{ textAlign: "center", ...generalStyle.text[colorScheme] }}>By signing up for an account, you agree to</Text>
-            <Text style={{ ...styles.termsText, ...generalStyle.text[colorScheme] }}>Audtiklance’s Terms of Service and Privacy Policy.</Text>
+            <Text style={{ textAlign: "center", fontSize: 12, ...generalStyle.text[colorScheme] }}>By signing up for an account, you agree to</Text>
+            <Text style={{ ...styles.termsText, fontSize: 12, ...generalStyle.text[colorScheme] }}>Audtiklance’s Terms of Service and Privacy Policy.</Text>
           </View>
         </View>
       </TouchableWithoutFeedback>
@@ -68,14 +59,15 @@ const styles = StyleSheet.create({
   },
   registerMain: {
       display: "flex",
-      justifyContent: "center",
+      justifyContent: "flex-start",
+      paddingTop: 60,
       alignItems: "center",
       flexDirection: "column",
-      width: "100%",
+      width: "99%",
       height: "100%"
   },
   profileText: {
-      fontSize: 18,
+      fontSize: 16,
       fontWeight: 600,
       marginTop: 10,
       marginBottom: 20
@@ -143,7 +135,8 @@ const styles = StyleSheet.create({
   loginText: {
       fontSize: 14,
       fontWeight: 600,
-      marginBottom: 30
+      marginTop: 10
+      // marginBottom: 30
   },
   termsContainer: {
       position: "absolute",

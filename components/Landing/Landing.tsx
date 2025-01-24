@@ -38,7 +38,7 @@ const Landing = () => {
                     {
                         carouselData?.map((data) => (
                             <View style={styles.carouselView} key={data.title}>
-                                <LottieView onAnimationFinish={slideAnimationFinish} source={data.image} loop={false} autoPlay style={{ width: 300, height: 350 }} />
+                                <LottieView onAnimationFinish={slideAnimationFinish} source={data.image} loop={false} autoPlay style={{ width: "90%", height: 300 }} />
                                 <Text style={{ ...styles.landingTitle, ...generalStyle.text[colorScheme] }}>{data?.title}</Text>
                                 <Text style={{ ...styles.landingText, ...generalStyle.text[colorScheme] }}>{data?.text}</Text>
                             </View>

@@ -189,7 +189,7 @@ const ChatContent: React.FC<{ convoId: string, recipientId: string }> = ({ convo
                                 <Ionicons name="arrow-back" size={24} color={colorScheme === "light" ? "black" : "white"} />
                                 <Text style={{ ...generalStyle.text[colorScheme] }}>Back</Text>
                             </Pressable>
-                            <Text style={{ fontSize: 18, ...generalStyle.text[colorScheme], textTransform: "capitalize" }}>{messages[0]?.receiver?.firstname} {messages[0]?.receiver?.lastname}</Text>
+                            <Text style={{ fontSize: 15, ...generalStyle.text[colorScheme], textTransform: "capitalize" }}>{messages[0]?.receiver?.firstname} {messages[0]?.receiver?.lastname}</Text>
                             <View style={{ ...styles.buttons, columnGap: 20 }}>
                                 <Ionicons name="call-outline" size={24} color={colorScheme === "light" ? "black" : "white"} />
                                 <Fontisto name="email" size={24} color={colorScheme === "light" ? "black" : "white"} />

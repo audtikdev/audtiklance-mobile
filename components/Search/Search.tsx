@@ -26,6 +26,7 @@ const Search: React.FC<{ query: string }> = ({ query }) => {
     const [isLoading, setisLoading] = useState(false)
     const [topService, setTopService] = useState(false)
     const [page, setPage] = useState(1)
+    
 
     const mapKey = Constants.expoConfig?.extra?.MAPBOX_KEY
     const baseUrl = Constants.expoConfig?.extra?.BASE_API
@@ -88,29 +89,29 @@ const Search: React.FC<{ query: string }> = ({ query }) => {
         return () => delayedSearch.cancel();
     }, [locationQuery])
 
-    // useEffect(() => {
-    //     // Debounce the search function to reduce API calls
-    //     const delayedSearch = debounce(() => {
-    //         if (serviceQuery.trim() !== "") {
-    //             const url = `${baseUrl}/category/?search=${serviceQuery}`;
-    //             axios.get(url)
-    //                 .then((response: any) => {
-    //                     setServiceSearch(response.data.results);
-    //                 })
-    //                 .catch((error: any) => {
-    //                     console.error(error);
-    //                 });
-    //         } else {
-    //             setServiceSearch([]);
-    //             setService({ name: "" })
-    //         }
-    //     }, 300);
+    useEffect(() => {
+        // Debounce the search function to reduce API calls
+        const delayedSearch = debounce(() => {
+            if (serviceQuery.trim() !== "") {
+                const url = `${baseUrl}/category/?search=${serviceQuery}`;
+                axios.get(url)
+                    .then((response: any) => {
+                        setServiceSearch(response.data.results);
+                    })
+                    .catch((error: any) => {
+                        console.error(error);
+                    });
+            } else {
+                setServiceSearch([]);
+                setService({ name: "" })
+            }
+        }, 300);
 
-    //     delayedSearch();
+        delayedSearch();
 
-    //     // Clean up the debounce function on unmount
-    //     return () => delayedSearch.cancel();
-    // }, [serviceQuery])
+        // Clean up the debounce function on unmount
+        return () => delayedSearch.cancel();
+    }, [serviceQuery])
 
     useEffect(() => {
         setLoad(true)
@@ -222,7 +223,7 @@ const Search: React.FC<{ query: string }> = ({ query }) => {
                             <FlatList
                                 data={services}
                                 keyExtractor={(item, index) => index.toString()}
-                                renderItem={({ item }) => <ServiceCard service={item} width={"50%"} />}
+                                renderItem={({ item }) => <ServiceCard service={item} width={"48%"} />}
                                 onEndReached={() => setPage(page + 1)}
                                 onEndReachedThreshold={0.2}
                                 ListFooterComponent={renderFooter}
@@ -253,7 +254,7 @@ const styles = StyleSheet.create({
         paddingTop: 90,
     },
     searchTitle: {
-        fontSize: 18,
+        fontSize: 16,
         fontWeight: 600,
         marginBottom: 20
     },
@@ -267,13 +268,14 @@ const styles = StyleSheet.create({
         paddingBottom: 300
     },
     title: {
-        fontSize: 20,
+        fontSize: 17,
         fontWeight: 700
     },
     serviceTitleContainer: {
         display: "flex",
         flexDirection: "row",
         justifyContent: "space-between",
-        alignItems: "center"
+        alignItems: "center",
+        paddingVertical: 10
     },
 })

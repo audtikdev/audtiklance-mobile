@@ -215,3 +215,22 @@ export const updatePassword = async (body: {old_password: string, new_password: 
     }
   }
 };
+
+export const deleteAccount = async () => {
+  try {
+    const res = await apiAxios.delete("/user/delete-profile/");
+    return {
+      status: res.status,
+      data: res.data,
+    };
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      return {
+        status: error?.response?.status,
+        data: error?.response?.data?.error,
+      };
+    } else {
+      console.log(error);
+    }
+  }
+};

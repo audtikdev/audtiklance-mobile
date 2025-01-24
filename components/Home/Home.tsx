@@ -87,7 +87,7 @@ const Home = () => {
                 <Text style={{ ...styles.greeting, ...generalStyle.text.light }}>What services do you need?</Text>
             </View>
             <View style={styles.container}>
-                <ScrollView  contentContainerStyle={{marginBottom: 50, paddingBottom: 50}}>
+                <ScrollView  contentContainerStyle={{marginBottom: 100, paddingBottom: 100}}>
                     <View style={{ paddingHorizontal: 20, marginTop: 20 }}>
                         <Text style={{ ...styles.title, ...generalStyle.text[colorScheme] }}>Popular Category</Text>
                         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.categoryList}>
@@ -99,7 +99,7 @@ const Home = () => {
                         </ScrollView>
                     </View>
                     <View style={{ paddingHorizontal: 20, marginVertical: 30 }}>
-                        <Text style={{ fontSize: 18, fontWeight: 500, textAlign: "center" }}>Have a personalized request in mind?</Text>
+                        <Text style={{ fontSize: 15, fontWeight: 500, textAlign: "center", ...generalStyle.text[colorScheme] }}>Have a personalized request in mind?</Text>
                         <Pressable onPress={()=> router.push("/createListing")} style={{ ...styles.loginButton, ...(colorScheme === "light" && generalStyle.button.active), ...(colorScheme === "dark" && generalStyle.button.dark) }}>
                             <Text style={{ ...styles.buttonText, ...generalStyle.text["dark"] }}>Create a listing</Text>
                         </Pressable>
@@ -152,7 +152,7 @@ export default Home
 
 const styles = StyleSheet.create({
     container: {
-        marginBottom: 100,
+        marginBottom: 80,
         height: "75%",
     },
     heroText: {
@@ -162,11 +162,11 @@ const styles = StyleSheet.create({
         backgroundColor: "#bde0fe"
     },
     title: {
-        fontSize: 20,
+        fontSize: 16,
         fontWeight: 700
     },
     greeting: {
-        fontSize: 18,
+        fontSize: 15,
         fontWeight: 500,
         marginTop: 10
     },
@@ -192,7 +192,7 @@ const styles = StyleSheet.create({
     },
     loginButton: {
         width: "100%",
-        height: 52,
+        height: 45,
         borderRadius: 10,
         backgroundColor: "#1B64F1",
         display: 'flex',
@@ -201,7 +201,7 @@ const styles = StyleSheet.create({
         marginTop: 10
     },
     buttonText: {
-        fontSize: 18,
+        fontSize: 15,
         fontWeight: 600
     },
 });

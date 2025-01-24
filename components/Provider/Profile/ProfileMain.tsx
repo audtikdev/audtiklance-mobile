@@ -11,6 +11,7 @@ import { resetAuth } from '../../Context/authProvider'
 import { router } from 'expo-router'
 import { RootState } from '../../Store/store'
 import Plan from './Plan'
+import DeleteModal from '@/components/Profile/DeleteModal'
 
 const ProfileMain = () => {
     const authUser = useSelector((state: RootState) => state.authProvider.auth)
@@ -20,6 +21,7 @@ const ProfileMain = () => {
     const passwordRef = useRef<Modalize>(null)
     const notifyRef = useRef<Modalize>(null)
     const planRef = useRef<Modalize>(null)
+    const deleteRef = useRef<Modalize>(null)
 
     useEffect(() => {
         if (!authUser?.access) {
@@ -117,6 +119,15 @@ const ProfileMain = () => {
                     </Pressable>
                     <Pressable onPress={() => logOutUser()} style={{ display: "flex", justifyContent: "space-between", flexDirection: "row", alignItems: "baseline" }}>
                         <View style={styles.box}>
+                            <View style={{ ...styles.iconView, backgroundColor: "red" }}>
+                            <AntDesign name="delete" size={24} color="white" />
+                            </View>
+                            <Text style={{ fontSize: 18, fontWeight: 600, ...generalStyle.text[colorScheme] }}>Delete Account</Text>
+                        </View>
+                        <AntDesign name="right" size={20} color={colorScheme === "light" ? "black" : "white"} />
+                    </Pressable>
+                    <Pressable onPress={() => logOutUser()} style={{ display: "flex", justifyContent: "space-between", flexDirection: "row", alignItems: "baseline" }}>
+                        <View style={styles.box}>
                             <View style={{ ...styles.iconView, ...(colorScheme === "dark" && generalStyle.background.light) }}>
                                 <MaterialIcons name="logout" size={24} color="black" />
                             </View>
@@ -130,6 +141,7 @@ const ProfileMain = () => {
             <PasswordModal passwordRef={passwordRef} />
             <NotifyModal notifyRef={notifyRef} />
             <Plan planRef={planRef} />
+            <DeleteModal deleteRef={deleteRef} />
         </>
     )
 }

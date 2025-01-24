@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, useColorScheme, Image, ScrollView, Pressable, Alert } from 'react-native'
+import { View, Text, StyleSheet, useColorScheme, Image, ScrollView, Pressable, Alert, Dimensions } from 'react-native'
 import React, { useEffect, useRef, useState } from 'react'
 import { generalStyle } from '@/style/generalStyle'
 import { RootState } from '@/components/Store/store'
@@ -14,8 +14,7 @@ import { getCategory, updateServiceImage, updateServiceProfile } from '@/api/ser
 
 const ServiceMain = () => {
     const authUser = useSelector((state: RootState) => state.authProvider.auth)
-    console.log(authUser?.images);
-    
+    const screenWidth = Dimensions.get('window').width;
     const colorScheme = useColorScheme() || "light"
     const [showAddModal, setShowAddModal] = useState(false)
     const [showUpdateModal, setShowUpdateModal] = useState(false)
@@ -119,7 +118,7 @@ const ServiceMain = () => {
                 <View>
                     <ScrollView contentContainerStyle={{ height: "102%" }} showsVerticalScrollIndicator={false}>
                         <View style={{ position: "relative" }}>
-                            <Image style={{ width: "100%", height: 170, marginTop: 20, borderRadius: 10 }} source={{ uri: authUser?.profile_picture as unknown as string }} />
+                            <Image style={{ width: "100%", height: screenWidth > 600 ? 330 : 170, marginTop: 20, borderRadius: 10 }} source={{ uri: authUser?.profile_picture as unknown as string }} />
                             <Pressable onPress={() => handleImageSelect("profile_picture")} style={{ position: "absolute", top: 30, right: 10, ...styles.iconView, width: 35, height: 35, ...(colorScheme === "dark" && generalStyle.background.light) }}>
                                 <Feather name="edit" size={18} color="white" />
                             </Pressable>
@@ -130,7 +129,7 @@ const ServiceMain = () => {
                                 {
                                     authUser?.images?.map((image, i) => (
                                         <View key={i} style={{ position: "relative", width: "48%" }}>
-                                            <Image style={{ width: "100%", height: 170, borderRadius: 10 }} source={{ uri: image?.image_url }} />
+                                            <Image style={{ width: "100%", height: screenWidth > 600 ? 330 : 170, borderRadius: 10 }} source={{ uri: image?.image_url }} />
                                             <Pressable onPress={() => handleImageSelect("images", i)} style={{ position: "absolute", top: 10, right: 10, ...styles.iconView, width: 35, height: 35, ...(colorScheme === "dark" && generalStyle.background.light) }}>
                                                 <Feather name="edit" size={18} color="white" />
                                             </Pressable>
@@ -139,7 +138,7 @@ const ServiceMain = () => {
                                 }
                                 {
                                     authUser?.images?.length! < 2 &&
-                                    <Pressable onPress={() => handleImageSelect("images", authUser?.images?.length!)} style={{ width: "48%", height: 170, borderWidth: 0.6, display: "flex", borderRadius: 10, justifyContent: "center", alignItems: "center" }}>
+                                    <Pressable onPress={() => handleImageSelect("images", authUser?.images?.length!)} style={{ width: "48%", height: screenWidth > 600 ? 330 : 170, borderWidth: 0.6, display: "flex", borderRadius: 10, justifyContent: "center", alignItems: "center" }}>
                                         <Entypo name="upload-to-cloud" size={50} color="black" />
                                     </Pressable>
                                 }

@@ -1,12 +1,13 @@
-import { View, Text, Image, StyleSheet, Pressable, useColorScheme, DimensionValue } from 'react-native'
+import { View, Text, Image, StyleSheet, Pressable, useColorScheme, DimensionValue, Dimensions } from 'react-native'
 import React from 'react'
 import { Service } from '@/types/service'
 import { AntDesign } from '@expo/vector-icons'
 import { formatCurrency } from '@/utils/helper'
 import { generalStyle } from '@/style/generalStyle'
 import { router } from 'expo-router'
+const screenWidth = Dimensions.get('window').width;
 
-const ServiceCard: React.FC<{ service: Service, width?: DimensionValue }> = ({ service, width = 230 }) => {
+const ServiceCard: React.FC<{ service: Service, width?: DimensionValue }> = ({ service, width = 200 }) => {
     const colorScheme = useColorScheme() || "light"
 
     return (
@@ -22,9 +23,9 @@ const ServiceCard: React.FC<{ service: Service, width?: DimensionValue }> = ({ s
                     <Image style={styles.image} source={{ uri: service?.profile_picture }} />
                 </Pressable>
             </View>
-            <Text onPress={() => router.push(`/service-detail/${service?.id}`)} numberOfLines={1} style={{ fontSize: 15, fontWeight: 600, marginTop: 10, marginBottom: 3, ...generalStyle.text[colorScheme] }}>{service?.business_name}</Text>
-            {!service?.is_google_place && <Text onPress={() => router.push(`/service-detail/${service?.id}`)} style={{ fontSize: 13, fontWeight: 400, ...generalStyle.text[colorScheme] }}>{service?.sub_category?.[0]?.sub_category}</Text>}
-            {!service?.is_google_place && <Text onPress={() => router.push(`/service-detail/${service?.id}`)} style={{ fontSize: 15, fontWeight: 600, marginTop: 5, ...generalStyle.text[colorScheme] }}>{formatCurrency("en-US", "USD", Number(service?.sub_category?.[0]?.cost))}</Text>}
+            <Text onPress={() => router.push(`/service-detail/${service?.id}`)} numberOfLines={1} style={{ fontSize: 13, fontWeight: 500, marginTop: 20, marginBottom: 0, ...generalStyle.text[colorScheme] }}>{service?.business_name}</Text>
+            <Text onPress={() => router.push(`/service-detail/${service?.id}`)} style={{ fontSize: 13, fontWeight: 400, marginVertical: 2, ...generalStyle.text[colorScheme] }}>{service?.sub_category?.[0]?.sub_category}</Text>
+            {!service?.is_google_place && <Text onPress={() => router.push(`/service-detail/${service?.id}`)} style={{ fontSize: 13, fontWeight: 500, marginTop: 0, ...generalStyle.text[colorScheme] }}>{formatCurrency("en-US", "USD", Number(service?.sub_category?.[0]?.cost))}</Text>}
         </View>
     )
 }
@@ -36,14 +37,15 @@ const styles = StyleSheet.create({
     serviceContainer: {
         backgroundColor: "white",
         borderRadius: 10,
-        padding: 20,
+        padding: 10,
         width: "20%",
         flexGrow: 0,
-        margin: 5
+        margin: 5,
+        height: screenWidth > 600 ? 300 : 220
     },
     imageContainer: {
         width: "100%",
-        height: 100,
+        height: "65%",
         position: "relative"
     },
     image: {
