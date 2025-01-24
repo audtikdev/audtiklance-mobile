@@ -1,4 +1,4 @@
-import { View, Text, KeyboardAvoidingView, TouchableWithoutFeedback, Image, TextInput, Pressable, useColorScheme, StyleSheet, Keyboard, ActivityIndicator } from 'react-native'
+import { View, Text, KeyboardAvoidingView, TouchableWithoutFeedback, Image, TextInput, Pressable, useColorScheme, StyleSheet, Keyboard, ActivityIndicator, Alert } from 'react-native'
 import React, { useRef, useState } from 'react'
 import { generalStyle } from '@/style/generalStyle'
 import { router } from 'expo-router'
@@ -11,6 +11,7 @@ import Toast from 'react-native-toast-message'
 import { validateEmail } from '@/utils/helper'
 import { updateAuth } from '../Context/authProvider'
 import { useDispatch } from 'react-redux'
+import * as AppleAuthentication from 'expo-apple-authentication';
 
 const UserRegister = () => {
   const colorScheme = useColorScheme() || "light"
@@ -29,6 +30,29 @@ const UserRegister = () => {
     }));
   }
 
+  const handleAppleLogin = async () => {
+    try {
+      const credential = await AppleAuthentication.signInAsync({
+        requestedScopes: [
+          AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
+          AppleAuthentication.AppleAuthenticationScope.EMAIL,
+        ],
+      });
+      console.log(credential);
+
+      // Use credential.user, credential.email, and credential.fullName
+
+    } catch (error: any) {
+      if (error.code === 'ERR_CANCELED') {
+        // User canceled the sign-in request
+        Alert.alert('Login canceled');
+      } else {
+        // Handle other errors
+        Alert.alert('An error occurred', error.message);
+      }
+    }
+  };
+
   const handleSubmit = async () => {
     setLoad(true)
     const body: RegisterUserInfo = {
@@ -45,7 +69,7 @@ const UserRegister = () => {
     if (response?.status === 201 || response?.status === 200) {
       console.log("success");
       const data = response?.data?.data
-      dispatch(updateAuth({auth: data}))
+      dispatch(updateAuth({ auth: data }))
       router.push("/(user)")
     } else {
       Toast.show({
@@ -130,10 +154,17 @@ const UserRegister = () => {
             <Image source={require("../../assets/images/google.png")} />
             <Text style={{ ...styles.oauthText, ...generalStyle.text[colorScheme] }}>Continue with Google</Text>
           </Pressable>
+          <AppleAuthentication.AppleAuthenticationButton
+            buttonType={AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN}
+            buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.BLACK}
+            cornerRadius={10}
+            style={{ width: '100%', height: 50, marginBottom: 15 }}
+            onPress={handleAppleLogin}
+          />
           <Text style={{ ...styles.loginText, ...generalStyle.text[colorScheme] }}>Already have an account? <Text onPress={() => router.push("/login")} style={{ color: "#F0594C" }}>Log In</Text></Text>
           <View style={styles.termsContainer}>
-            <Text style={{ textAlign: "center", ...generalStyle.text[colorScheme] }}>By signing up for an account, you agree to</Text>
-            <Text style={{ ...styles.termsText, ...generalStyle.text[colorScheme] }}>ChaimBase’s Terms of Service and Privacy Policy.</Text>
+            <Text style={{ textAlign: "center", fontSize: 12, ...generalStyle.text[colorScheme] }}>By signing up for an account, you agree to</Text>
+            <Text style={{ ...styles.termsText, fontSize: 12, ...generalStyle.text[colorScheme] }}>ChaimBase’s Terms of Service and Privacy Policy.</Text>
           </View>
         </View>
       </TouchableWithoutFeedback>

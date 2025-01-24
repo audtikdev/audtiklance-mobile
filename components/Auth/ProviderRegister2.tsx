@@ -100,9 +100,9 @@ const ProviderRegister2 = () => {
             <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
                 <View style={styles.registerMain}>
                     <Image source={require("../../assets/images/logo.png")} />
-                    <Text style={{ ...styles.profileText, ...generalStyle.text[colorScheme] }}>Service Provider Profile Creation</Text>
+                    <Text style={{ ...styles.profileText, ...generalStyle.text[colorScheme], marginBottom: 0 }}>Service Provider Profile Creation</Text>
 
-                    <Text style={{ ...styles.profileText, ...generalStyle.text[colorScheme] }}>Business Information</Text>
+                    <Text style={{ ...styles.profileText, ...generalStyle.text[colorScheme], }}>Business Information</Text>
 
                     <TextInput placeholderTextColor={generalStyle.text[colorScheme].color} onChangeText={(text) => handleInput("business_name", text)} value={userInfo?.business_name} style={{ ...styles.registerInput, ...generalStyle.border[colorScheme], ...generalStyle.text[colorScheme] }} placeholder='Business Name' />
 
@@ -118,19 +118,19 @@ const ProviderRegister2 = () => {
                         objectKey='place_name'
                     />
 
-                    <TextInput multiline={true} numberOfLines={5} textAlignVertical='top' placeholderTextColor={generalStyle.text[colorScheme].color} onChangeText={(text) => handleInput("about_me", text)} value={userInfo?.email} style={{ ...styles.registerInput, height: 100, paddingTop: 10, ...generalStyle.border[colorScheme], ...generalStyle.text[colorScheme] }} placeholder='Business Description' />
+                    <TextInput multiline={true} numberOfLines={5} textAlignVertical='top' placeholderTextColor={generalStyle.text[colorScheme].color} onChangeText={(text) => handleInput("about_me", text)} value={userInfo?.email} style={{ ...styles.registerInput, height: 90, paddingTop: 10, ...generalStyle.border[colorScheme], ...generalStyle.text[colorScheme] }} placeholder='Business Description' />
 
                     <Pressable onPress={handleImageSelect} style={{ ...styles.uploadView, ...generalStyle.border[colorScheme] }}>
                         {
                             image ?
                                 <ImageBackground source={{ uri: image }} style={styles.background}>
                                     <AntDesign name="upload" size={30} color={"white"} />
-                                    <Text style={{ fontSize: 18, ...generalStyle.text.dark }}>Upload image</Text>
+                                    <Text style={{ fontSize: 14, ...generalStyle.text.dark }}>Upload image</Text>
                                 </ImageBackground>
                                 :
                                 <>
                                     <AntDesign name="upload" size={30} color={colorScheme === "dark" ? "white" : "black"} />
-                                    <Text style={{ fontSize: 18, ...generalStyle.text[colorScheme] }}>Upload image</Text>
+                                    <Text style={{ fontSize: 14, ...generalStyle.text[colorScheme] }}>Upload image</Text>
                                 </>
                         }
                     </Pressable>
@@ -161,7 +161,7 @@ const styles = StyleSheet.create({
         height: "100%"
     },
     profileText: {
-        fontSize: 18,
+        fontSize: 16,
         fontWeight: 600,
         marginTop: 10,
         marginBottom: 20
@@ -191,7 +191,7 @@ const styles = StyleSheet.create({
     },
     uploadView: {
         width: "100%",
-        height: 150,
+        height: 100,
         borderWidth: 1,
         borderRadius: 5,
         marginBottom: 10,

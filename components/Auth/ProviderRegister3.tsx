@@ -106,7 +106,7 @@ const ProviderRegister3 = () => {
                         <Text style={{ ...styles.profileText, ...generalStyle.text[colorScheme] }}>Choose Your Services</Text>
                         <Text style={{ ...styles.profileText, ...generalStyle.text[colorScheme], marginTop: 25 }}>{providerDetails?.business_name}</Text>
                         <View style={{ display: 'flex', alignItems: 'flex-end', flexDirection: 'row', columnGap: 10, marginBottom: 40 }}>
-                            <Ionicons name="location-sharp" size={24} color="black" />
+                            <Ionicons name="location-sharp" size={24} color={colorScheme === "dark" ? "white" : "black"} />
                             <Text style={{ ...styles.profileText, ...generalStyle.text[colorScheme] }}>{providerDetails?.address}</Text>
                         </View>
                         <AutoSearch
@@ -189,7 +189,7 @@ const styles = StyleSheet.create({
         height: 400
     },
     profileText: {
-        fontSize: 18,
+        fontSize: 15,
         fontWeight: 600,
         marginTop: 10,
     },

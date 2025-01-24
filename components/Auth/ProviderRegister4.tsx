@@ -251,13 +251,13 @@ const styles = StyleSheet.create({
         height: 320
     },
     profileText: {
-        fontSize: 18,
+        fontSize: 15,
         fontWeight: 600,
         marginTop: 10,
     },
     uploadView: {
         width: "100%",
-        height: 150,
+        height: 120,
         borderWidth: 1,
         borderRadius: 5,
         marginBottom: 10,

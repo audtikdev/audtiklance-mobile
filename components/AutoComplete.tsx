@@ -59,11 +59,11 @@ const styles = StyleSheet.create({
         borderRadius: 5,
     },
     registerInput: {
-        height: 50,
+        height: 45,
         borderWidth: 1,
         flexShrink: 1,
         width: '100%',
-        marginBottom: 20,
+        marginBottom: 12,
         paddingLeft: 10,
         borderRadius: 5,
     },

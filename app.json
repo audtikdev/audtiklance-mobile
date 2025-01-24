@@ -20,7 +20,11 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "audtiklance"
+      "bundleIdentifier": "audtiklance",
+      "usesAppleSignIn": true,
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "We use your location to show nearby service providers and personalized recommendations. For example, this helps us find service providers within 5 miles of you."
+      }
     },
     "android": {
       "adaptiveIcon": {
