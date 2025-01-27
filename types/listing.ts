@@ -1,4 +1,5 @@
 export type ListingBody = {
+    id?: string;
     images: Array<string>;
     category: string;
     preferred_date: string;
@@ -7,5 +8,7 @@ export type ListingBody = {
     title: string;
     budget: string;
     description: string;
-    address: string
+    address: string;
+    is_paid?: boolean,
+    status?: string
 }
