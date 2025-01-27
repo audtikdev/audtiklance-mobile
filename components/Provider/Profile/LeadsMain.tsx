@@ -41,7 +41,7 @@ const LeadsMain = () => {
                     <Ionicons name="arrow-back-sharp" size={24} color={colorScheme === "dark" ? "white" : "black"} />
                     <Text style={{ fontSize: 16, fontWeight: 400, ...generalStyle.text[colorScheme] }}>Back</Text>
                 </Pressable>
-                <Text style={{ fontSize: 18, fontWeight: 600, textAlign: "center", ...generalStyle.text[colorScheme] }}>Customer Leads</Text>
+                <Text style={{ fontSize: 16, fontWeight: 600, textAlign: "center", ...generalStyle.text[colorScheme] }}>Customer Leads</Text>
             </View>
             {
                 load ?
@@ -49,10 +49,10 @@ const LeadsMain = () => {
                         <LottieView source={require("../../../assets/images/service2.json")} loop={true} autoPlay style={{ width: 300, height: 350 }} />
                     </View> : leads.length < 1 ?
                         <View style={{display: "flex", alignItems: "center", justifyContent: "center", padding: 20, height: "90%"}}>
-                            <Text style={{fontSize: 18, fontWeight: 500}}>You don't have any leads yet</Text>
-                            <Text style={{fontSize: 16, fontWeight: 600, textAlign: "center", paddingTop: 10}}>Subscribe to AudtikLance Preferred to rank higher in search</Text>
-                            <Image style={{width: 400, height: 300, paddingVertical: 40}} source={require("../../../assets/images/Empty-product.png")} />
-                            <Pressable onPress={()=> planRef.current?.open()} style={{...styles.numberButton, ...generalStyle.button.active}}><Text style={{color: "white", fontSize: 18}}>Subscribe</Text></Pressable>
+                            <Text style={{fontSize: 16, fontWeight: 500}}>You don't have any leads yet</Text>
+                            <Text style={{fontSize: 14, fontWeight: 600, textAlign: "center", paddingTop: 10}}>Subscribe to AudtikLance Preferred to rank higher in search</Text>
+                            <Image style={{width: 300, height: 300, paddingVertical: 40}} source={require("../../../assets/images/Empty-product.png")} />
+                            <Pressable onPress={()=> planRef.current?.open()} style={{...styles.numberButton, ...generalStyle.button.active}}><Text style={{color: "white", fontSize: 16}}>Subscribe</Text></Pressable>
                         </View> :
                         <View style={styles.scrollContainer}>
                             <ScrollView>
@@ -170,7 +170,7 @@ const styles = StyleSheet.create({
     },
     numberButton: {
         width: "100%",
-        height: 52,
+        height: 45,
         borderRadius: 10,
         backgroundColor: "#B8BBBC",
         display: 'flex',
@@ -179,7 +179,7 @@ const styles = StyleSheet.create({
         marginTop: 40
     },
     buttonText: {
-        fontSize: 18,
+        fontSize: 16,
         fontWeight: 600
     },
 })
