@@ -1,6 +1,7 @@
 {
   "expo": {
     "name": "audtiklance_mobile",
+    "owner": "audtiklance",
     "slug": "audtiklance_mobile",
     "version": "1.0.0",
     "orientation": "portrait",
