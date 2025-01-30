@@ -39,26 +39,25 @@ const Landing = () => {
                         carouselData?.map((data) => (
                             <View style={styles.carouselView} key={data.title}>
                                 <LottieView onAnimationFinish={slideAnimationFinish} source={data.image} loop={false} autoPlay style={{ width: "90%", height: 300 }} />
-                                <Text style={{ ...styles.landingTitle, ...generalStyle.text[colorScheme] }}>{data?.title}</Text>
-                                <Text style={{ ...styles.landingText, ...generalStyle.text[colorScheme] }}>{data?.text}</Text>
+                                <Text style={{ ...styles.landingTitle, }}>{data?.title}</Text>
+                                <Text style={{ ...styles.landingText, }}>{data?.text}</Text>
                             </View>
                         ))
                     }
                 </Swiper>
                 <View style={styles.landingSecond}>
                     <Pressable onPress={() => router.push("/login")} style={styles.loginButton}><Text style={{ ...styles.buttonText, color: "white" }}>Login</Text></Pressable>
-                    <Pressable onPress={() => modalizeRef.current?.open()} style={{ ...styles.registerButton, ...generalStyle.border[colorScheme] }}><Text style={{ ...styles.buttonText, ...generalStyle.text[colorScheme] }}>Create An Account</Text></Pressable>
-                    <Text onPress={() => router.push("/(user)")} style={{ ...styles.guestText, ...generalStyle.text[colorScheme] }}>Login as a guest</Text>
+                    <Pressable onPress={() => modalizeRef.current?.open()} style={{ ...styles.registerButton, }}><Text style={{ ...styles.buttonText, }}>Create An Account</Text></Pressable>
+                    <Text onPress={() => router.push("/(user)")} style={{ ...styles.guestText, }}>Login as a guest</Text>
                 </View>
             </View>
             <Modalize
                 ref={modalizeRef}
                 adjustToContentHeight={true}
-                modalStyle={generalStyle.background[colorScheme]}
             >
                 <View style={styles.modalContent}>
                     <Pressable onPress={() => router.push("/userRegister")} style={{ ...styles.loginButton, marginTop: 40 }}><Text style={{ ...styles.buttonText, ...generalStyle.buttonText.light }}>I am looking for service providers</Text></Pressable>
-                    <Pressable onPress={() => router.push("/providerRegister1")} style={{ ...styles.registerButton, ...generalStyle.border[colorScheme] }}><Text style={{ ...styles.buttonText, ...generalStyle.text[colorScheme] }}>I am a service provider</Text></Pressable>
+                    <Pressable onPress={() => router.push("/providerRegister1")} style={{ ...styles.registerButton, }}><Text style={{ ...styles.buttonText, color: "black" }}>I am a service provider</Text></Pressable>
                 </View>
             </Modalize>
         </>
@@ -74,7 +73,8 @@ const styles = StyleSheet.create({
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
-        padding: 20
+        padding: 20,
+        backgroundColor: "white"
     },
     landingFirst: {
         paddingTop: 80,

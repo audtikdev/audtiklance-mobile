@@ -46,7 +46,7 @@ const Reviews = () => {
                             <Text style={{ fontSize: 18, fontWeight: 600 }}>{service?.business_name}</Text>
                         </View>
                         {
-                            !service?.external_reviews || service?.external_reviews?.length < 1 ?
+                            !service?.external_reviews || service?.external_reviews?.length < 1 || Object.keys(service?.external_reviews)?.length < 1 ?
                                 <Text style={{ marginVertical: 30, textAlign: "center", fontSize: 16 }}>No Review Yet</Text> :
                                 <View style={{ marginTop: 20 }}>
                                     {

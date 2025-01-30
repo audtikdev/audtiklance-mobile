@@ -63,7 +63,7 @@ export const SelectCategory: React.FC<{ showModal: boolean, setShowModal: Dispat
         >
             <Pressable onPress={() => setShowModal(false)} style={styles.modalOverlay}>
                 <View style={styles.addModalContent}>
-                    <Text style={{ ...styles.profileText, ...generalStyle.text[colorScheme] }}>Select A New Skill To Add</Text>
+                    <Text style={{ ...styles.profileText }}>Select A New Skill To Add</Text>
                     <AutoSearch
                         key={"autoSearch"}
                         data={services}
@@ -73,8 +73,8 @@ export const SelectCategory: React.FC<{ showModal: boolean, setShowModal: Dispat
                         onChangeValue={handleServiceSelect}
                         objectKey='name'
                     />
-                    <Pressable onPress={selectService} style={{ ...styles.registerButton, marginTop: 10, ...(colorScheme === "light" && generalStyle.button.active), ...(colorScheme === "dark" && generalStyle.button.dark) }}>
-                        <Text style={{ ...styles.buttonText, ...generalStyle.text["dark"] }}>Continue</Text>
+                    <Pressable onPress={selectService} style={{ ...styles.registerButton, marginTop: 10 }}>
+                        <Text style={{ ...styles.buttonText }}>Continue</Text>
                     </Pressable>
                 </View>
             </Pressable>
@@ -142,7 +142,7 @@ export const SelectLocation: React.FC<{ showModal: boolean, setShowModal: Dispat
         >
             <Pressable onPress={() => setShowModal(false)} style={styles.modalOverlay}>
                 <View style={styles.addModalContent}>
-                    <Text style={{ ...styles.profileText, ...generalStyle.text[colorScheme] }}>Enter Your Location</Text>
+                    <Text style={{ ...styles.profileText }}>Enter Your Location</Text>
                     <AutoSearch
                         key={"autoSearch"}
                         data={locations}
@@ -152,8 +152,8 @@ export const SelectLocation: React.FC<{ showModal: boolean, setShowModal: Dispat
                         onChangeValue={handleLocationSelect}
                         objectKey='place_name'
                     />
-                    <Pressable onPress={selectLocation} style={{ ...styles.registerButton, marginTop: 10, ...(colorScheme === "light" && generalStyle.button.active), ...(colorScheme === "dark" && generalStyle.button.dark) }}>
-                        <Text style={{ ...styles.buttonText, ...generalStyle.text["dark"] }}>Continue</Text>
+                    <Pressable onPress={selectLocation} style={{ ...styles.registerButton, marginTop: 10 }}>
+                        <Text style={{ ...styles.buttonText }}>Continue</Text>
                     </Pressable>
                 </View>
             </Pressable>
@@ -164,7 +164,8 @@ export const SelectLocation: React.FC<{ showModal: boolean, setShowModal: Dispat
 const styles = StyleSheet.create({
     modalOverlay: {
         flex: 1,
-        justifyContent: 'center',
+        justifyContent: 'flex-start',
+        paddingTop: 150,
         alignItems: 'center',
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
     },
@@ -200,7 +201,7 @@ const styles = StyleSheet.create({
         width: "100%",
         height: 52,
         borderRadius: 10,
-        backgroundColor: "#00000080",
+        backgroundColor: "#1B64F1",
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
@@ -208,6 +209,7 @@ const styles = StyleSheet.create({
     },
     buttonText: {
         fontSize: 18,
-        fontWeight: 600
+        fontWeight: 600,
+        color: "white"
     },
 })

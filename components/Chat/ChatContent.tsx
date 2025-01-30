@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import { MESSAGE } from './type'
 import { createConversation, getPreviousConversation, sendMessage } from '@/api/chat'
 import Toast from 'react-native-toast-message'
-import { Feather, Fontisto, Ionicons } from '@expo/vector-icons'
+import { Entypo, Feather, Fontisto, Ionicons } from '@expo/vector-icons'
 import { generalStyle } from '@/style/generalStyle'
 import { router } from 'expo-router'
 import LottieView from 'lottie-react-native'
@@ -11,6 +11,8 @@ import * as Notifications from 'expo-notifications';
 import { RootState } from '../Store/store'
 import { useSelector } from 'react-redux'
 import { getUserByID } from '@/api/auth'
+import { Modalize } from 'react-native-modalize'
+import ChatModal from './ChatModal'
 
 const ChatContent: React.FC<{ convoId: string, recipientId: string }> = ({ convoId, recipientId }) => {
     const authUser = useSelector((state: RootState) => state.authProvider.auth)
@@ -25,7 +27,7 @@ const ChatContent: React.FC<{ convoId: string, recipientId: string }> = ({ convo
     const [load, setLoad] = useState(false)
     const [sendLoad, setSendLoad] = useState(false)
     const scrollViewRef = useRef<ScrollView>(null);
-    // console.log(convoId, recipientId);
+    const chatModalRef = useRef<Modalize>(null)
 
     const getConversation = async () => {
         const response = await getPreviousConversation(conversationID)
@@ -148,7 +150,7 @@ const ChatContent: React.FC<{ convoId: string, recipientId: string }> = ({ convo
         })()
     }, [conversationID])
 
-    useEffect(()=> {
+    useEffect(() => {
         setTimeout(() => {
             scrollViewRef.current?.scrollToEnd({ animated: true })
         }, 100);
@@ -177,51 +179,55 @@ const ChatContent: React.FC<{ convoId: string, recipientId: string }> = ({ convo
     }
 
     return (
-        <View>
-            {
-                load ?
-                    <View style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100%", width: "100%" }}>
-                        <LottieView source={require("../../assets/images/service2.json")} loop={true} autoPlay style={{ width: 300, height: 350 }} />
-                    </View> :
-                    <View style={styles.container}>
-                        <View style={styles.heading}>
-                            <Pressable onPress={() => router.back()} style={styles.buttons}>
-                                <Ionicons name="arrow-back" size={24} color={colorScheme === "light" ? "black" : "white"} />
-                                <Text style={{ ...generalStyle.text[colorScheme] }}>Back</Text>
-                            </Pressable>
-                            <Text style={{ fontSize: 15, ...generalStyle.text[colorScheme], textTransform: "capitalize" }}>{messages[0]?.receiver?.firstname} {messages[0]?.receiver?.lastname}</Text>
-                            <View style={{ ...styles.buttons, columnGap: 20 }}>
-                                <Ionicons name="call-outline" size={24} color={colorScheme === "light" ? "black" : "white"} />
-                                <Fontisto name="email" size={24} color={colorScheme === "light" ? "black" : "white"} />
+        <>
+            <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+                {
+                    load ?
+                        <View style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100%", width: "100%" }}>
+                            <LottieView source={require("../../assets/images/service2.json")} loop={true} autoPlay style={{ width: 300, height: 350 }} />
+                        </View> :
+                        <View style={styles.container}>
+                            <View style={styles.heading}>
+                                <Pressable onPress={() => router.back()} style={styles.buttons}>
+                                    <Ionicons name="arrow-back" size={24} color={"black"} />
+                                    <Text>Back</Text>
+                                </Pressable>
+                                <Text style={{ fontSize: 15, textTransform: "capitalize" }}>{messages[0]?.receiver?.firstname} {messages[0]?.receiver?.lastname}</Text>
+                                <View style={{ ...styles.buttons, columnGap: 20 }}>
+                                    <Ionicons name="call-outline" size={18} color={"black"} />
+                                    <Fontisto name="email" size={18} color={"black"} />
+                                    <Entypo onPress={() => chatModalRef.current?.open()} name="dots-three-vertical" size={18} color="black" />
+                                </View>
+                            </View>
+                            <View style={styles.chatContainer}>
+                                <ScrollView ref={scrollViewRef} showsVerticalScrollIndicator={false} style={{ width: "100%" }}>
+                                    {
+                                        messages?.map((message, i) => (
+                                            <View key={i} style={{ ...styles.chatView, alignSelf: message?.is_sender ? "flex-end" : "flex-start" }}>
+                                                <View style={{ display: "flex", width: "75%", flexDirection: 'row', flexWrap: 'wrap' }}>
+                                                    <Text style={{ width: "100%", color: "white" }}>{message?.content}</Text>
+                                                </View>
+                                                <Text style={{ color: "white", fontSize: 10 }}>{new Date(message?.updated_at)?.toLocaleTimeString()}</Text>
+                                            </View>
+                                        ))
+                                    }
+                                </ScrollView>
+                            </View>
+                            <View style={styles.inputView}>
+                                <TextInput value={inputValue} multiline onChangeText={(text) => setInputValue(text)} placeholderTextColor={"black"} placeholder='Enter your message' style={{ ...styles.input }} />
+                                <Pressable onPress={() => sendUserMessage()} style={styles.sendView}>
+                                    {
+                                        sendLoad ?
+                                            <ActivityIndicator color={"white"} /> :
+                                            <Feather name="send" size={20} color="white" />
+                                    }
+                                </Pressable>
                             </View>
                         </View>
-                        <View style={styles.chatContainer}>
-                            <ScrollView ref={scrollViewRef} showsVerticalScrollIndicator={false} style={{ width: "100%" }}>
-                                {
-                                    messages?.map((message, i) => (
-                                        <View key={i} style={{ ...styles.chatView, alignSelf: message?.is_sender ? "flex-end" : "flex-start" }}>
-                                            <View style={{ display: "flex", width: "75%", flexDirection: 'row', flexWrap: 'wrap' }}>
-                                                <Text style={{ width: "100%", color: "white" }}>{message?.content}</Text>
-                                            </View>
-                                            <Text style={{ color: "white", fontSize: 10 }}>{new Date(message?.updated_at)?.toLocaleTimeString()}</Text>
-                                        </View>
-                                    ))
-                                }
-                            </ScrollView>
-                        </View>
-                        <View style={styles.inputView}>
-                            <TextInput value={inputValue} multiline onChangeText={(text) => setInputValue(text)} placeholderTextColor={generalStyle.text[colorScheme].color} placeholder='Enter your message' style={{ ...styles.input, ...generalStyle.border[colorScheme], ...generalStyle.text[colorScheme] }} />
-                            <Pressable onPress={() => sendUserMessage()} style={styles.sendView}>
-                                {
-                                    sendLoad ?
-                                        <ActivityIndicator /> :
-                                        <Feather name="send" size={20} color="white" />
-                                }
-                            </Pressable>
-                        </View>
-                    </View>
-            }
-        </View>
+                }
+            </KeyboardAvoidingView>
+            <ChatModal chatModalRef={chatModalRef} name={`${messages[0]?.receiver?.firstname} ${messages[0]?.receiver?.lastname}`} />
+        </>
     )
 }
 
@@ -230,15 +236,19 @@ export default ChatContent
 const styles = StyleSheet.create({
     container: {
         padding: 15,
-        paddingTop: 80,
+        paddingTop: 70,
         position: "relative",
-        height: "100%"
+        height: "100%",
+        display: "flex",
+        alignItems: "center",
+        width: "100%",
     },
     heading: {
         display: "flex",
         flexDirection: "row",
         justifyContent: "space-between",
-        alignItems: "flex-start"
+        alignItems: "flex-start",
+        width: "100%"
     },
     buttons: {
         display: "flex",
@@ -252,7 +262,8 @@ const styles = StyleSheet.create({
         justifyContent: "flex-start",
         alignItems: "flex-start",
         height: "85%",
-        paddingBottom: 10
+        paddingBottom: 10,
+        width: "100%"
     },
     chatView: {
         display: "flex",
@@ -268,13 +279,11 @@ const styles = StyleSheet.create({
     },
     inputView: {
         width: "100%",
-        position: "absolute",
-        right: 15,
-        bottom: 40,
         display: "flex",
         flexDirection: "row",
         columnGap: 15,
-        alignItems: "center"
+        alignItems: "center",
+        paddingBottom: 20
     },
     sendView: {
         width: 40,

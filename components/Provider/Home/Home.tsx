@@ -46,38 +46,46 @@ const Home = () => {
     }, [])
 
     return (
-        <View style={{ ...styles.container, ...generalStyle.modalBackground[colorScheme] }}>
+        <View style={{ ...styles.container }}>
             {
                 load ?
                     <View style={{ display: "flex", justifyContent: "center", alignItems: "center", height: 750, width: "100%" }}>
                         <LottieView source={require("../../../assets/images/service2.json")} loop={true} autoPlay style={{ width: 300, height: 350 }} />
                     </View> :
                     <>
-                        <Text style={{ fontSize: 24, fontWeight: 700, textTransform: "capitalize", ...generalStyle.text[colorScheme] }}>Welcome back, {authUser?.firstname}!</Text>
-                        <Text style={{ fontSize: 15, fontWeight: 400, marginTop: 5, ...generalStyle.text[colorScheme] }}>Here's what's happening with your business today.</Text>
+                        <Text style={{ fontSize: 20, fontWeight: 700, textTransform: "capitalize" }}>Welcome back, {authUser?.firstname}!</Text>
+                        <Text style={{ fontSize: 14, fontWeight: 400, marginTop: 5 }}>Here's what's happening with your business today.</Text>
                         <View style={styles.scrollContainer}>
                             <ScrollView showsVerticalScrollIndicator={false}>
-                                <Pressable onPress={()=> router.push("/(provider)/chat")} style={styles.firstContainer}>
-                                    <View style={{...styles.smallContainer, width: "100%"}}>
+                                <View style={{ ...styles.smallContainer, width: "100%", marginTop: 20 }}>
+                                    <View style={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
+                                        <Text style={{ fontSize: 16, fontWeight: 500 }}>Current Services</Text>
+                                        <MaterialIcons name="home-repair-service" size={30} color="black" />
+                                    </View>
+                                    {
+                                        authUser?.sub_category?.map((serv, i) => (
+                                            <View key={i} style={{ display: "flex", marginTop: 15, flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+                                                <View>
+                                                    <Text style={{ fontSize: 18, fontWeight: 600 }}>{serv?.sub_category}</Text>
+                                                    <Text style={{ marginTop: 5 }}>{formatCurrency("en-US", "USD", Number(serv?.cost))}</Text>
+                                                </View>
+                                                <Text>{serv?.time_frame}</Text>
+                                            </View>
+                                        ))
+                                    }
+                                </View>
+                                <View style={styles.firstContainer}>
+                                    <Pressable onPress={() => router.push("/(provider)/chat")} style={styles.smallContainer}>
                                         <View style={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
-                                            <Text style={{ fontSize: 16, fontWeight: 500 }}>Total Messages</Text>
-                                            <MaterialCommunityIcons name="android-messages" size={30} color="black" />
+                                            <Text style={{ fontSize: 14, fontWeight: 500 }}>Total Messages</Text>
+                                            <MaterialCommunityIcons name="android-messages" size={24} color="black" />
                                         </View>
                                         <Text style={{ fontSize: 24, fontWeight: 700, textTransform: "capitalize", marginTop: 40 }}>{chatNum}</Text>
-                                    </View>
-                                </Pressable>
-                                <View style={styles.firstContainer}>
-                                    <View style={styles.smallContainer}>
+                                    </Pressable>
+                                    <Pressable onPress={() => router.push("/leads")} style={styles.smallContainer}>
                                         <View style={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
-                                            <Text style={{ fontSize: 16, fontWeight: 500 }}>Total Customer</Text>
-                                            <FontAwesome name="users" size={30} color="black" />
-                                        </View>
-                                        <Text style={{ fontSize: 24, fontWeight: 700, textTransform: "capitalize", marginTop: 40 }}>1250</Text>
-                                    </View>
-                                    <Pressable onPress={()=> router.push("/leads")} style={styles.smallContainer}>
-                                        <View style={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
-                                            <Text style={{ fontSize: 16, fontWeight: 500 }}>Total Leads</Text>
-                                            <FontAwesome name="users" size={30} color="black" />
+                                            <Text style={{ fontSize: 14, fontWeight: 500 }}>Total Leads</Text>
+                                            <FontAwesome name="users" size={20} color="black" />
                                         </View>
                                         <Text style={{ fontSize: 24, fontWeight: 700, textTransform: "capitalize", marginTop: 40 }}>{leadNum}</Text>
                                     </Pressable>
@@ -99,23 +107,6 @@ const Home = () => {
                                         ))
                                     }
                                 </View>
-                                <View style={{ ...styles.smallContainer, width: "100%", marginTop: 20 }}>
-                                    <View style={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
-                                        <Text style={{ fontSize: 16, fontWeight: 500 }}>Current Services</Text>
-                                        <MaterialIcons name="home-repair-service" size={30} color="black" />
-                                    </View>
-                                    {
-                                        authUser?.sub_category?.map((serv, i) => (
-                                            <View key={i} style={{ display: "flex", marginTop: 15, flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
-                                                <View>
-                                                    <Text style={{ fontSize: 18, fontWeight: 600 }}>{serv?.sub_category}</Text>
-                                                    <Text style={{ marginTop: 5 }}>{formatCurrency("en-US", "USD", Number(serv?.cost))}</Text>
-                                                </View>
-                                                <Text>{serv?.time_frame}</Text>
-                                            </View>
-                                        ))
-                                    }
-                                </View>
                             </ScrollView>
                         </View>
                     </>
@@ -130,7 +121,8 @@ const styles = StyleSheet.create({
     container: {
         padding: 15,
         paddingTop: 90,
-        backgroundColor: "white"
+        backgroundColor: "white",
+        height: "100%"
     },
     firstContainer: {
         display: "flex",

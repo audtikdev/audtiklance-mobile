@@ -1,4 +1,4 @@
-import { View, Text, KeyboardAvoidingView, TouchableWithoutFeedback, Image, TextInput, Pressable, useColorScheme, StyleSheet, Keyboard, ActivityIndicator, Alert } from 'react-native'
+import { View, Text, KeyboardAvoidingView, TouchableWithoutFeedback, Image, TextInput, Pressable, useColorScheme, StyleSheet, Keyboard, ActivityIndicator, Alert, Platform } from 'react-native'
 import React, { useRef, useState } from 'react'
 import { generalStyle } from '@/style/generalStyle'
 import { LoginUserInfo } from '@/types/auth'
@@ -19,6 +19,7 @@ const Login = () => {
     const modalizeRef = useRef<Modalize>(null)
     const dispatch = useDispatch()
     const redirectUri = AuthSession.makeRedirectUri();
+    
     const [request, response, promptAsync] = Google.useAuthRequest({
         clientId: '295762912332-3b8phemu55ggkb5m976osibehsuji6rt.apps.googleusercontent.com',
         redirectUri: redirectUri,
@@ -79,29 +80,29 @@ const Login = () => {
 
     return (
         <>
-            <KeyboardAvoidingView style={styles.registerContainer}>
+            <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.registerContainer}>
                 <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
                     <View style={styles.registerMain}>
                         <Image source={require("../../assets/images/logo.png")} />
-                        <Text style={{ ...styles.profileText, ...generalStyle.text[colorScheme] }}>Welcome Back Rejoice!</Text>
-                        <TextInput textContentType="emailAddress" autoCapitalize='none' autoCorrect={false} keyboardType='email-address' placeholderTextColor={generalStyle.text[colorScheme].color} onChangeText={(text) => handleInput("email", text)} value={userInfo?.email} style={{ ...styles.registerInput, ...generalStyle.border[colorScheme], ...generalStyle.text[colorScheme] }} placeholder='Email' />
-                        <TextInput textContentType="password" placeholderTextColor={generalStyle.text[colorScheme].color} onChangeText={(text) => handleInput("password", text)} value={userInfo?.password} style={{ ...styles.registerInput, ...generalStyle.border[colorScheme], ...generalStyle.text[colorScheme] }} placeholder='Password' />
-                        <Text onPress={() => router.push("/forgotPassword")} style={{ alignSelf: "flex-end", fontSize: 14, textDecorationLine: "underline", marginTop: -15, ...generalStyle.text[colorScheme] }}>Forgot Password?</Text>
-                        <Pressable onPress={handleSubmit} style={{ ...styles.loginButton, ...(colorScheme === "light" && generalStyle.button.active), ...(colorScheme === "dark" && generalStyle.button.dark) }}>
+                        <Text style={{ ...styles.profileText }}>Welcome Back Rejoice!</Text>
+                        <TextInput textContentType="emailAddress" autoCapitalize='none' autoCorrect={false} keyboardType='email-address' placeholderTextColor={"black"} onChangeText={(text) => handleInput("email", text)} value={userInfo?.email} style={{ ...styles.registerInput }} placeholder='Email' />
+                        <TextInput textContentType="password" placeholderTextColor={"black"} onChangeText={(text) => handleInput("password", text)} value={userInfo?.password} style={{ ...styles.registerInput }} placeholder='Password' />
+                        <Text onPress={() => router.push("/forgotPassword")} style={{ alignSelf: "flex-end", fontSize: 14, textDecorationLine: "underline", marginTop: -15 }}>Forgot Password?</Text>
+                        <Pressable onPress={handleSubmit} style={{ ...styles.loginButton }}>
                             {
                                 load ?
                                     <View><ActivityIndicator color={"white"} size="large" /></View> :
-                                    <Text style={{ ...styles.buttonText, ...generalStyle.text["dark"] }}>Login</Text>
+                                    <Text style={{ ...styles.buttonText }}>Login</Text>
                             }
                         </Pressable>
                         <View style={styles.registerDivider}>
                             <View style={{ ...styles.dividerLine, ...generalStyle.divider[colorScheme] }}></View>
-                            <Text style={{ ...styles.dividerText, ...generalStyle.text[colorScheme] }}>OR</Text>
+                            <Text style={{ ...styles.dividerText }}>OR</Text>
                             <View style={{ ...styles.dividerLine, ...generalStyle.divider[colorScheme] }}></View>
                         </View>
-                        <Pressable onPress={() => promptAsync()} style={{ ...styles.oauthButton, ...generalStyle.border[colorScheme] }}>
+                        <Pressable onPress={() => promptAsync()} style={{ ...styles.oauthButton }}>
                             <Image source={require("../../assets/images/google.png")} />
-                            <Text style={{ ...styles.oauthText, ...generalStyle.text[colorScheme] }}>Continue with Google</Text>
+                            <Text style={{ ...styles.oauthText }}>Continue with Google</Text>
                         </Pressable>
                         <AppleAuthentication.AppleAuthenticationButton
                             buttonType={AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN}
@@ -111,10 +112,10 @@ const Login = () => {
                             onPress={handleAppleLogin}
                         />
 
-                        <Text style={{ ...styles.loginText, ...generalStyle.text[colorScheme] }}>Don't have an account? <Text onPress={() => modalizeRef.current?.open()} style={{ color: "#F0594C" }}>Register</Text></Text>
+                        <Text style={{ ...styles.loginText }}>Don't have an account? <Text onPress={() => modalizeRef.current?.open()} style={{ color: "#F0594C" }}>Register</Text></Text>
                         <View style={styles.termsContainer}>
-                            <Text style={{ textAlign: "center", fontSize: 12, ...generalStyle.text[colorScheme] }}>By signing up for an account, you agree to</Text>
-                            <Text style={{ ...styles.termsText, fontSize: 12, ...generalStyle.text[colorScheme] }}>Audtiklance’s Terms of Service and Privacy Policy.</Text>
+                            <Text style={{ textAlign: "center", fontSize: 12 }}>By signing up for an account, you agree to</Text>
+                            <Text style={{ ...styles.termsText, fontSize: 12 }}>Audtiklance’s Terms of Service and Privacy Policy.</Text>
                         </View>
                     </View>
                 </TouchableWithoutFeedback>
@@ -122,11 +123,11 @@ const Login = () => {
             <Modalize
                 ref={modalizeRef}
                 adjustToContentHeight={true}
-                modalStyle={generalStyle.modalBackground[colorScheme]}
+                // modalStyle={generalStyle.modalBackground[colorScheme]}
             >
                 <View style={styles.modalContent}>
                     <Pressable onPress={() => router.push("/userRegister")} style={{ ...styles.loginButton, marginTop: 40 }}><Text style={{ ...styles.buttonText, ...generalStyle.buttonText.light }}>I am looking for service providers</Text></Pressable>
-                    <Pressable onPress={() => router.push("/providerRegister1")} style={{ ...styles.registerButton, ...generalStyle.border[colorScheme] }}><Text style={{ ...styles.buttonText, ...generalStyle.text[colorScheme] }}>I am a service provider</Text></Pressable>
+                    <Pressable onPress={() => router.push("/providerRegister1")} style={{ ...styles.registerButton }}><Text style={{ ...styles.buttonText, color: "black" }}>I am a service provider</Text></Pressable>
                 </View>
             </Modalize>
         </>
@@ -142,7 +143,8 @@ const styles = StyleSheet.create({
         alignItems: "center",
         height: "100%",
         width: "100%",
-        padding: 20
+        padding: 20,
+        backgroundColor: "white"
     },
 
     registerMain: {
@@ -195,7 +197,8 @@ const styles = StyleSheet.create({
     },
     buttonText: {
         fontSize: 18,
-        fontWeight: 600
+        fontWeight: 600,
+        color: "white"
     },
     termsContainer: {
         position: "absolute",

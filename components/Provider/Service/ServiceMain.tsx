@@ -100,37 +100,37 @@ const ServiceMain = () => {
     return (
         <>
             <View style={styles.container}>
-                <Text style={{ fontSize: 18, fontWeight: 600, textAlign: "center", ...generalStyle.text[colorScheme] }}>My Business</Text>
+                <Text style={{ fontSize: 18, fontWeight: 600, textAlign: "center" }}>My Business</Text>
                 <View style={styles.box}>
-                    <View style={{ ...styles.iconView, ...(colorScheme === "dark" && generalStyle.background.light) }}>
+                    <View style={{ ...styles.iconView}}>
                         <MaterialIcons name="home-repair-service" size={24} color={"black"} />
                     </View>
-                    <Text style={{ fontSize: 24, fontWeight: 600, ...generalStyle.text[colorScheme] }}>{authUser?.business_name}</Text>
+                    <Text style={{ fontSize: 20, fontWeight: 600 }}>{authUser?.business_name}</Text>
                     <Feather onPress={() => setShowUpdateModal(true)} style={{ marginTop: 5 }} name="edit" size={18} color="black" />
                 </View>
                 <View style={styles.box}>
-                    <View style={{ ...styles.iconView, ...(colorScheme === "dark" && generalStyle.background.light) }}>
+                    <View style={{ ...styles.iconView}}>
                         <Ionicons name="location-sharp" size={24} color="black" />
                     </View>
-                    <Text style={{ fontSize: 16, fontWeight: 600, ...generalStyle.text[colorScheme], maxWidth: "75%" }}>Based in {authUser?.address}</Text>
+                    <Text style={{ fontSize: 12, fontWeight: 600, maxWidth: "75%" }}>Based in {authUser?.address}</Text>
                     <Feather onPress={() => setShowUpdateModal(true)} style={{ marginTop: 5 }} name="edit" size={18} color="black" />
                 </View>
                 <View>
                     <ScrollView contentContainerStyle={{ height: "102%" }} showsVerticalScrollIndicator={false}>
                         <View style={{ position: "relative" }}>
                             <Image style={{ width: "100%", height: screenWidth > 600 ? 330 : 170, marginTop: 20, borderRadius: 10 }} source={{ uri: authUser?.profile_picture as unknown as string }} />
-                            <Pressable onPress={() => handleImageSelect("profile_picture")} style={{ position: "absolute", top: 30, right: 10, ...styles.iconView, width: 35, height: 35, ...(colorScheme === "dark" && generalStyle.background.light) }}>
+                            <Pressable onPress={() => handleImageSelect("profile_picture")} style={{ position: "absolute", top: 30, right: 10, ...styles.iconView, width: 35, height: 35}}>
                                 <Feather name="edit" size={18} color="white" />
                             </Pressable>
                         </View>
-                        <View style={{ marginTop: 15 }}>
-                            <Text style={{ fontSize: 18, fontWeight: 600, ...generalStyle.text[colorScheme] }}>Previous Work Images</Text>
+                        <View style={{ marginTop: 20 }}>
+                            <Text style={{ fontSize: 14, fontWeight: 600 }}>Previous Work Images</Text>
                             <View style={{ display: "flex", flexDirection: "row", columnGap: 10, marginTop: 10, alignItems: "flex-end" }}>
                                 {
                                     authUser?.images?.map((image, i) => (
                                         <View key={i} style={{ position: "relative", width: "48%" }}>
                                             <Image style={{ width: "100%", height: screenWidth > 600 ? 330 : 170, borderRadius: 10 }} source={{ uri: image?.image_url }} />
-                                            <Pressable onPress={() => handleImageSelect("images", i)} style={{ position: "absolute", top: 10, right: 10, ...styles.iconView, width: 35, height: 35, ...(colorScheme === "dark" && generalStyle.background.light) }}>
+                                            <Pressable onPress={() => handleImageSelect("images", i)} style={{ position: "absolute", top: 10, right: 10, ...styles.iconView, width: 35, height: 35}}>
                                                 <Feather name="edit" size={18} color="white" />
                                             </Pressable>
                                         </View>
@@ -146,7 +146,7 @@ const ServiceMain = () => {
                         </View>
                         <View style={{ marginTop: 20 }}>
                             <View style={{ ...styles.serviceContainer }}>
-                                <Text style={{ fontSize: 18, fontWeight: 600, ...generalStyle.text[colorScheme] }}>My Services</Text>
+                                <Text style={{ fontSize: 14, fontWeight: 600 }}>My Services</Text>
                                 <Pressable onPress={() => setShowAddModal(true)} style={styles.addButton}><Text style={{ color: "white" }}>Add Service</Text></Pressable>
                             </View>
                             <View style={{ marginTop: 10 }}>
@@ -154,8 +154,8 @@ const ServiceMain = () => {
                                     authUser?.sub_category?.map((serv) => (
                                         <View key={serv?.id} style={{ ...styles.serviceContainer, marginTop: 15, paddingTop: 15, borderTopWidth: 0.6 }}>
                                             <View>
-                                                <Text style={{ fontSize: 18, fontWeight: 600, ...generalStyle.text[colorScheme] }}>{serv?.sub_category}</Text>
-                                                <Text style={{ fontSize: 16, fontWeight: 500, ...generalStyle.text[colorScheme], marginTop: 3 }}>{formatCurrency("en-US", "USD", Number(serv?.cost))} - {serv?.time_frame}</Text>
+                                                <Text style={{ fontSize: 18, fontWeight: 600 }}>{serv?.sub_category}</Text>
+                                                <Text style={{ fontSize: 16, fontWeight: 500, marginTop: 3 }}>{formatCurrency("en-US", "USD", Number(serv?.cost))} - {serv?.time_frame}</Text>
                                             </View>
                                             <View style={{ display: "flex", flexDirection: "row", columnGap: 10, alignItems: "center" }}>
                                                 <Feather onPress={() => editService(serv)} name="edit" size={24} color="black" />
@@ -208,7 +208,7 @@ const styles = StyleSheet.create({
     },
     addButton: {
         width: 100,
-        height: 40,
+        height: 35,
         borderRadius: 6,
         backgroundColor: "#1B64F1",
         display: "flex",

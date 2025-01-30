@@ -88,30 +88,30 @@ const ResetPasswordOtp: React.FC<{ query: string }> = ({ query }) => {
                 <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
                     <View style={styles.otpMainView}>
                         <View style={styles.otpVerifyContainer}>
-                            <Text style={{ ...styles.otpTitle, ...generalStyle.text[colorScheme] }}>Verify Account</Text>
-                            <Text style={{ ...styles.otpText, ...generalStyle.text[colorScheme] }}>A verification code has been sent to your email <Text style={{ fontWeight: "700" }}>{email}</Text></Text>
-                            <View style={{ ...styles.verifyText, ...generalStyle.background[colorScheme] }}>
-                                <Text style={{ ...styles.otpText, ...generalStyle.text[colorScheme], fontSize: 13, fontWeight: 600 }}>Enter the OTP code below or <Text style={{ color: "#F0594C", textDecorationLine: "underline" }}>Change email</Text></Text>
+                            <Text style={{ ...styles.otpTitle }}>Verify Account</Text>
+                            <Text style={{ ...styles.otpText }}>A verification code has been sent to your email <Text style={{ fontWeight: "700" }}>{email}</Text></Text>
+                            <View style={{ ...styles.verifyText }}>
+                                <Text style={{ ...styles.otpText, fontSize: 13, fontWeight: 600 }}>Enter the OTP code below or <Text style={{ color: "#F0594C", textDecorationLine: "underline" }}>Change email</Text></Text>
                             </View>
                             <View style={styles.otpInput}>
                                 <OtpTextInput
                                     inputCount={6}
                                     containerStyle={styles.otpInputContainer}
-                                    textInputStyle={{ ...styles.otpInputBox, ...generalStyle.background[colorScheme], ...generalStyle.text[colorScheme] }}
+                                    textInputStyle={{ ...styles.otpInputBox }}
                                     handleTextChange={(otp) => setInputValue(otp)}
                                 />
                             </View>
-                            <Pressable disabled={inputValue.length < 4} onPress={handleSubmit} style={{ ...styles.numberButton, ...generalStyle.button[colorScheme], ...(colorScheme === "light" && inputValue.length > 3 && generalStyle.button.active) }}>
+                            <Pressable disabled={inputValue.length < 4} onPress={handleSubmit} style={{ ...styles.numberButton }}>
                                 {
                                     load ?
                                     <ActivityIndicator size={"large"} /> :
-                                    <Text style={{ ...styles.buttonText, ...generalStyle.text.dark }}>Verify Code</Text>
+                                    <Text style={{ ...styles.buttonText  }}>Verify Code</Text>
                                 }
                             </Pressable>
                         </View>
                         {
                             isActive ?
-                                <Text style={generalStyle.text[colorScheme]}>Send code reload in: <Text style={{ color: "#F0594C" }}>{seconds}</Text></Text> :
+                                <Text>Send code reload in: <Text style={{ color: "#F0594C" }}>{seconds}</Text></Text> :
                                 <Text onPress={resetTimer} style={{ color: "#F0594C" }}>Resend Code</Text>
                         }
                     </View>
@@ -128,7 +128,8 @@ const styles = StyleSheet.create({
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        height: "100%"
+        height: "100%",
+        backgroundColor: "white"
     },
     otpMainView: {
         display: "flex",
@@ -204,7 +205,7 @@ const styles = StyleSheet.create({
         width: "100%",
         height: 52,
         borderRadius: 10,
-        backgroundColor: "#B8BBBC",
+        backgroundColor: "#1B64F1",
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center'

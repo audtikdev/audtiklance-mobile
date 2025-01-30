@@ -28,10 +28,9 @@ const Plan: React.FC<{ planRef: React.RefObject<IHandles> }> = ({ planRef }) => 
             <Modalize
                 ref={planRef}
                 adjustToContentHeight={true}
-                modalStyle={generalStyle.modalBackground[colorScheme]}
             >
-                <View style={{ ...styles.modalContent, height: 570 }}>
-                    <Text style={{ ...styles.profileText, ...generalStyle.text[colorScheme] }}>Upgrade To AudtikLance Preferred</Text>
+                <View style={{ ...styles.modalContent, height: 500 }}>
+                    <Text style={{ ...styles.profileText }}>Upgrade To AudtikLance Preferred</Text>
                     {
                         planBenefits?.map((benifit, i) => (
                             <View style={{ display: "flex", flexDirection: "row", columnGap: 10, marginTop: 15, width: "90%" }} key={i}>
@@ -40,7 +39,7 @@ const Plan: React.FC<{ planRef: React.RefObject<IHandles> }> = ({ planRef }) => 
                             </View>
                         ))
                     }
-                    <Pressable onPress={() => subscribeRef.current?.open()} style={{ ...styles.registerButton, marginTop: 40, ...(colorScheme === "light" && generalStyle.button.active), ...(colorScheme === "dark" && generalStyle.button.dark) }}>
+                    <Pressable onPress={() => subscribeRef.current?.open()} style={{ ...styles.registerButton, marginTop: 40 }}>
                         <Text style={{ ...styles.buttonText, ...generalStyle.text["dark"] }}>Upgrade</Text>
                     </Pressable>
                 </View>
@@ -70,18 +69,17 @@ const SubscribeModal: React.FC<{ subscribeRef: React.RefObject<IHandles>, plan: 
         <Modalize
             ref={subscribeRef}
             adjustToContentHeight={true}
-            modalStyle={generalStyle.modalBackground[colorScheme]}
         >
-            <View style={{ ...styles.modalContent, height: 350 }}>
-                <Text style={{ ...styles.profileText, ...generalStyle.text[colorScheme] }}>Subscribe To AudtikLance Preferred</Text>
-                <Text style={{ fontSize: 16, fontWeight: 500, textAlign: "center", marginBottom: 20, ...generalStyle.text[colorScheme] }}>Subscribe to get the plan upgraded perks for:</Text>
-                <Text style={{ fontSize: 28, fontWeight: 700, textAlign: "center", marginBottom: 20, ...generalStyle.text[colorScheme] }}>${plan?.max_cost}</Text>
+            <View style={{ ...styles.modalContent, height: 250 }}>
+                <Text style={{ ...styles.profileText }}>Subscribe To AudtikLance Preferred</Text>
+                <Text style={{ fontSize: 14, fontWeight: 500, textAlign: "center", marginBottom: 20 }}>Subscribe to get the plan upgraded perks for:</Text>
+                <Text style={{ fontSize: 28, fontWeight: 700, textAlign: "center", marginBottom: 20 }}>${plan?.max_cost}</Text>
 
                 <View style={{ display: "flex", flexDirection: "row", columnGap: 10 }}>
                     <Pressable onPress={() => subscribeRef.current?.close()} style={{ ...styles.cancelButton, marginTop: 0, width: "49%" }}>
                         <Text style={{ ...styles.buttonText, color: "black" }}>Cancel</Text>
                     </Pressable>
-                    <Pressable onPress={subscribe} style={{ ...styles.registerButton, marginTop: 0, width: "49%", ...(colorScheme === "light" && generalStyle.button.active), ...(colorScheme === "dark" && generalStyle.button.dark) }}>
+                    <Pressable onPress={subscribe} style={{ ...styles.registerButton, marginTop: 0, width: "49%" }}>
                         {
                             load ?
                                 <ActivityIndicator size={"large"} color={"white"} /> :
@@ -101,7 +99,6 @@ export const SuccessModal: React.FC<{ successRef: React.RefObject<IHandles> }> =
         <Modalize
             ref={successRef}
             adjustToContentHeight={true}
-            modalStyle={generalStyle.modalBackground[colorScheme]}
         >
             <View style={{ ...styles.modalContent, height: 350 }}>
                 <View style={{ display: "flex", alignItems: "center", justifyContent: "center", width: "100%" }}>
@@ -119,7 +116,7 @@ const styles = StyleSheet.create({
         height: 500,
     },
     profileText: {
-        fontSize: 18,
+        fontSize: 16,
         fontWeight: 600,
         marginTop: 10,
         marginBottom: 20,
@@ -129,7 +126,7 @@ const styles = StyleSheet.create({
         width: "100%",
         height: 52,
         borderRadius: 10,
-        backgroundColor: "#00000080",
+        backgroundColor: "#1B64F1",
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',

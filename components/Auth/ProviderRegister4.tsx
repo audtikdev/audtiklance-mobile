@@ -3,7 +3,7 @@ import { AntDesign, MaterialIcons } from '@expo/vector-icons'
 import * as ImagePicker from 'expo-image-picker';
 import { router } from 'expo-router';
 import React, { useRef, useState } from 'react'
-import { ActivityIndicator, Alert, Image, Keyboard, KeyboardAvoidingView, Pressable, StyleSheet, Text, TouchableWithoutFeedback, useColorScheme, View } from 'react-native'
+import { ActivityIndicator, Alert, Image, Keyboard, KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, TouchableWithoutFeedback, useColorScheme, View } from 'react-native'
 import { Modalize } from 'react-native-modalize'
 import OtpTextInput from 'react-native-otp-textinput';
 import { RootState } from '../Store/store';
@@ -124,15 +124,15 @@ const ProviderRegister4 = () => {
 
     return (
         <>
-            <KeyboardAvoidingView style={styles.registerContainer}>
+            <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.registerContainer}>
                 <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
                     <View style={styles.registerMain}>
                         <Image source={require("../../assets/images/logo.png")} />
-                        <Text style={{ ...styles.profileText, ...generalStyle.text[colorScheme] }}>Service Provider Profile Creation</Text>
-                        <Text style={{ ...styles.profileText, ...generalStyle.text[colorScheme] }}>Upload Media Of Your Previous Work</Text>
-                        <Pressable onPress={handleImageSelect} style={{ ...styles.uploadView, ...generalStyle.border[colorScheme] }}>
-                            <AntDesign name="upload" size={30} color={colorScheme === "dark" ? "white" : "black"} />
-                            <Text style={{ fontSize: 18, ...generalStyle.text[colorScheme] }}>Upload images</Text>
+                        <Text style={{ ...styles.profileText, }}>Service Provider Profile Creation</Text>
+                        <Text style={{ ...styles.profileText, }}>Upload Media Of Your Previous Work</Text>
+                        <Pressable onPress={handleImageSelect} style={{ ...styles.uploadView }}>
+                            <AntDesign name="upload" size={30} color={"black"} />
+                            <Text style={{ fontSize: 18, }}>Upload images</Text>
                         </Pressable>
                         <View style={styles.imageList}>
                             {
@@ -144,7 +144,7 @@ const ProviderRegister4 = () => {
                                 ))
                             }
                         </View>
-                        <Pressable onPress={handleSubmit} style={{ ...styles.registerButton, ...(colorScheme === "light" && generalStyle.button.active), ...(colorScheme === "dark" && generalStyle.button.dark) }}>
+                        <Pressable onPress={handleSubmit} style={{ ...styles.registerButton }}>
                             {
                                 load ?
                                     <ActivityIndicator size={"large"} color={"white"} /> :
@@ -168,7 +168,7 @@ const ProviderRegister4 = () => {
                             <OtpTextInput
                                 inputCount={6}
                                 containerStyle={styles.otpInputContainer}
-                                textInputStyle={{ ...styles.otpInputBox, ...generalStyle.background[colorScheme], ...generalStyle.text[colorScheme] }}
+                                textInputStyle={{ ...styles.otpInputBox, ...generalStyle.background[colorScheme], }}
                                 handleTextChange={(otp) => setOtp(otp)}
                             />
                             <Pressable onPress={createAccount} style={{ ...styles.registerButton, marginTop: 40, ...(colorScheme === "light" && generalStyle.button.active), ...(colorScheme === "dark" && generalStyle.button.dark) }}>
@@ -200,7 +200,8 @@ const styles = StyleSheet.create({
         alignItems: "center",
         height: "100%",
         width: "100%",
-        padding: 20
+        padding: 20,
+        backgroundColor: "white"
     },
     registerMain: {
         display: "flex",
@@ -271,7 +272,7 @@ const styles = StyleSheet.create({
         width: "100%",
         height: 52,
         borderRadius: 10,
-        backgroundColor: "#00000080",
+        backgroundColor: "#1B64F1",
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',

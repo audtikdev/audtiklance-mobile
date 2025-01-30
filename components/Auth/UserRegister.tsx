@@ -1,4 +1,4 @@
-import { View, Text, KeyboardAvoidingView, TouchableWithoutFeedback, Image, TextInput, Pressable, useColorScheme, StyleSheet, Keyboard, ActivityIndicator, Alert } from 'react-native'
+import { View, Text, KeyboardAvoidingView, TouchableWithoutFeedback, Image, TextInput, Pressable, useColorScheme, StyleSheet, Keyboard, ActivityIndicator, Alert, Platform } from 'react-native'
 import React, { useRef, useState } from 'react'
 import { generalStyle } from '@/style/generalStyle'
 import { router } from 'expo-router'
@@ -12,6 +12,9 @@ import { validateEmail } from '@/utils/helper'
 import { updateAuth } from '../Context/authProvider'
 import { useDispatch } from 'react-redux'
 import * as AppleAuthentication from 'expo-apple-authentication';
+import { userRegisterSchema } from '@/validation/register'
+import { Controller, useForm } from 'react-hook-form'
+import { yupResolver } from '@hookform/resolvers/yup';
 
 const UserRegister = () => {
   const colorScheme = useColorScheme() || "light"
@@ -22,6 +25,9 @@ const UserRegister = () => {
   const [secret, setSecret] = useState("")
   const [load, setLoad] = useState(false)
   const [created, setCreated] = useState(false)
+  const { control, handleSubmit, formState: { errors } } = useForm({
+    resolver: yupResolver(userRegisterSchema),
+  });
 
   const handleInput = (type: string, value: string) => {
     setUserInfo((prevUserInfo) => ({
@@ -53,7 +59,7 @@ const UserRegister = () => {
     }
   };
 
-  const handleSubmit = async () => {
+  const onSubmit = async () => {
     setLoad(true)
     const body: RegisterUserInfo = {
       ...userInfo!,
@@ -64,7 +70,6 @@ const UserRegister = () => {
     console.log(body);
 
     const response = await registerUser(body)
-    console.log(response);
 
     if (response?.status === 201 || response?.status === 200) {
       console.log("success");
@@ -80,36 +85,18 @@ const UserRegister = () => {
     setLoad(false)
   }
 
-  const handleSendOtp = async () => {
-    if (!userInfo?.firstname || !userInfo?.lastname || !userInfo?.phone) {
-      Toast.show({
-        type: "error",
-        text1: "Fill the required field"
-      })
-      return
-    } else if (!validateEmail(userInfo?.email)) {
-      Toast.show({
-        type: "error",
-        text1: "Invalide Email"
-      })
-      return
-    } else if (!userInfo?.password) {
-      Toast.show({
-        type: "error",
-        text1: "Enter a password"
-      })
-      return
-    } else if (userInfo?.password !== userInfo?.confirmPassword) {
+  const handleSendOtp = async (data: RegisterUserInfo) => {
+    if (userInfo?.password !== userInfo?.confirmPassword) {
       Toast.show({
         type: "error",
         text1: "Password and confirm password do not match"
       })
       return
     }
+    setUserInfo(data)
     setLoad(true)
-    const response = await sendOtp({ email: userInfo?.email! })
+    const response = await sendOtp({ email: data?.email })
     if (response?.status === 201 || response?.status === 200) {
-      console.log(response?.data?.data);
       setSecret(response?.data?.data)
       Keyboard.dismiss()
       Toast.show({
@@ -127,45 +114,98 @@ const UserRegister = () => {
   }
 
   return (
-    <KeyboardAvoidingView style={styles.registerContainer}>
+    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.registerContainer}>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View style={styles.registerMain}>
-          <Image source={require("../../assets/images/logo.png")} />
-          <Text style={{ ...styles.profileText, ...generalStyle.text[colorScheme] }}>Create a profile</Text>
-          <TextInput placeholderTextColor={generalStyle.text[colorScheme].color} onChangeText={(text) => handleInput("firstname", text)} value={userInfo?.firstname} style={{ ...styles.registerInput, ...generalStyle.border[colorScheme], ...generalStyle.text[colorScheme] }} placeholder='First Name' />
-          <TextInput placeholderTextColor={generalStyle.text[colorScheme].color} onChangeText={(text) => handleInput("lastname", text)} value={userInfo?.lastname} style={{ ...styles.registerInput, ...generalStyle.border[colorScheme], ...generalStyle.text[colorScheme] }} placeholder='Last Name' />
-          <TextInput autoCapitalize='none' autoCorrect={false} keyboardType='email-address' placeholderTextColor={generalStyle.text[colorScheme].color} onChangeText={(text) => handleInput("email", text)} value={userInfo?.email} style={{ ...styles.registerInput, ...generalStyle.border[colorScheme], ...generalStyle.text[colorScheme] }} placeholder='Email' />
-          <TextInput placeholderTextColor={generalStyle.text[colorScheme].color} onChangeText={(text) => handleInput("phone", text)} value={userInfo?.phone} keyboardType='phone-pad' style={{ ...styles.registerInput, ...generalStyle.border[colorScheme], ...generalStyle.text[colorScheme] }} placeholder='Phone Number' />
-          <TextInput placeholderTextColor={generalStyle.text[colorScheme].color} onChangeText={(text) => handleInput("password", text)} value={userInfo?.password} style={{ ...styles.registerInput, ...generalStyle.border[colorScheme], ...generalStyle.text[colorScheme] }} placeholder='Password' />
-          <TextInput placeholderTextColor={generalStyle.text[colorScheme].color} onChangeText={(text) => handleInput("confirmPassword", text)} value={userInfo?.confirmPassword} style={{ ...styles.registerInput, ...generalStyle.border[colorScheme], ...generalStyle.text[colorScheme] }} placeholder='Confirm Password' />
-          <Pressable onPress={handleSendOtp} style={{ ...styles.registerButton, ...(colorScheme === "light" && generalStyle.button.active), ...(colorScheme === "dark" && generalStyle.button.dark) }}>
+          <Text style={{ ...styles.profileText }}>Create a profile</Text>
+          <Controller
+            control={control}
+            name="firstname"
+            render={({ field: { onChange, onBlur, value } }) => (
+              <TextInput placeholderTextColor={"black"} onChangeText={onChange} onBlur={onBlur} value={value} style={{ ...styles.registerInput }} placeholder='First Name' />
+            )}
+          />
+          <View style={styles.errorContainer}>
+            {errors.firstname && <Text style={styles.errorText}>{errors.firstname.message}</Text>}
+          </View>
+          <Controller
+            control={control}
+            name="lastname"
+            render={({ field: { onChange, onBlur, value } }) => (
+              <TextInput placeholderTextColor={"black"} onChangeText={onChange} onBlur={onBlur} value={value} style={{ ...styles.registerInput }} placeholder='Last Name' />
+            )}
+          />
+          <View style={styles.errorContainer}>
+            {errors.lastname && <Text style={styles.errorText}>{errors.lastname.message}</Text>}
+          </View>
+          <Controller
+            control={control}
+            name="email"
+            render={({ field: { onChange, onBlur, value } }) => (
+              <TextInput autoCapitalize='none' autoCorrect={false} keyboardType='email-address' placeholderTextColor={"black"} onChangeText={onChange} onBlur={onBlur} value={value?.toLowerCase()} style={{ ...styles.registerInput }} placeholder='Email' />
+            )}
+          />
+          <View style={styles.errorContainer}>
+            {errors.email && <Text style={styles.errorText}>{errors.email.message}</Text>}
+          </View>
+          <Controller
+            control={control}
+            name="phone"
+            render={({ field: { onChange, onBlur, value } }) => (
+              <TextInput placeholderTextColor={"black"} onChangeText={onChange} value={value} onBlur={onBlur} keyboardType='phone-pad' style={{ ...styles.registerInput }} placeholder='Phone Number' />
+            )}
+          />
+          <View style={styles.errorContainer}>
+            {errors.phone && <Text style={styles.errorText}>{errors.phone.message}</Text>}
+          </View>
+          <Controller
+            control={control}
+            name="password"
+            render={({ field: { onChange, onBlur, value } }) => (
+              <TextInput placeholderTextColor={"black"} onChangeText={onChange} onBlur={onBlur} value={value} style={{ ...styles.registerInput }} placeholder='Password' />
+            )}
+          />
+          <View style={styles.errorContainer}>
+            {errors.password && <Text style={styles.errorText}>{errors.password.message}</Text>}
+          </View>
+          <Controller
+            control={control}
+            name="confirmPassword"
+            render={({ field: { onChange, onBlur, value } }) => (
+              <TextInput placeholderTextColor={"black"} onChangeText={onChange} onBlur={onBlur} value={value} style={{ ...styles.registerInput }} placeholder='Confirm Password' />
+            )}
+          />
+          <View style={styles.errorContainer}>
+            {errors.confirmPassword && <Text style={styles.errorText}>{errors.confirmPassword.message}</Text>}
+          </View>
+          <Pressable onPress={handleSubmit(handleSendOtp)} style={{ ...styles.registerButton }}>
             {
               load ?
                 <View><ActivityIndicator color={"white"} size="large" /></View> :
-                <Text style={{ ...styles.buttonText, ...generalStyle.text["dark"] }}>Register</Text>
+                <Text style={{ ...styles.buttonText }}>Register</Text>
             }
           </Pressable>
           <View style={styles.registerDivider}>
-            <View style={{ ...styles.dividerLine, ...generalStyle.divider[colorScheme] }}></View>
-            <Text style={{ ...styles.dividerText, ...generalStyle.text[colorScheme] }}>OR</Text>
-            <View style={{ ...styles.dividerLine, ...generalStyle.divider[colorScheme] }}></View>
+            <View style={{ ...styles.dividerLine }}></View>
+            <Text style={{ ...styles.dividerText }}>OR</Text>
+            <View style={{ ...styles.dividerLine }}></View>
           </View>
-          <Pressable style={{ ...styles.oauthButton, ...generalStyle.border[colorScheme] }}>
+          <Pressable style={{ ...styles.oauthButton }}>
             <Image source={require("../../assets/images/google.png")} />
-            <Text style={{ ...styles.oauthText, ...generalStyle.text[colorScheme] }}>Continue with Google</Text>
+            <Text style={{ ...styles.oauthText }}>Continue with Google</Text>
           </Pressable>
           <AppleAuthentication.AppleAuthenticationButton
             buttonType={AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN}
             buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.BLACK}
             cornerRadius={10}
-            style={{ width: '100%', height: 50, marginBottom: 15 }}
+            style={{ width: '100%', height: 45, marginBottom: 15 }}
             onPress={handleAppleLogin}
           />
-          <Text style={{ ...styles.loginText, ...generalStyle.text[colorScheme] }}>Already have an account? <Text onPress={() => router.push("/login")} style={{ color: "#F0594C" }}>Log In</Text></Text>
-          <View style={styles.termsContainer}>
-            <Text style={{ textAlign: "center", fontSize: 12, ...generalStyle.text[colorScheme] }}>By signing up for an account, you agree to</Text>
-            <Text style={{ ...styles.termsText, fontSize: 12, ...generalStyle.text[colorScheme] }}>ChaimBase’s Terms of Service and Privacy Policy.</Text>
-          </View>
+          <Text style={{ ...styles.loginText }}>Already have an account? <Text onPress={() => router.push("/login")} style={{ color: "#F0594C" }}>Log In</Text></Text>
+          {/* <View style={styles.termsContainer}>
+            <Text style={{ textAlign: "center", fontSize: 12 }}>By signing up for an account, you agree to</Text>
+            <Text style={{ ...styles.termsText, fontSize: 12 }}>ChaimBase’s Terms of Service and Privacy Policy.</Text>
+          </View> */}
         </View>
       </TouchableWithoutFeedback>
       <Modalize
@@ -177,27 +217,27 @@ const UserRegister = () => {
         {
           !created ?
             <View style={styles.modalContent}>
-              <Text style={{ fontSize: 20, fontWeight: 700, textAlign: "center", ...generalStyle.text[colorScheme] }}>Verify OTP</Text>
-              <Text style={{ fontSize: 16, marginVertical: 10, fontWeight: 600, textAlign: "center", ...generalStyle.text[colorScheme] }}>An OTP was sent to your email</Text>
+              <Text style={{ fontSize: 20, fontWeight: 700, textAlign: "center" }}>Verify OTP</Text>
+              <Text style={{ fontSize: 16, marginVertical: 10, fontWeight: 600, textAlign: "center" }}>An OTP was sent to your email</Text>
               <OtpTextInput
                 inputCount={6}
                 containerStyle={styles.otpInputContainer}
-                textInputStyle={{ ...styles.otpInputBox, ...generalStyle.background[colorScheme], ...generalStyle.text[colorScheme] }}
+                textInputStyle={{ ...styles.otpInputBox, ...generalStyle.background[colorScheme] }}
                 handleTextChange={(otp) => setOtp(otp)}
               />
-              <Pressable onPress={handleSubmit} style={{ ...styles.registerButton, marginTop: 40, ...(colorScheme === "light" && generalStyle.button.active), ...(colorScheme === "dark" && generalStyle.button.dark) }}>
+              <Pressable onPress={onSubmit} style={{ ...styles.registerButton, marginTop: 40 }}>
                 {
                   load ?
                     <View><ActivityIndicator color={"white"} size="large" /></View> :
-                    <Text style={{ ...styles.buttonText, ...generalStyle.text["dark"] }}>Verify</Text>
+                    <Text style={{ ...styles.buttonText }}>Verify</Text>
                 }
               </Pressable>
             </View> :
             <View style={styles.modalContent}>
-              <Text style={{ fontSize: 20, fontWeight: 700, textAlign: "center", ...generalStyle.text[colorScheme] }}>OTP Verified Successfully</Text>
-              <Text style={{ fontSize: 16, marginTop: 10, fontWeight: 600, textAlign: "center", ...generalStyle.text[colorScheme] }}>Your Account Has Been Created Successfully</Text>
+              <Text style={{ fontSize: 20, fontWeight: 700, textAlign: "center" }}>OTP Verified Successfully</Text>
+              <Text style={{ fontSize: 16, marginTop: 10, fontWeight: 600, textAlign: "center" }}>Your Account Has Been Created Successfully</Text>
               <AntDesign style={{ textAlign: "center", marginVertical: 20 }} name="checkcircle" size={60} color="green" />
-              <Pressable onPress={() => router.push("/(user)")} style={{ ...styles.registerButton, marginTop: 10, ...(colorScheme === "light" && generalStyle.button.active), ...(colorScheme === "dark" && generalStyle.button.dark) }}><Text style={{ ...styles.buttonText, ...generalStyle.text["dark"] }}>Go To Dashboard</Text></Pressable>
+              <Pressable onPress={() => router.push("/(user)")} style={{ ...styles.registerButton, marginTop: 10 }}><Text style={{ ...styles.buttonText }}>Go To Dashboard</Text></Pressable>
             </View>
         }
       </Modalize>
@@ -214,7 +254,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     height: "100%",
     width: "100%",
-    padding: 20
+    padding: 20,
+    backgroundColor: "white"
   },
   registerMain: {
     display: "flex",
@@ -230,28 +271,40 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginBottom: 20
   },
+  errorContainer: {
+    width: "100%",
+    marginTop: -10,
+    marginBottom: 5
+  },
+  errorText: {
+    fontSize: 13,
+    textAlign: "left",
+    color: '#F0594C'
+  },
   registerInput: {
-    height: 50,
+    height: 40,
     borderWidth: 1,
     flexShrink: 1,
     width: '100%',
-    marginBottom: 20,
+    marginBottom: 15,
+    marginTop: 7,
     paddingLeft: 10,
     borderRadius: 5,
   },
   registerButton: {
     width: "100%",
-    height: 52,
+    height: 45,
     borderRadius: 10,
-    backgroundColor: "#00000080",
+    backgroundColor: "#1B64F1",
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 10
+    marginTop: 0
   },
   buttonText: {
     fontSize: 18,
-    fontWeight: 600
+    fontWeight: 600,
+    color: "white"
   },
   registerDivider: {
     display: "flex",
@@ -259,8 +312,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     columnGap: 5,
-    marginTop: 20,
-    marginBottom: 20,
+    marginTop: 10,
+    marginBottom: 10,
     width: "100%"
   },
   dividerLine: {
@@ -274,7 +327,7 @@ const styles = StyleSheet.create({
     fontWeight: 600
   },
   oauthButton: {
-    height: 50,
+    height: 45,
     borderWidth: 1,
     flexShrink: 1,
     width: '100%',

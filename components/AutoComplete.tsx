@@ -14,7 +14,7 @@ const AutoSearch: React.FC<{ data: any, query: string, onChangeText: any, object
 
     return (
         <View style={styles.container}>
-            <TextInput onFocus={()=> setShowList(true)} onBlur={()=> setShowList(false)} placeholderTextColor={generalStyle.text[colorScheme].color} onChangeText={(text) => {showList === false && setShowList(true); onChangeText(text)}} value={query} style={{ ...styles.registerInput, ...generalStyle.border[colorScheme], ...generalStyle.text[colorScheme] }} placeholder={placeholder} />
+            <TextInput onFocus={()=> setShowList(true)} onBlur={()=> setShowList(false)} placeholderTextColor={"black"} onChangeText={(text) => {showList === false && setShowList(true); onChangeText(text)}} value={query} style={{ ...styles.registerInput }} placeholder={placeholder} />
            {showList && <FlatList
                 data={data}
                 renderItem={renderItem}

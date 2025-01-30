@@ -1,10 +1,9 @@
-import { View, Text, StyleSheet, Image, Pressable, ScrollView, useColorScheme } from 'react-native'
+import { View, Text, StyleSheet, Image, Pressable, ScrollView } from 'react-native'
 import React, { useEffect, useRef, useState } from 'react'
-import { AntDesign, EvilIcons, Ionicons } from '@expo/vector-icons'
+import { AntDesign, Entypo, EvilIcons, Ionicons } from '@expo/vector-icons'
 import Constants from 'expo-constants'
 import { formatCurrency } from '@/utils/helper'
 import { router } from 'expo-router'
-import { generalStyle } from '@/style/generalStyle'
 import ReviewCard from '../Review/ReviewCard'
 import { Service } from '@/types/service'
 import axios from 'axios'
@@ -14,14 +13,15 @@ import OurProvider from './OurProvider'
 import ExtProvider from './ExtProvider'
 import { RootState } from '../Store/store'
 import { useSelector } from 'react-redux'
+import FlagOrReportService from './FlagModal'
 
 const ServiceDescription: React.FC<{ id: string }> = ({ id }) => {
     const authUser = useSelector((state: RootState) => state.authProvider.auth)
-    const colorScheme = useColorScheme() || "light"
     const [service, setService] = useState<Service | null>(null)
     const [load, setLoad] = useState(true)
     const ourProviderRef = useRef<Modalize>(null)
     const extProviderRef = useRef<Modalize>(null)
+    const flagOrReportRef = useRef<Modalize>(null)
     const baseUrl = Constants.expoConfig?.extra?.BASE_API
 
     useEffect(() => {
@@ -37,7 +37,7 @@ const ServiceDescription: React.FC<{ id: string }> = ({ id }) => {
                 console.error("getServices", error);
                 setLoad(false)
             });
-            
+
     }, [id])
 
     const bookService = () => {
@@ -69,10 +69,13 @@ const ServiceDescription: React.FC<{ id: string }> = ({ id }) => {
                         <View>
                             <View style={styles.heroText}>
                                 <View style={{ width: "100%", paddingHorizontal: 20 }}>
-                                    <Pressable onPress={() => router.back()} style={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
-                                        <Ionicons name="chevron-back-outline" size={24} color="black" />
-                                        <Text style={{ fontSize: 18 }}>Back</Text>
-                                    </Pressable>
+                                    <View style={{display: "flex", flexDirection: "row", justifyContent: "space-between"}}>
+                                        <Pressable onPress={() => router.back()} style={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
+                                            <Ionicons name="chevron-back-outline" size={24} color="black" />
+                                            <Text style={{ fontSize: 18 }}>Back</Text>
+                                        </Pressable>
+                                        <Entypo onPress={()=> flagOrReportRef.current?.open()} name="dots-three-vertical" size={18} color="black" />
+                                    </View>
                                     <Text style={{ marginTop: 50, fontSize: 20 }}>{service?.business_name}</Text>
                                     {!service?.is_google_place && <Text style={{ marginTop: 10, fontSize: 30 }}>{formatCurrency("en-US", "USD", Number(service?.sub_category?.[0]?.cost!))}</Text>}
                                     <View style={{ display: "flex", flexDirection: "row", alignItems: "center", marginTop: 10 }}>
@@ -91,15 +94,15 @@ const ServiceDescription: React.FC<{ id: string }> = ({ id }) => {
                                     <Image style={styles.image} source={{ uri: service?.profile_picture }} />
                                 </View>
                             </View>
-                            <View style={{ width: "100%", paddingHorizontal: 20, marginTop: 20 }}>
-                                <Text style={{ fontSize: 20, fontWeight: 600, ...generalStyle.text[colorScheme] }}>About me</Text>
-                                <Text style={{ fontSize: 16, marginTop: 10, lineHeight: 23, ...generalStyle.text[colorScheme] }}>{service?.about_me}</Text>
+                            <View style={{ width: "100%", paddingHorizontal: 20, marginTop: 20, }}>
+                                <Text style={{ fontSize: 20, fontWeight: 600 }}>About me</Text>
+                                <Text style={{ fontSize: 16, marginTop: 10, lineHeight: 23 }}>{service?.about_me}</Text>
                                 <View style={{ marginTop: 25, display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
-                                    <Text style={{ fontSize: 20, fontWeight: 600, ...generalStyle.text[colorScheme] }}>Review From Client</Text>
-                                    <Text onPress={() => router.push(`/reviews/${service?.id}`)} style={{ textDecorationLine: "underline", ...generalStyle.text[colorScheme] }}>View all</Text>
+                                    <Text style={{ fontSize: 20, fontWeight: 600 }}>Review From Client</Text>
+                                    <Text onPress={() => router.push(`/reviews/${service?.id}`)} style={{ textDecorationLine: "underline" }}>View all</Text>
                                 </View>
                                 {
-                                    !service?.external_reviews || service?.external_reviews?.length < 1 ?
+                                    !service?.external_reviews || service?.external_reviews?.length < 1 || Object.keys(service?.external_reviews)?.length < 1 ?
                                         <Text style={{ marginVertical: 30, textAlign: "center" }}>No Review Yet</Text> :
                                         <ReviewCard review={service?.external_reviews?.[0]!} />
                                 }
@@ -110,6 +113,7 @@ const ServiceDescription: React.FC<{ id: string }> = ({ id }) => {
             </ScrollView>
             <OurProvider ourProviderRef={ourProviderRef} service={service!} />
             <ExtProvider extProviderRef={extProviderRef} service={service!} />
+            <FlagOrReportService flagOrReportRef={flagOrReportRef} name={service?.business_name!} bookService={bookService} />
         </>
     )
 }

@@ -11,7 +11,7 @@ const ServiceCard: React.FC<{ service: Service, width?: DimensionValue }> = ({ s
     const colorScheme = useColorScheme() || "light"
 
     return (
-        <View style={{ ...styles.serviceContainer, ...generalStyle.background[colorScheme], width: width }}>
+        <View style={{ ...styles.serviceContainer, width: width }}>
             <View style={styles.imageContainer}>
                 {service?.is_google_place && <Pressable style={styles.thirdParty}>
                     <Text>Third Party</Text>
@@ -23,9 +23,9 @@ const ServiceCard: React.FC<{ service: Service, width?: DimensionValue }> = ({ s
                     <Image style={styles.image} source={{ uri: service?.profile_picture }} />
                 </Pressable>
             </View>
-            <Text onPress={() => router.push(`/service-detail/${service?.id}`)} numberOfLines={1} style={{ fontSize: 13, fontWeight: 500, marginTop: 20, marginBottom: 0, ...generalStyle.text[colorScheme] }}>{service?.business_name}</Text>
-            <Text onPress={() => router.push(`/service-detail/${service?.id}`)} style={{ fontSize: 13, fontWeight: 400, marginVertical: 2, ...generalStyle.text[colorScheme] }}>{service?.sub_category?.[0]?.sub_category}</Text>
-            {!service?.is_google_place && <Text onPress={() => router.push(`/service-detail/${service?.id}`)} style={{ fontSize: 13, fontWeight: 500, marginTop: 0, ...generalStyle.text[colorScheme] }}>{formatCurrency("en-US", "USD", Number(service?.sub_category?.[0]?.cost))}</Text>}
+            <Text onPress={() => router.push(`/service-detail/${service?.id}`)} numberOfLines={1} style={{ fontSize: 13, fontWeight: 500, marginTop: 20, marginBottom: 0 }}>{service?.business_name}</Text>
+            <Text onPress={() => router.push(`/service-detail/${service?.id}`)} style={{ fontSize: 13, fontWeight: 400, marginVertical: 2 }}>{service?.sub_category?.[0]?.sub_category}</Text>
+            {!service?.is_google_place && <Text onPress={() => router.push(`/service-detail/${service?.id}`)} style={{ fontSize: 13, fontWeight: 500, marginTop: 0 }}>{formatCurrency("en-US", "USD", Number(service?.sub_category?.[0]?.cost))}</Text>}
         </View>
     )
 }
@@ -35,7 +35,7 @@ export default ServiceCard
 
 const styles = StyleSheet.create({
     serviceContainer: {
-        backgroundColor: "white",
+        backgroundColor: "#F9F9F8",
         borderRadius: 10,
         padding: 10,
         width: "20%",
