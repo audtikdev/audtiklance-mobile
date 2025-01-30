@@ -13,12 +13,11 @@ const ExtProvider: React.FC<{ extProviderRef: React.RefObject<IHandles>, service
         <Modalize
             ref={extProviderRef}
             adjustToContentHeight={true}
-            modalStyle={generalStyle.modalBackground[colorScheme]}
         >
             <View style={styles.modalContent}>
-                <Text style={{ ...generalStyle.text[colorScheme], marginVertical: 20, fontSize: 16, fontWeight: 500, textAlign: "center", borderBottomWidth: 0.5, paddingBottom: 15 }}>This is a third party service provider, you can contact them using this details</Text>
-                <Text style={{ ...generalStyle.text[colorScheme], marginBottom: 10, fontSize: 16, fontWeight: 500, textAlign: "center" }}>Address</Text>
-                <Text style={{ ...generalStyle.text[colorScheme], marginBottom: 20, fontSize: 16, textAlign: "center" }}>{service?.address}</Text>
+                <Text style={{ marginVertical: 20, fontSize: 16, fontWeight: 500, textAlign: "center", borderBottomWidth: 0.5, paddingBottom: 15 }}>This is a third party service provider, you can contact them using this details</Text>
+                <Text style={{ marginBottom: 10, fontSize: 16, fontWeight: 500, textAlign: "center" }}>Address</Text>
+                <Text style={{ marginBottom: 20, fontSize: 16, textAlign: "center" }}>{service?.address}</Text>
                 <Pressable onPress={()=> makeCall(service?.phone!)} style={styles.bookButton}><Text style={{ color: "white", fontSize: 16 }}>Call Service</Text></Pressable>
             </View>
         </Modalize>

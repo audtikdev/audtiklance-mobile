@@ -1,5 +1,5 @@
-import { View, Text, KeyboardAvoidingView, TouchableWithoutFeedback, Image, TextInput, Pressable, useColorScheme, StyleSheet, Keyboard, Alert, ImageBackground } from 'react-native'
-import React, { useContext, useEffect, useState } from 'react'
+import { View, Text, KeyboardAvoidingView, TouchableWithoutFeedback, Image, TextInput, Pressable, StyleSheet, Keyboard, Alert, ImageBackground, Platform } from 'react-native'
+import React, { useEffect, useState } from 'react'
 import { generalStyle } from '@/style/generalStyle'
 import { router } from 'expo-router'
 import axios from "axios"
@@ -10,15 +10,20 @@ import { RegisterProvider } from '@/types/auth'
 import AntDesign from '@expo/vector-icons/AntDesign';
 import AutoSearch from '../AutoComplete'
 import { updateRegisterProvider } from '../Context/registerProvider'
+import { Controller, useForm } from 'react-hook-form'
+import { yupResolver } from '@hookform/resolvers/yup';
 import { useDispatch } from 'react-redux'
+import { providerRegisterTwoSchema } from '@/validation/register'
 
 const ProviderRegister2 = () => {
     const dispatch = useDispatch()
-    const colorScheme = useColorScheme() || "light"
-    const [userInfo, setUserInfo] = useState<RegisterProvider>()
     const [query, setQuery] = useState("");
     const [image, setImage] = useState("")
     const [locations, setLocations] = useState([]);
+    const { control, handleSubmit, setValue, formState: { errors } } = useForm({
+        resolver: yupResolver(providerRegisterTwoSchema),
+    });
+
     const mapKey = Constants.expoConfig?.extra?.MAPBOX_KEY
     useEffect(() => {
         // Debounce the search function to reduce API calls
@@ -50,20 +55,10 @@ const ProviderRegister2 = () => {
         setQuery(text);
     };
 
-    const handleInput = (type: string, value: string) => {
-        setUserInfo((prevUserInfo) => ({
-            ...prevUserInfo!,
-            [type!]: value!,
-        }));
-    }
-
     const handleLocationSelect = (location: any) => {
-        setUserInfo((prevUserInfo) => ({
-            ...prevUserInfo!,
-            address: location?.place_name!,
-            longitude: location?.geometry?.coordinates[0],
-            latitude: location?.geometry?.coordinates[1]
-        }));
+        setValue("address", location?.place_name, {shouldValidate: true})
+        setValue("longitude", location?.geometry?.coordinates[0], {shouldValidate: true})
+        setValue("latitude", location?.geometry?.coordinates[1], {shouldValidate: true})
         setQuery(location?.place_name)
     }
 
@@ -81,32 +76,46 @@ const ProviderRegister2 = () => {
 
         if (!result.canceled) {
             setImage(result.assets[0].uri)
-            setUserInfo((prevUserInfo) => ({
-                ...prevUserInfo!,
-                profile_picture: result.assets[0].uri!,
-            }));
+            setValue("profile_picture", result.assets[0].uri, {shouldValidate: true})
         }
     }
 
-    const handleSubmit = () => {
-        console.log(userInfo);
+    const onSubmit = (data: RegisterProvider) => {
+        console.log(data);
         
-        dispatch(updateRegisterProvider({ provider: userInfo! }))
+        dispatch(updateRegisterProvider({ provider: data }))
         router.push("/providerRegister3")
     }
 
     return (
-        <KeyboardAvoidingView style={styles.registerContainer}>
+        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.registerContainer}>
             <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
                 <View style={styles.registerMain}>
                     <Image source={require("../../assets/images/logo.png")} />
-                    <Text style={{ ...styles.profileText, ...generalStyle.text[colorScheme], marginBottom: 0 }}>Service Provider Profile Creation</Text>
+                    <Text style={{ ...styles.profileText, marginBottom: 0 }}>Service Provider Profile Creation</Text>
 
-                    <Text style={{ ...styles.profileText, ...generalStyle.text[colorScheme], }}>Business Information</Text>
+                    <Text style={{ ...styles.profileText, }}>Business Information</Text>
+                    <Controller
+                        control={control}
+                        name="business_name"
+                        render={({ field: { onChange, onBlur, value } }) => (
+                            <TextInput placeholderTextColor={"black"} onChangeText={onChange} onBlur={onBlur} value={value} style={{ ...styles.registerInput }} placeholder='Business Name' />
+                        )}
+                    />
+                    <View style={styles.errorContainer}>
+                        {errors.business_name && <Text style={styles.errorText}>{errors.business_name.message}</Text>}
+                    </View>
 
-                    <TextInput placeholderTextColor={generalStyle.text[colorScheme].color} onChangeText={(text) => handleInput("business_name", text)} value={userInfo?.business_name} style={{ ...styles.registerInput, ...generalStyle.border[colorScheme], ...generalStyle.text[colorScheme] }} placeholder='Business Name' />
-
-                    <TextInput placeholderTextColor={generalStyle.text[colorScheme].color} onChangeText={(text) => handleInput("phone", text)} value={userInfo?.phone} keyboardType='phone-pad' style={{ ...styles.registerInput, ...generalStyle.border[colorScheme], ...generalStyle.text[colorScheme] }} placeholder='Phone Number' />
+                    <Controller
+                        control={control}
+                        name="phone"
+                        render={({ field: { onChange, onBlur, value } }) => (
+                            <TextInput placeholderTextColor={"black"} onChangeText={onChange} onBlur={onBlur} value={value} keyboardType='phone-pad' style={{ ...styles.registerInput }} placeholder='Phone Number' />
+                        )}
+                    />
+                    <View style={styles.errorContainer}>
+                        {errors.phone && <Text style={styles.errorText}>{errors.phone.message}</Text>}
+                    </View>
 
                     <AutoSearch
                         key={"autoSearch"}
@@ -117,10 +126,21 @@ const ProviderRegister2 = () => {
                         onChangeValue={handleLocationSelect}
                         objectKey='place_name'
                     />
-
-                    <TextInput multiline={true} numberOfLines={5} textAlignVertical='top' placeholderTextColor={generalStyle.text[colorScheme].color} onChangeText={(text) => handleInput("about_me", text)} value={userInfo?.email} style={{ ...styles.registerInput, height: 90, paddingTop: 10, ...generalStyle.border[colorScheme], ...generalStyle.text[colorScheme] }} placeholder='Business Description' />
-
-                    <Pressable onPress={handleImageSelect} style={{ ...styles.uploadView, ...generalStyle.border[colorScheme] }}>
+                    <View style={{...styles.errorContainer, marginTop: -5}}>
+                        {errors.address && <Text style={styles.errorText}>{errors.address.message}</Text>}
+                    </View>
+                    <Controller
+                        control={control}
+                        name="about_me"
+                        render={({ field: { onChange, onBlur, value } }) => (
+                            <TextInput multiline={true} numberOfLines={5} textAlignVertical='top' placeholderTextColor={"black"} onChangeText={onChange} value={value} onBlur={onBlur} style={{ ...styles.registerInput, height: 90, paddingTop: 10, marginTop: 10 }} placeholder='Business Description' />
+                        )}
+                    />
+                    <View style={styles.errorContainer}>
+                        {errors.about_me && <Text style={styles.errorText}>{errors.about_me.message}</Text>}
+                    </View>
+                        
+                    <Pressable onPress={handleImageSelect} style={{ ...styles.uploadView }}>
                         {
                             image ?
                                 <ImageBackground source={{ uri: image }} style={styles.background}>
@@ -129,12 +149,15 @@ const ProviderRegister2 = () => {
                                 </ImageBackground>
                                 :
                                 <>
-                                    <AntDesign name="upload" size={30} color={colorScheme === "dark" ? "white" : "black"} />
-                                    <Text style={{ fontSize: 14, ...generalStyle.text[colorScheme] }}>Upload image</Text>
+                                    <AntDesign name="upload" size={30} color={"black"} />
+                                    <Text style={{ fontSize: 14 }}>Upload image</Text>
                                 </>
                         }
                     </Pressable>
-                    <Pressable onPress={handleSubmit} style={{ ...styles.registerButton, ...(colorScheme === "light" && generalStyle.button.active), ...(colorScheme === "dark" && generalStyle.button.dark) }}><Text style={{ ...styles.buttonText, ...generalStyle.text["dark"] }}>Continue</Text></Pressable>
+                    <View style={{...styles.errorContainer, marginTop: -5}}>
+                        {errors.profile_picture && <Text style={styles.errorText}>{errors.profile_picture.message}</Text>}
+                    </View>
+                    <Pressable onPress={handleSubmit(onSubmit)} style={{ ...styles.registerButton }}><Text style={{ ...styles.buttonText }}>Continue</Text></Pressable>
                 </View>
             </TouchableWithoutFeedback>
         </KeyboardAvoidingView>
@@ -150,7 +173,8 @@ const styles = StyleSheet.create({
         alignItems: "center",
         height: "100%",
         width: "100%",
-        padding: 20
+        padding: 20,
+        backgroundColor: "white"
     },
     registerMain: {
         display: "flex",
@@ -167,7 +191,7 @@ const styles = StyleSheet.create({
         marginBottom: 20
     },
     registerInput: {
-        height: 50,
+        height: 42,
         borderWidth: 1,
         flexShrink: 1,
         width: '100%',
@@ -177,9 +201,9 @@ const styles = StyleSheet.create({
     },
     registerButton: {
         width: "100%",
-        height: 52,
+        height: 45,
         borderRadius: 10,
-        backgroundColor: "#00000080",
+        backgroundColor: "#1B64F1",
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
@@ -187,7 +211,18 @@ const styles = StyleSheet.create({
     },
     buttonText: {
         fontSize: 18,
-        fontWeight: 600
+        fontWeight: 600,
+        color: "white"
+    },
+    errorContainer: {
+        width: "100%",
+        marginTop: -15,
+        marginBottom: 5
+    },
+    errorText: {
+        fontSize: 13,
+        textAlign: "left",
+        color: '#F0594C'
     },
     uploadView: {
         width: "100%",

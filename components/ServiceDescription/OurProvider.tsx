@@ -33,14 +33,13 @@ const OurProvider: React.FC<{ ourProviderRef: React.RefObject<IHandles>, service
         <Modalize
             ref={ourProviderRef}
             adjustToContentHeight={true}
-            modalStyle={generalStyle.modalBackground[colorScheme]}
         >
             {
                 true ?
                     <View style={{...styles.modalContent, height: 600}}>
-                        <Text style={{ ...generalStyle.text[colorScheme], marginTop: 6, fontSize: 18, fontWeight: 600, textAlign: "center" }}>Send a message to {service?.business_name}</Text>
-                        <Text style={{ ...generalStyle.text[colorScheme], marginVertical: 10, fontSize: 16, textAlign: "center" }}>Ask questions or describe what you need. You don’t need to include contact info yet.</Text>
-                        <TextInput onChangeText={(text)=> setMessage(text)} placeholderTextColor={generalStyle.text[colorScheme].color} numberOfLines={5} multiline placeholder='Send a brief description of the job to the provider' style={{ ...styles.registerInput, ...generalStyle.border[colorScheme], ...generalStyle.text[colorScheme] }} />
+                        <Text style={{ marginTop: 6, fontSize: 18, fontWeight: 600, textAlign: "center" }}>Send a message to {service?.business_name}</Text>
+                        <Text style={{ marginVertical: 10, fontSize: 16, textAlign: "center" }}>Ask questions or describe what you need. You don’t need to include contact info yet.</Text>
+                        <TextInput onChangeText={(text)=> setMessage(text)} placeholderTextColor={"black"} numberOfLines={5} multiline placeholder='Send a brief description of the job to the provider' style={{ ...styles.registerInput }} />
                         <Pressable onPress={sendServiceLead} style={styles.bookButton}>
                             {
                                 load ?
@@ -50,7 +49,7 @@ const OurProvider: React.FC<{ ourProviderRef: React.RefObject<IHandles>, service
                         </Pressable>
                     </View> :
                     <View style={styles.modalContent}>
-                        <Text style={{ ...generalStyle.text[colorScheme], marginVertical: 20, fontSize: 16, fontWeight: 500, textAlign: "center", borderBottomWidth: 0.5, paddingBottom: 15 }}>You can communicate with the service provider using the following method</Text>
+                        <Text style={{ marginVertical: 20, fontSize: 16, fontWeight: 500, textAlign: "center", borderBottomWidth: 0.5, paddingBottom: 15 }}>You can communicate with the service provider using the following method</Text>
                         <Pressable onPress={()=> router.push(`/chat/${service?.owner_id}/null`)} style={styles.bookButton}><Text style={{ color: "white", fontSize: 16 }}>Chat Service</Text></Pressable>
                         <Pressable onPress={()=> makeCall(service?.phone!)} style={styles.bookButton}><Text style={{ color: "white", fontSize: 16 }}>Call Service</Text></Pressable>
                     </View>

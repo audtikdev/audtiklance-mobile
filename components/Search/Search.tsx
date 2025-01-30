@@ -191,7 +191,7 @@ const Search: React.FC<{ query: string }> = ({ query }) => {
     return (
         <View>
             <View style={styles.searchContainer}>
-                <Text style={{ ...styles.searchTitle, ...generalStyle.text[colorScheme] }}>Search For Any Service</Text>
+                <Text style={{ ...styles.searchTitle }}>Search For Any Service</Text>
                 <AutoSearch
                     key={"autoSearchLocation"}
                     data={locations}
@@ -217,8 +217,8 @@ const Search: React.FC<{ query: string }> = ({ query }) => {
                         </View> :
                         <View style={{ marginBottom: 200, paddingBottom: 200 }}>
                             <View style={styles.serviceTitleContainer}>
-                                <Text style={{ ...styles.title, ...generalStyle.text[colorScheme] }}>Search Result({services?.length})</Text>
-                                <Text style={{ textDecorationLine: "underline", ...generalStyle.text[colorScheme] }}>See All</Text>
+                                <Text style={{ ...styles.title }}>Search Result({services?.length})</Text>
+                                <Text style={{ textDecorationLine: "underline" }}>See All</Text>
                             </View>
                             <FlatList
                                 data={services}
@@ -252,6 +252,7 @@ const styles = StyleSheet.create({
     searchContainer: {
         padding: 20,
         paddingTop: 90,
+        backgroundColor: "white"
     },
     searchTitle: {
         fontSize: 16,

@@ -34,13 +34,12 @@ const DeleteModal: React.FC<{ deleteRef: React.RefObject<IHandles> }> = ({ delet
         <Modalize
             ref={deleteRef}
             adjustToContentHeight={true}
-            modalStyle={generalStyle.modalBackground[colorScheme]}
         >
             <View style={styles.modalContent}>
                 <Text style={{fontSize: 18, fontWeight: 600, textAlign: "center", marginTop: 10}}>Are You Sure You Want To Delete Your Account</Text>
                 <Text style={{fontSize: 14, fontWeight: 500, textAlign: "center", marginTop: 10, paddingHorizontal: 20}}>All Your Account Information Will Be Gone Permanently, This Action Is Irreversible</Text>
                 <View style={{display: "flex", width: "100%", flexDirection: "row", justifyContent: "space-between", alignItems: "center", columnGap: 10, marginTop: 20}}>
-                    <Pressable onPress={()=> deleteRef.current?.close()} style={{...styles.cancelButton, ...generalStyle.border[colorScheme]}}><Text style={{fontSize: 16, fontWeight: 500, ...generalStyle.text[colorScheme]}}>Cancel</Text></Pressable>
+                    <Pressable onPress={()=> deleteRef.current?.close()} style={{...styles.cancelButton}}><Text style={{fontSize: 16, fontWeight: 500 }}>Cancel</Text></Pressable>
                     <Pressable onPress={deleteUser} style={styles.deleteButton}><Text style={{fontSize: 16, fontWeight: 500, color: "white"}}>Delete</Text></Pressable>
                 </View>
             </View>
@@ -53,7 +52,7 @@ export default DeleteModal
 const styles = StyleSheet.create({
     modalContent: {
         padding: 20,
-        height: 300,
+        height: 240,
     },
     deleteButton: {
         width: "49%",

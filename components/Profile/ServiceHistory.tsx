@@ -20,10 +20,10 @@ const ServiceHistory = () => {
         <View style={styles.container}>
             <View style={{display: "flex", flexDirection: "row", alignItems: "center",  justifyContent: "space-between", width: "100%"}}>
                 <Pressable onPress={()=> router.back()} style={{display: "flex", flexDirection: "row", alignItems: "center", columnGap: 10}}>
-                    <Ionicons name="arrow-back-sharp" size={24} color={colorScheme === "dark" ? "white" : "black"} />
-                    <Text style={{ fontSize: 16, fontWeight: 400, ...generalStyle.text[colorScheme] }}>Back</Text>
+                    <Ionicons name="arrow-back-sharp" size={24} color={"black"} />
+                    <Text style={{ fontSize: 16, fontWeight: 400 }}>Back</Text>
                 </Pressable>
-                <Text style={{ fontSize: 18, fontWeight: 600, textAlign: "center", ...generalStyle.text[colorScheme] }}>Service Request History</Text>
+                <Text style={{ fontSize: 18, fontWeight: 600, textAlign: "center" }}>Service Request History</Text>
             </View>
             <ScrollView contentContainerStyle={styles.scrollContainer}>
                 {
@@ -32,9 +32,9 @@ const ServiceHistory = () => {
                             <View style={styles.box}>
                                 <Image source={require("../../assets/images/react-logo.png")} style={styles.iconView} />
                                 <View>
-                                    <Text style={{ fontSize: 18, fontWeight: 600, ...generalStyle.text[colorScheme] }}>Rejoice Plumbing</Text>
-                                    <Text style={{ fontSize: 16, fontWeight: 400, ...generalStyle.text[colorScheme] }}>{formatCurrency("en-US", "USD", 3000)}</Text>
-                                    <Text style={{ fontSize: 14, fontWeight: 400, ...generalStyle.text[colorScheme] }}>{new Date().toLocaleString()}</Text>
+                                    <Text style={{ fontSize: 18, fontWeight: 600 }}>Rejoice Plumbing</Text>
+                                    <Text style={{ fontSize: 16, fontWeight: 400 }}>{formatCurrency("en-US", "USD", 3000)}</Text>
+                                    <Text style={{ fontSize: 14, fontWeight: 400 }}>{new Date().toLocaleString()}</Text>
                                 </View>
                             </View>
                             <Pressable onPress={openRateModal} style={styles.button}><Text style={{ fontSize: 14, fontWeight: 400, ...generalStyle.text.dark }}>Rate</Text></Pressable>
@@ -60,7 +60,7 @@ const RateModal: React.FC<{ rateRef: React.RefObject<IHandles> }> = ({ rateRef }
             modalStyle={{ ...generalStyle.modalBackground[colorScheme] }}
         >
             <View style={{ ...styles.shareModalContent, height: 340, paddingTop: 30 }}>
-                <Text style={{ fontSize: 16, fontWeight: 500, textAlign: "center", marginBottom: 30, ...generalStyle.text[colorScheme] }}>Rate this service provider</Text>
+                <Text style={{ fontSize: 16, fontWeight: 500, textAlign: "center", marginBottom: 30 }}>Rate this service provider</Text>
                 <StarRating setRating={setRating} rating={rating} />
                 <TextInput placeholderTextColor="#00000080" style={styles.input} multiline={true} textAlignVertical='top' placeholder='Tell us more about this service provider' />
                 <Pressable style={{ ...styles.numberButton, ...generalStyle.button.active }}><Text style={{ ...styles.buttonText, ...generalStyle.text.dark }}>Submit</Text></Pressable>

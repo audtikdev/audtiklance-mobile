@@ -1,4 +1,4 @@
-import { View, Text, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard, StyleSheet, Image, useColorScheme, Pressable, TextInput } from 'react-native'
+import { View, Text, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard, StyleSheet, Image, useColorScheme, Pressable, TextInput, Platform } from 'react-native'
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import { generalStyle } from '@/style/generalStyle'
 import Ionicons from '@expo/vector-icons/Ionicons';
@@ -98,16 +98,16 @@ const ProviderRegister3 = () => {
 
     return (
         <>
-            <KeyboardAvoidingView style={styles.registerContainer}>
+            <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.registerContainer}>
                 <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
                     <View style={styles.registerMain}>
                         <Image source={require("../../assets/images/logo.png")} />
-                        <Text style={{ ...styles.profileText, ...generalStyle.text[colorScheme] }}>Service Provider Profile Creation</Text>
-                        <Text style={{ ...styles.profileText, ...generalStyle.text[colorScheme] }}>Choose Your Services</Text>
-                        <Text style={{ ...styles.profileText, ...generalStyle.text[colorScheme], marginTop: 25 }}>{providerDetails?.business_name}</Text>
+                        <Text style={{ ...styles.profileText }}>Service Provider Profile Creation</Text>
+                        <Text style={{ ...styles.profileText }}>Choose Your Services</Text>
+                        <Text style={{ ...styles.profileText, marginTop: 25 }}>{providerDetails?.business_name}</Text>
                         <View style={{ display: 'flex', alignItems: 'flex-end', flexDirection: 'row', columnGap: 10, marginBottom: 40 }}>
-                            <Ionicons name="location-sharp" size={24} color={colorScheme === "dark" ? "white" : "black"} />
-                            <Text style={{ ...styles.profileText, ...generalStyle.text[colorScheme] }}>{providerDetails?.address}</Text>
+                            <Ionicons name="location-sharp" size={24} color={"black"} />
+                            <Text style={{ ...styles.profileText }}>{providerDetails?.address}</Text>
                         </View>
                         <AutoSearch
                             key={"autoSearch"}
@@ -128,14 +128,13 @@ const ProviderRegister3 = () => {
                                 ))
                             }
                         </View>
-                        <Pressable onPress={handleSubmit} style={{ ...styles.registerButton, ...(colorScheme === "light" && generalStyle.button.active), ...(colorScheme === "dark" && generalStyle.button.dark) }}><Text style={{ ...styles.buttonText, ...generalStyle.text["dark"] }}>Continue</Text></Pressable>
+                        <Pressable onPress={handleSubmit} style={{ ...styles.registerButton }}><Text style={{ ...styles.buttonText }}>Continue</Text></Pressable>
                     </View>
                 </TouchableWithoutFeedback>
             </KeyboardAvoidingView>
             <Modalize
                 ref={modalizeRef}
                 adjustToContentHeight={true}
-                modalStyle={generalStyle.modalBackground[colorScheme]}
                 closeOnOverlayTap={false}
             >
                 <View style={styles.modalContent}>
@@ -145,10 +144,10 @@ const ProviderRegister3 = () => {
                     <Text style={styles.activeServiceText}>Pros with upfront pricing get hired more on Audtiklance.</Text>
                     <Text style={styles.activeServiceText}>Add a base price to help you get contacted and hired more, The price will include: Labor (excludes cost of parts).</Text>
                     <Text style={{ marginBottom: 5, marginTop: 10 }}>Enter your base price</Text>
-                    <TextInput placeholderTextColor={generalStyle.text[colorScheme].color} onChangeText={(text) => handlePriceinput(text)} value={activeService?.sub_category?.[0]?.cost} keyboardType='phone-pad' style={{ ...styles.registerInput, ...generalStyle.border[colorScheme], ...generalStyle.text[colorScheme] }} placeholder='$0.00' />
+                    <TextInput placeholderTextColor={"black"} onChangeText={(text) => handlePriceinput(text)} value={activeService?.sub_category?.[0]?.cost} keyboardType='phone-pad' style={{ ...styles.registerInput }} placeholder='$0.00' />
                     <View style={styles.buttonContainer}>
-                        <Pressable onPress={() => modalizeRef.current?.close()} style={{ ...styles.registerButton, marginTop: 0, backgroundColor: "white", borderWidth: 1, ...generalStyle.border[colorScheme] }}><Text style={{ ...styles.buttonText, ...generalStyle.text["light"] }}>Cancel</Text></Pressable>
-                        <Pressable onPress={addService} style={{ ...styles.registerButton, marginTop: 0, ...(colorScheme === "light" && generalStyle.button.active), ...(colorScheme === "dark" && generalStyle.button.dark) }}><Text style={{ ...styles.buttonText, ...generalStyle.text["dark"] }}>Submit</Text></Pressable>
+                        <Pressable onPress={() => modalizeRef.current?.close()} style={{ ...styles.registerButton, marginTop: 0, backgroundColor: "white", borderWidth: 1 }}><Text style={{ ...styles.buttonText, ...generalStyle.text["light"] }}>Cancel</Text></Pressable>
+                        <Pressable onPress={addService} style={{ ...styles.registerButton, marginTop: 0 }}><Text style={{ ...styles.buttonText, ...generalStyle.text["dark"] }}>Submit</Text></Pressable>
                     </View>
                 </View>
             </Modalize>
@@ -165,15 +164,17 @@ const styles = StyleSheet.create({
         alignItems: "center",
         height: "100%",
         width: "100%",
-        padding: 20
+        padding: 20,
+        backgroundColor: "white"
     },
     registerMain: {
+        paddingTop: 80,
         display: "flex",
-        justifyContent: "center",
+        justifyContent: "flex-start",
         alignItems: "center",
         flexDirection: "column",
         width: "100%",
-        height: "100%"
+        height: "100%",
     },
     registerInput: {
         height: 50,
@@ -233,7 +234,7 @@ const styles = StyleSheet.create({
         width: "100%",
         height: 52,
         borderRadius: 10,
-        backgroundColor: "#00000080",
+        backgroundColor: "#1B64F1",
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
@@ -242,6 +243,7 @@ const styles = StyleSheet.create({
     },
     buttonText: {
         fontSize: 18,
-        fontWeight: 600
+        fontWeight: 600,
+        color: "white"
     },
 })

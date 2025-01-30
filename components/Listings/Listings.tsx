@@ -27,11 +27,11 @@ const Listings = () => {
     return (
         <View style={styles.container}>
             <View style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
-                <View style={{ display: "flex", flexDirection: "row", columnGap: 10, alignItems: "center" }}>
-                    <AntDesign onPress={() => router.back()} name="left" size={24} color="black" />
-                    <Text style={{ fontSize: 16, fontWeight: 600, ...generalStyle.text[colorScheme] }}>Listings</Text>
-                </View>
-                <Pressable onPress={() => router.push("/createListing")} style={{...styles.newButton, ...generalStyle.border[colorScheme]}}><Text style={{ fontSize: 12, ...generalStyle.text[colorScheme] }}>Create new listing</Text></Pressable>
+                <Pressable onPress={() => router.back()} style={{ display: "flex", flexDirection: "row", columnGap: 10, alignItems: "center" }}>
+                    <AntDesign name="left" size={24} color="black" />
+                    <Text style={{ fontSize: 16, fontWeight: 600 }}>Listings</Text>
+                </Pressable>
+                <Pressable onPress={() => router.push("/createListing")} style={{...styles.newButton }}><Text style={{ fontSize: 12 }}>Create new listing</Text></Pressable>
             </View>
             {
                 load ?

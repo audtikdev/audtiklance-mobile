@@ -109,7 +109,7 @@ const CreateListing = () => {
 
     return (
         <>
-            <KeyboardAvoidingView>
+            <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
                 <View style={styles.container}>
                     <View style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
                         <Text style={{ fontSize: 16, fontWeight: 600 }}>Add New Listing</Text>
@@ -121,25 +121,25 @@ const CreateListing = () => {
                             <View style={{paddingBottom: 10}}>
                                 <View style={styles.inputContainer}>
                                     <Text style={styles.inputText}>Job Title</Text>
-                                    <TextInput onChangeText={(text) => handleInput("title", text)} placeholderTextColor={generalStyle.text[colorScheme].color} style={{ ...styles.registerInput, ...generalStyle.border[colorScheme], ...generalStyle.text[colorScheme] }} placeholder='Enter Job Title' />
+                                    <TextInput onChangeText={(text) => handleInput("title", text)} placeholderTextColor={"black"} style={{ ...styles.registerInput }} placeholder='Enter Job Title' />
                                 </View>
                                 <View style={styles.inputContainer}>
                                     <Text style={styles.inputText}>Budget</Text>
-                                    <TextInput onChangeText={(text) => handleInput("budget", text)} placeholderTextColor={generalStyle.text[colorScheme].color} style={{ ...styles.registerInput, ...generalStyle.border[colorScheme], ...generalStyle.text[colorScheme] }} placeholder='Enter Budget' />
+                                    <TextInput onChangeText={(text) => handleInput("budget", text)} placeholderTextColor={"black"} style={{ ...styles.registerInput }} placeholder='Enter Budget' />
                                 </View>
                                 <View style={styles.inputContainer}>
                                     <Text style={styles.inputText}>Category</Text>
-                                    <TextInput readOnly value={selectedCat?.name} onPress={() => setShowCatModal(true)} placeholderTextColor={generalStyle.text[colorScheme].color} style={{ ...styles.registerInput, ...generalStyle.border[colorScheme], ...generalStyle.text[colorScheme] }} placeholder='Select Category' />
+                                    <TextInput readOnly value={selectedCat?.name} onPress={() => setShowCatModal(true)} placeholderTextColor={"black"} style={{ ...styles.registerInput }} placeholder='Select Category' />
                                 </View>
                                 <View style={styles.inputContainer}>
                                     <Text style={styles.inputText}>Location</Text>
-                                    <TextInput readOnly value={selectedLoc?.address} onPress={() => setShowLocModal(true)} placeholderTextColor={generalStyle.text[colorScheme].color} style={{ ...styles.registerInput, ...generalStyle.border[colorScheme], ...generalStyle.text[colorScheme] }} placeholder='Select Location' />
+                                    <TextInput readOnly value={selectedLoc?.address} onPress={() => setShowLocModal(true)} placeholderTextColor={"black"} style={{ ...styles.registerInput }} placeholder='Select Location' />
                                 </View>
                                 <View style={styles.inputContainer}>
                                     <Text style={styles.inputText}>Job Description</Text>
-                                    <TextInput onChangeText={(text) => handleInput("description", text)} multiline numberOfLines={5} placeholderTextColor={generalStyle.text[colorScheme].color} style={{ ...styles.registerInput, height: 120, padding: 10, ...generalStyle.border[colorScheme], ...generalStyle.text[colorScheme] }} placeholder='Give a detailed description of what this job is about...' />
+                                    <TextInput onChangeText={(text) => handleInput("description", text)} multiline numberOfLines={5} placeholderTextColor={"black"} style={{ ...styles.registerInput, height: 120, padding: 10 }} placeholder='Give a detailed description of what this job is about...' />
                                 </View>
-                                <Pressable onPress={handleImageSelect} style={{ ...styles.uploadView, ...generalStyle.border[colorScheme] }}>
+                                <Pressable onPress={handleImageSelect} style={{ ...styles.uploadView }}>
                                     {
                                         image ?
                                             <ImageBackground source={{ uri: image }} style={styles.background}>
@@ -148,8 +148,8 @@ const CreateListing = () => {
                                             </ImageBackground>
                                             :
                                             <>
-                                                <AntDesign name="upload" size={30} color={colorScheme === "dark" ? "white" : "black"} />
-                                                <Text style={{ fontSize: 18, ...generalStyle.text[colorScheme] }}>Upload image</Text>
+                                                <AntDesign name="upload" size={30} color={"black"} />
+                                                <Text style={{ fontSize: 18 }}>Upload image</Text>
                                             </>
                                     }
                                 </Pressable>
@@ -157,7 +157,7 @@ const CreateListing = () => {
                                     <Text style={styles.inputText}>Deadline</Text>
                                     <DateTimePicker
                                         value={date}
-                                        mode="datetime"
+                                        mode="date"
                                         display="default"
                                         onChange={onChange}
                                     />

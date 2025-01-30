@@ -34,20 +34,20 @@ const ChatList = () => {
 
     return (
         <View style={styles.container}>
-            <Text style={{ fontSize: 24, fontWeight: 600, ...generalStyle.text[colorScheme] }}>Chat</Text>
-            <TextInput placeholderTextColor={generalStyle.text[colorScheme].color} onChangeText={(text) => setSearchValue(text)} value={searchValue} style={{ ...styles.registerInput, ...generalStyle.border[colorScheme], ...generalStyle.text[colorScheme] }} placeholder='Search...' />
+            <Text style={{ fontSize: 24, fontWeight: 600, }}>Chat</Text>
+            <TextInput placeholderTextColor={"black"} onChangeText={(text) => setSearchValue(text)} value={searchValue} style={{ ...styles.registerInput }} placeholder='Search...' />
             {
                 load ?
                     <View style={{ display: "flex", justifyContent: "center", alignItems: "center", height: 500, width: "100%" }}>
                         <LottieView source={require("../../assets/images/service2.json")} loop={true} autoPlay style={{ width: 300, height: 350 }} />
                     </View> : chatList.length < 1 ?
                         <View style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: 20, height: "80%", width: "100%" }}>
-                            <Text style={{ fontSize: 18, fontWeight: 500 }}>You don't have any chats yet</Text>
+                            <Text style={{ fontSize: 14, fontWeight: 500 }}>You don't have any chats yet</Text>
                             {
                                 authUser?.service_profile &&
-                                <Text style={{ fontSize: 16, fontWeight: 600, textAlign: "center", paddingTop: 10 }}>Subscribe to AudtikLance Preferred to rank higher in search</Text>
+                                <Text style={{ fontSize: 12, fontWeight: 600, textAlign: "center", paddingTop: 10 }}>Subscribe to AudtikLance Preferred to rank higher in search</Text>
                             }
-                            <Image style={{ width: 400, height: 300, paddingVertical: 40 }} source={require("../../assets/images/Empty-product.png")} />
+                            <Image style={{ width: 300, height: 300, paddingVertical: 40 }} source={require("../../assets/images/Empty-product.png")} />
                             {
                                 authUser?.service_profile &&
                                 <Pressable onPress={()=> planRef.current?.open()} style={{ ...styles.numberButton, ...generalStyle.button.active }}><Text style={{ color: "white" }}>Subscribe</Text></Pressable>
@@ -60,10 +60,10 @@ const ChatList = () => {
                                         <Image style={styles.image} source={{ uri: chat?.recipient?.profile_picture }} />
                                         <View style={{ width: "100%" }}>
                                             <View style={styles.nameView}>
-                                                <Text style={{ ...generalStyle.text[colorScheme] }}>{chat?.recipient?.firstname}</Text>
-                                                <Text style={{ ...generalStyle.text[colorScheme] }}>{new Date(chat?.updated_at).getHours()}:{new Date(chat?.updated_at).getMinutes()}</Text>
+                                                <Text style={{textTransform: "capitalize"}}>{chat?.recipient?.firstname}</Text>
+                                                <Text>{new Date(chat?.updated_at).getHours()}:{new Date(chat?.updated_at).getMinutes()}</Text>
                                             </View>
-                                            <Text style={{ ...styles.text, ...generalStyle.text[colorScheme] }} numberOfLines={1}>{chat?.last_message_content}</Text>
+                                            <Text style={{ ...styles.text }} numberOfLines={1}>{chat?.last_message_content}</Text>
                                         </View>
                                     </Pressable>
                                 ))
@@ -103,12 +103,12 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         columnGap: 10,
         alignItems: "center",
-        width: "100%",
+        width: "98%",
         padding: 10
     },
     numberButton: {
         width: "100%",
-        height: 52,
+        height: 45,
         borderRadius: 10,
         backgroundColor: "#B8BBBC",
         display: 'flex',

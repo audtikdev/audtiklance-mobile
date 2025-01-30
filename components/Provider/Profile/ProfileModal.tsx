@@ -64,18 +64,17 @@ export const AccountModal: React.FC<{ accountRef: React.RefObject<IHandles> }> =
         <Modalize
             ref={accountRef}
             adjustToContentHeight={true}
-            modalStyle={generalStyle.modalBackground[colorScheme]}
         >
             <View style={styles.modalContent}>
-                <Text style={{ ...styles.profileText, ...generalStyle.text[colorScheme] }}>Update Your Account Details</Text>
-                <TextInput placeholderTextColor={generalStyle.text[colorScheme].color} onChangeText={(text) => handleInput("firstname", text)} value={userInfo?.firstname} style={{ ...styles.registerInput, ...generalStyle.border[colorScheme], ...generalStyle.text[colorScheme] }} placeholder='First Name' />
-                <TextInput placeholderTextColor={generalStyle.text[colorScheme].color} onChangeText={(text) => handleInput("lastname", text)} value={userInfo?.lastname} style={{ ...styles.registerInput, ...generalStyle.border[colorScheme], ...generalStyle.text[colorScheme] }} placeholder='Last Name' />
+                <Text style={{ ...styles.profileText }}>Update Your Account Details</Text>
+                <TextInput placeholderTextColor={"black"} onChangeText={(text) => handleInput("firstname", text)} value={userInfo?.firstname} style={{ ...styles.registerInput }} placeholder='First Name' />
+                <TextInput placeholderTextColor={"black"} onChangeText={(text) => handleInput("lastname", text)} value={userInfo?.lastname} style={{ ...styles.registerInput }} placeholder='Last Name' />
 
-                <TextInput placeholderTextColor={generalStyle.text[colorScheme].color} onChangeText={(text) => handleInput("phone", text)} value={userInfo?.phone} keyboardType='phone-pad' style={{ ...styles.registerInput, ...generalStyle.border[colorScheme], ...generalStyle.text[colorScheme] }} placeholder='Phone Number' />
-                <TextInput placeholderTextColor={generalStyle.text[colorScheme].color} onChangeText={(text) => handleInput("gender", text.toUpperCase())} value={userInfo?.gender} style={{ ...styles.registerInput, ...generalStyle.border[colorScheme], ...generalStyle.text[colorScheme] }} placeholder='Gender' />
-                <TextInput placeholderTextColor={generalStyle.text[colorScheme].color} onChangeText={(text) => handleInput("dob", text)} value={userInfo?.dob} style={{ ...styles.registerInput, ...generalStyle.border[colorScheme], ...generalStyle.text[colorScheme] }} keyboardType="numeric" placeholder='Enter date (YYYY-MM-DD)' />
-                <TextInput numberOfLines={5} multiline placeholderTextColor={generalStyle.text[colorScheme].color} onChangeText={(text) => handleInput("about_me", text)} value={userInfo?.about_me} style={{ ...styles.registerInput, ...generalStyle.border[colorScheme], ...generalStyle.text[colorScheme], height: 140 }} placeholder='About Me' />
-                <Pressable onPress={updateUserDetails} style={{ ...styles.registerButton, marginTop: 10, ...(colorScheme === "light" && generalStyle.button.active), ...(colorScheme === "dark" && generalStyle.button.dark) }}>
+                <TextInput placeholderTextColor={"black"} onChangeText={(text) => handleInput("phone", text)} value={userInfo?.phone} keyboardType='phone-pad' style={{ ...styles.registerInput }} placeholder='Phone Number' />
+                <TextInput placeholderTextColor={"black"} onChangeText={(text) => handleInput("gender", text.toUpperCase())} value={userInfo?.gender} style={{ ...styles.registerInput }} placeholder='Gender' />
+                <TextInput placeholderTextColor={"black"} onChangeText={(text) => handleInput("dob", text)} value={userInfo?.dob} style={{ ...styles.registerInput }} keyboardType="numeric" placeholder='Enter date (YYYY-MM-DD)' />
+                <TextInput numberOfLines={5} multiline placeholderTextColor={"black"} onChangeText={(text) => handleInput("about_me", text)} value={userInfo?.about_me} style={{ ...styles.registerInput, height: 120 }} placeholder='About Me' />
+                <Pressable onPress={updateUserDetails} style={{ ...styles.registerButton, marginTop: 10 }}>
                     {
                         load ?
                             <ActivityIndicator /> :
@@ -127,23 +126,22 @@ export const PasswordModal: React.FC<{ passwordRef: React.RefObject<IHandles> }>
         <Modalize
             ref={passwordRef}
             adjustToContentHeight={true}
-            modalStyle={generalStyle.modalBackground[colorScheme]}
         >
-            <View style={{ ...styles.modalContent, height: 400 }}>
-                <Text style={{ ...styles.profileText, ...generalStyle.text[colorScheme] }}>Update Your Password</Text>
-                <View style={{ ...styles.passwordContainer, ...generalStyle.border[colorScheme] }}>
-                    <TextInput placeholderTextColor={generalStyle.text[colorScheme].color} secureTextEntry={showPass} onChangeText={(text) => handleInput("old_password", text)} value={userInfo?.old_password} style={{ ...styles.passwordInput, ...generalStyle.text[colorScheme] }} placeholder='Current Password' />
+            <View style={{ ...styles.modalContent, height: 300 }}>
+                <Text style={{ ...styles.profileText }}>Update Your Password</Text>
+                <View style={{ ...styles.passwordContainer }}>
+                    <TextInput placeholderTextColor={"black"} secureTextEntry={showPass} onChangeText={(text) => handleInput("old_password", text)} value={userInfo?.old_password} style={{ ...styles.passwordInput }} placeholder='Current Password' />
                     <Pressable onPress={() => setShowPass(!showPass)}>
                         <FontAwesome6 name={showPass ? "eye" : "eye-slash"} size={15} color="black" />
                     </Pressable>
                 </View>
-                <View style={{ ...styles.passwordContainer, ...generalStyle.border[colorScheme] }}>
-                    <TextInput placeholderTextColor={generalStyle.text[colorScheme].color} secureTextEntry={showPass} onChangeText={(text) => handleInput("new_password", text)} value={userInfo?.new_password} style={{ ...styles.passwordInput, ...generalStyle.text[colorScheme] }} placeholder='New Password' />
+                <View style={{ ...styles.passwordContainer }}>
+                    <TextInput placeholderTextColor={"black"} secureTextEntry={showPass} onChangeText={(text) => handleInput("new_password", text)} value={userInfo?.new_password} style={{ ...styles.passwordInput }} placeholder='New Password' />
                     <Pressable onPress={() => setShowPass(!showPass)}>
                         <FontAwesome6 name={showPass ? "eye" : "eye-slash"} size={15} color="black" />
                     </Pressable>
                 </View>
-                <Pressable onPress={updateUserPassword} style={{ ...styles.registerButton, marginTop: 10, ...(colorScheme === "light" && generalStyle.button.active), ...(colorScheme === "dark" && generalStyle.button.dark) }}>
+                <Pressable onPress={updateUserPassword} style={{ ...styles.registerButton, marginTop: 10 }}>
                     {
                         load ?
                         <ActivityIndicator /> :
@@ -167,12 +165,11 @@ export const NotifyModal: React.FC<{ notifyRef: React.RefObject<IHandles> }> = (
         <Modalize
             ref={notifyRef}
             adjustToContentHeight={true}
-            modalStyle={generalStyle.modalBackground[colorScheme]}
         >
-            <View style={{ ...styles.modalContent, height: 380 }}>
-                <Text style={{ ...styles.profileText, ...generalStyle.text[colorScheme] }}>Update Your Notification Setting</Text>
+            <View style={{ ...styles.modalContent, height: 280 }}>
+                <Text style={{ ...styles.profileText }}>Update Your Notification Setting</Text>
                 <View style={styles.switchView}>
-                    <Text style={{ ...styles.profileText, ...generalStyle.text[colorScheme] }}>Email Notification</Text>
+                    <Text style={{ ...styles.profileText }}>Email Notification</Text>
                     <Switch
                         trackColor={{ false: "#767577", true: "#1B64F1" }}
                         thumbColor={notify?.email ? "#f4f3f4" : "#f4f3f4"}
@@ -182,7 +179,7 @@ export const NotifyModal: React.FC<{ notifyRef: React.RefObject<IHandles> }> = (
                     />
                 </View>
                 <View style={styles.switchView}>
-                    <Text style={{ ...styles.profileText, ...generalStyle.text[colorScheme] }}>App Notification</Text>
+                    <Text style={{ ...styles.profileText }}>App Notification</Text>
                     <Switch
                         trackColor={{ false: "#767577", true: "#1B64F1" }}
                         thumbColor={notify?.app ? "#f4f3f4" : "#f4f3f4"}
@@ -191,7 +188,7 @@ export const NotifyModal: React.FC<{ notifyRef: React.RefObject<IHandles> }> = (
                         value={notify?.app}
                     />
                 </View>
-                <Pressable onPress={updateNotification} style={{ ...styles.registerButton, marginTop: 30, ...(colorScheme === "light" && generalStyle.button.active), ...(colorScheme === "dark" && generalStyle.button.dark) }}><Text style={{ ...styles.buttonText, ...generalStyle.text["dark"] }}>Update</Text></Pressable>
+                <Pressable onPress={updateNotification} style={{ ...styles.registerButton, marginTop: 30 }}><Text style={{ ...styles.buttonText, ...generalStyle.text["dark"] }}>Update</Text></Pressable>
             </View>
         </Modalize>
     )
@@ -200,10 +197,10 @@ export const NotifyModal: React.FC<{ notifyRef: React.RefObject<IHandles> }> = (
 const styles = StyleSheet.create({
     modalContent: {
         padding: 20,
-        height: 750,
+        height: 600,
     },
     profileText: {
-        fontSize: 18,
+        fontSize: 16,
         fontWeight: 600,
         marginTop: 10,
         marginBottom: 20,
@@ -227,7 +224,7 @@ const styles = StyleSheet.create({
         borderWidth: 0
     },
     registerInput: {
-        height: 50,
+        height: 45,
         borderWidth: 1,
         flexShrink: 1,
         width: '100%',
@@ -237,9 +234,9 @@ const styles = StyleSheet.create({
     },
     registerButton: {
         width: "100%",
-        height: 52,
+        height: 45,
         borderRadius: 10,
-        backgroundColor: "#00000080",
+        backgroundColor: "#1B64F1",
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',

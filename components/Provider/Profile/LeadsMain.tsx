@@ -38,10 +38,10 @@ const LeadsMain = () => {
         <View style={styles.container}>
             <View style={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "space-between", width: "100%" }}>
                 <Pressable onPress={() => router.back()} style={{ display: "flex", flexDirection: "row", alignItems: "center", columnGap: 10 }}>
-                    <Ionicons name="arrow-back-sharp" size={24} color={colorScheme === "dark" ? "white" : "black"} />
-                    <Text style={{ fontSize: 16, fontWeight: 400, ...generalStyle.text[colorScheme] }}>Back</Text>
+                    <Ionicons name="arrow-back-sharp" size={24} color={"black"} />
+                    <Text style={{ fontSize: 16, fontWeight: 400 }}>Back</Text>
                 </Pressable>
-                <Text style={{ fontSize: 16, fontWeight: 600, textAlign: "center", ...generalStyle.text[colorScheme] }}>Customer Leads</Text>
+                <Text style={{ fontSize: 16, fontWeight: 600, textAlign: "center" }}>Customer Leads</Text>
             </View>
             {
                 load ?
@@ -62,8 +62,8 @@ const LeadsMain = () => {
                                             <View style={styles.box}>
                                                 <Image source={{ uri: lead?.user?.profile_picture }} style={styles.iconView} />
                                                 <View>
-                                                    <Text style={{ fontSize: 18, fontWeight: 600, ...generalStyle.text[colorScheme] }}>{lead?.user?.firstname} {lead?.user?.lastname}</Text>
-                                                    <Text style={{ fontSize: 16, fontWeight: 400, ...generalStyle.text[colorScheme] }}>{lead?.message}</Text>
+                                                    <Text style={{ fontSize: 18, fontWeight: 600 }}>{lead?.user?.firstname} {lead?.user?.lastname}</Text>
+                                                    <Text style={{ fontSize: 16, fontWeight: 400 }}>{lead?.message}</Text>
                                                 </View>
                                             </View>
                                             <AntDesign name="right" size={24} color={colorScheme === "dark" ? "white" : "black"} />
@@ -88,19 +88,18 @@ const LeadModal: React.FC<{ leadRef: React.RefObject<IHandles>, planRef: React.R
         <Modalize
             ref={leadRef}
             adjustToContentHeight={true}
-            modalStyle={{ ...generalStyle.modalBackground[colorScheme] }}
         >
             {
                 lead?.paid ?
                     <View style={styles.modalContent}>
-                        <Text style={{ ...generalStyle.text[colorScheme], marginVertical: 20, fontSize: 16, fontWeight: 500, textAlign: "center", borderBottomWidth: 0.5, paddingBottom: 15 }}>You can communicate with this customer using the following method</Text>
+                        <Text style={{ marginVertical: 20, fontSize: 16, fontWeight: 500, textAlign: "center", borderBottomWidth: 0.5, paddingBottom: 15 }}>You can communicate with this customer using the following method</Text>
                         <Pressable style={styles.bookButton}><Text style={{ color: "white", fontSize: 16 }}>Chat with customer</Text></Pressable>
                         <Pressable style={styles.bookButton}><Text style={{ color: "white", fontSize: 16 }}>Call customer</Text></Pressable>
                     </View> :
                     <View style={{ ...styles.shareModalContent, height: 260, paddingTop: 30 }}>
-                        <Text style={{ fontSize: 18, fontWeight: 700, textAlign: "center", marginBottom: 10, ...generalStyle.text[colorScheme] }}>{lead?.user?.firstname} {lead?.user?.lastname}</Text>
-                        <Text style={{ fontSize: 16, fontWeight: 500, ...generalStyle.text[colorScheme] }}>{lead?.message}</Text>
-                        <Text style={{ fontSize: 16, fontWeight: 600, ...generalStyle.text[colorScheme], textAlign: "center", marginTop: 20 }}>Subscribe to get access to the customer contact details and many others like this</Text>
+                        <Text style={{ fontSize: 18, fontWeight: 700, textAlign: "center", marginBottom: 10 }}>{lead?.user?.firstname} {lead?.user?.lastname}</Text>
+                        <Text style={{ fontSize: 16, fontWeight: 500 }}>{lead?.message}</Text>
+                        <Text style={{ fontSize: 16, fontWeight: 600, textAlign: "center", marginTop: 20 }}>Subscribe to get access to the customer contact details and many others like this</Text>
                         <Pressable onPress={() => planRef.current?.open()} style={{ ...styles.numberButton, ...generalStyle.button.active }}><Text style={{ ...styles.buttonText, ...generalStyle.text.dark }}>Subscribe</Text></Pressable>
                     </View>
 

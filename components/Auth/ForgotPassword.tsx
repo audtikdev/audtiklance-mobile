@@ -1,4 +1,4 @@
-import { View, Text, KeyboardAvoidingView, TouchableWithoutFeedback, Image, TextInput, Pressable, useColorScheme, StyleSheet, Keyboard, ActivityIndicator } from 'react-native'
+import { View, Text, KeyboardAvoidingView, TouchableWithoutFeedback, Image, TextInput, Pressable, useColorScheme, StyleSheet, Keyboard, ActivityIndicator, Platform } from 'react-native'
 import React, { useState } from 'react'
 import { generalStyle } from '@/style/generalStyle'
 import { router } from 'expo-router'
@@ -6,7 +6,6 @@ import { sendForgotPasswordOtp } from '@/api/auth'
 import Toast from 'react-native-toast-message'
 
 const ForgotPassword = () => {
-    const colorScheme = useColorScheme() || "light"
     const [email, setEmail] = useState("")
     const [load, setLoad] = useState(false)
 
@@ -29,17 +28,17 @@ const ForgotPassword = () => {
 
     return (
         <>
-            <KeyboardAvoidingView style={styles.registerContainer}>
+            <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.registerContainer}>
                 <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
                     <View style={styles.registerMain}>
                         <Image source={require("../../assets/images/logo.png")} />
-                        <Text style={{ ...styles.profileText, ...generalStyle.text[colorScheme] }}>Forgot Your Password? Request A Reset Link</Text>
-                        <TextInput textContentType="emailAddress" autoCapitalize='none' autoCorrect={false} keyboardType='email-address' placeholderTextColor={generalStyle.text[colorScheme].color} onChangeText={(text) => setEmail(text)} value={email} style={{ ...styles.registerInput, ...generalStyle.border[colorScheme], ...generalStyle.text[colorScheme] }} placeholder='Email' />
-                        <Pressable onPress={handleSubmit} style={{ ...styles.loginButton, ...(colorScheme === "light" && generalStyle.button.active), ...(colorScheme === "dark" && generalStyle.button.dark) }}>
+                        <Text style={{ ...styles.profileText }}>Forgot Your Password? Request A Reset Link</Text>
+                        <TextInput textContentType="emailAddress" autoCapitalize='none' autoCorrect={false} keyboardType='email-address' placeholderTextColor={"black"} onChangeText={(text) => setEmail(text)} value={email} style={{ ...styles.registerInput }} placeholder='Email' />
+                        <Pressable onPress={handleSubmit} style={{ ...styles.loginButton }}>
                             {
                                 load ?
                                     <ActivityIndicator size={"large"} /> :
-                                    <Text style={{ ...styles.buttonText, ...generalStyle.text["dark"] }}>Send Link</Text>
+                                    <Text style={{ ...styles.buttonText }}>Send Link</Text>
                             }
                         </Pressable>
                     </View>
@@ -58,7 +57,8 @@ const styles = StyleSheet.create({
         alignItems: "center",
         height: "100%",
         width: "100%",
-        padding: 20
+        padding: 20,
+        backgroundColor: "white"
     },
     registerMain: {
         display: "flex",
@@ -96,7 +96,8 @@ const styles = StyleSheet.create({
     },
     buttonText: {
         fontSize: 18,
-        fontWeight: 600
+        fontWeight: 600,
+        color: 'white'
     },
     emailTitle: {
         fontSize: 18,

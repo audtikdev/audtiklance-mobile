@@ -74,30 +74,30 @@ const ResetPassword: React.FC<{ query: string }> = ({ query }) => {
                     <Pressable onPress={() => router.back()} style={styles.backIcon}>
                         <Ionicons name="chevron-back" size={24} color="black" />
                     </Pressable>
-                    <Text style={{ ...styles.title, ...(colorScheme === "dark" && generalStyle.text.dark) }}>Set New Password</Text>
-                    <Text style={{ ...styles.text, ...(colorScheme === "dark" && generalStyle.text.dark) }}>Create a strong password to secure your account</Text>
-                    <View style={{ ...styles.passwordContainer, ...generalStyle.border[colorScheme] }}>
-                        <TextInput placeholderTextColor={generalStyle.text[colorScheme].color} secureTextEntry={showPass} onChangeText={(text) => handleInput("password", text)} value={userInfo?.password} style={{ ...styles.passwordInput, ...generalStyle.text[colorScheme] }} placeholder='Password' />
+                    <Text style={{ ...styles.title }}>Set New Password</Text>
+                    <Text style={{ ...styles.text }}>Create a strong password to secure your account</Text>
+                    <View style={{ ...styles.passwordContainer }}>
+                        <TextInput placeholderTextColor={"black"} secureTextEntry={showPass} onChangeText={(text) => handleInput("password", text)} value={userInfo?.password} style={{ ...styles.passwordInput, }} placeholder='Password' />
                         <Pressable onPress={() => setShowPass(!showPass)}>
                             <FontAwesome6 name={showPass ? "eye" : "eye-slash"} size={15} color={colorScheme === "dark" ? "white" : "black"} />
                         </Pressable>
                     </View>
-                    <View style={{ ...styles.passwordContainer, ...generalStyle.border[colorScheme] }}>
-                        <TextInput placeholderTextColor={generalStyle.text[colorScheme].color} secureTextEntry={showPass} onChangeText={(text) => handleInput("confirmPassword", text)} value={userInfo?.confirmPassword} style={{ ...styles.passwordInput, ...generalStyle.text[colorScheme] }} placeholder='Confirm Password' />
+                    <View style={{ ...styles.passwordContainer }}>
+                        <TextInput placeholderTextColor={"black"} secureTextEntry={showPass} onChangeText={(text) => handleInput("confirmPassword", text)} value={userInfo?.confirmPassword} style={{ ...styles.passwordInput, }} placeholder='Confirm Password' />
                         <Pressable onPress={() => setShowPass(!showPass)}>
                             <FontAwesome6 name={showPass ? "eye" : "eye-slash"} size={15} color={colorScheme === "dark" ? "white" : "black"} />
                         </Pressable>
                     </View>
-                    <Text style={{ marginVertical: 10, ...generalStyle.text[colorScheme] }}>Password must include:</Text>
+                    <Text style={{ marginVertical: 10, }}>Password must include:</Text>
                     <Pressable style={{ display: "flex", alignItems: "center", flexDirection: "row", columnGap: 10, marginVertical: 10 }}>
                         <AntDesign name="checksquare" size={24} color={!userInfo?.password || userInfo?.password?.length! < 8 ? "#00000010" : "#1B64F1"} />
-                        <Text style={{ ...generalStyle.text[colorScheme] }}>be minimum of 8 characters</Text>
+                        <Text>be minimum of 8 characters</Text>
                     </Pressable>
                     <Pressable style={{ display: "flex", alignItems: "center", flexDirection: "row", columnGap: 10 }}>
                         <AntDesign name="checksquare" size={24} color={!userInfo?.password || !containNumber(userInfo?.password) ? "#00000010" : "#1B64F1"} />
-                        <Text style={{ ...generalStyle.text[colorScheme] }}>include a number</Text>
+                        <Text>include a number</Text>
                     </Pressable>
-                    <Pressable onPress={handleSubmit} style={{ ...styles.registerButton, ...(colorScheme === "light" && generalStyle.button.active), ...(colorScheme === "dark" && generalStyle.button.dark) }}>
+                    <Pressable onPress={handleSubmit} style={{ ...styles.registerButton }}>
                         {
                             load ?
                                 <ActivityIndicator size={"large"} /> :
@@ -117,7 +117,8 @@ const styles = StyleSheet.create({
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        height: "100%"
+        height: "100%",
+        backgroundColor: "white"
     },
     resetMainView: {
         display: "flex",
@@ -172,7 +173,7 @@ const styles = StyleSheet.create({
         width: "100%",
         height: 52,
         borderRadius: 10,
-        backgroundColor: "#00000080",
+        backgroundColor: "#1B64F1",
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
