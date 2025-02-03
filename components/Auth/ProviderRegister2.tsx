@@ -56,9 +56,9 @@ const ProviderRegister2 = () => {
     };
 
     const handleLocationSelect = (location: any) => {
-        setValue("address", location?.place_name, {shouldValidate: true})
-        setValue("longitude", location?.geometry?.coordinates[0], {shouldValidate: true})
-        setValue("latitude", location?.geometry?.coordinates[1], {shouldValidate: true})
+        setValue("address", location?.place_name, { shouldValidate: true })
+        setValue("longitude", location?.geometry?.coordinates[0], { shouldValidate: true })
+        setValue("latitude", location?.geometry?.coordinates[1], { shouldValidate: true })
         setQuery(location?.place_name)
     }
 
@@ -76,13 +76,13 @@ const ProviderRegister2 = () => {
 
         if (!result.canceled) {
             setImage(result.assets[0].uri)
-            setValue("profile_picture", result.assets[0].uri, {shouldValidate: true})
+            setValue("profile_picture", result.assets[0].uri, { shouldValidate: true })
         }
     }
 
     const onSubmit = (data: RegisterProvider) => {
         console.log(data);
-        
+
         dispatch(updateRegisterProvider({ provider: data }))
         router.push("/providerRegister3")
     }
@@ -91,6 +91,10 @@ const ProviderRegister2 = () => {
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.registerContainer}>
             <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
                 <View style={styles.registerMain}>
+                    {/* <Pressable style={styles.backButton}>
+                        <AntDesign name="arrowleft" size={24} color="black" />
+                        <Text>Back</Text>
+                    </Pressable> */}
                     <Image source={require("../../assets/images/logo.png")} />
                     <Text style={{ ...styles.profileText, marginBottom: 0 }}>Service Provider Profile Creation</Text>
 
@@ -126,7 +130,7 @@ const ProviderRegister2 = () => {
                         onChangeValue={handleLocationSelect}
                         objectKey='place_name'
                     />
-                    <View style={{...styles.errorContainer, marginTop: -5}}>
+                    <View style={{ ...styles.errorContainer, marginTop: -5 }}>
                         {errors.address && <Text style={styles.errorText}>{errors.address.message}</Text>}
                     </View>
                     <Controller
@@ -139,7 +143,7 @@ const ProviderRegister2 = () => {
                     <View style={styles.errorContainer}>
                         {errors.about_me && <Text style={styles.errorText}>{errors.about_me.message}</Text>}
                     </View>
-                        
+
                     <Pressable onPress={handleImageSelect} style={{ ...styles.uploadView }}>
                         {
                             image ?
@@ -154,10 +158,11 @@ const ProviderRegister2 = () => {
                                 </>
                         }
                     </Pressable>
-                    <View style={{...styles.errorContainer, marginTop: -5}}>
+                    <View style={{ ...styles.errorContainer, marginTop: -5 }}>
                         {errors.profile_picture && <Text style={styles.errorText}>{errors.profile_picture.message}</Text>}
                     </View>
                     <Pressable onPress={handleSubmit(onSubmit)} style={{ ...styles.registerButton }}><Text style={{ ...styles.buttonText }}>Continue</Text></Pressable>
+                    <Pressable onPress={()=> router.back()} style={{ ...styles.backButton }}><Text style={{ ...styles.buttonText, color: "#1B64F1" }}>Go back</Text></Pressable>
                 </View>
             </TouchableWithoutFeedback>
         </KeyboardAvoidingView>
@@ -193,7 +198,6 @@ const styles = StyleSheet.create({
     registerInput: {
         height: 42,
         borderWidth: 1,
-        flexShrink: 1,
         width: '100%',
         marginBottom: 20,
         paddingLeft: 10,
@@ -204,6 +208,17 @@ const styles = StyleSheet.create({
         height: 45,
         borderRadius: 10,
         backgroundColor: "#1B64F1",
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: 10
+    },
+    backButton: {
+        width: "100%",
+        height: 45,
+        borderRadius: 10,
+        borderColor: "#1B64F1",
+        borderWidth: 1,
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',

@@ -13,6 +13,7 @@ import { debounce } from 'lodash';
 import Constants from 'expo-constants'
 import axios from 'axios';
 import { updateRegisterProvider } from '../Context/registerProvider';
+import { AntDesign } from '@expo/vector-icons';
 
 const ProviderRegister3 = () => {
     const colorScheme = useColorScheme() || "light"
@@ -129,6 +130,7 @@ const ProviderRegister3 = () => {
                             }
                         </View>
                         <Pressable onPress={handleSubmit} style={{ ...styles.registerButton }}><Text style={{ ...styles.buttonText }}>Continue</Text></Pressable>
+                        <Pressable onPress={() => router.back()} style={{ ...styles.backButton }}><Text style={{ ...styles.buttonText, color: "#1B64F1" }}>Go back</Text></Pressable>
                     </View>
                 </TouchableWithoutFeedback>
             </KeyboardAvoidingView>
@@ -240,6 +242,17 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginTop: 50,
         flexShrink: 1
+    },
+    backButton: {
+        width: "100%",
+        height: 45,
+        borderRadius: 10,
+        borderColor: "#1B64F1",
+        borderWidth: 1,
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: 10
     },
     buttonText: {
         fontSize: 18,

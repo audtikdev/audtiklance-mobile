@@ -3,14 +3,17 @@ import React, { useEffect, useState } from 'react'
 import { Ionicons } from '@expo/vector-icons'
 import { router, useLocalSearchParams } from 'expo-router'
 import ReviewCard from '@/components/Review/ReviewCard'
-import { Service } from '@/types/service'
+import { Review, Service } from '@/types/service'
 import Constants from 'expo-constants'
 import axios from 'axios'
 import LottieView from 'lottie-react-native'
+import { getServiceReview } from '@/api/service'
+import OurReview from '@/components/Review/OurReview'
 
 const Reviews = () => {
     const { id } = useLocalSearchParams();
     const [service, setService] = useState<Service | null>(null)
+    const [reviews, setReviews] = useState<Review[]>([])
     const [load, setLoad] = useState(true)
     const baseUrl = Constants.expoConfig?.extra?.BASE_API
 
@@ -27,6 +30,12 @@ const Reviews = () => {
                 console.error("getServices", error);
                 setLoad(false)
             });
+        (async () => {
+            const res = await getServiceReview(id as string)
+            if (res?.status === 200) {
+                setReviews(res?.data?.data)
+            }
+        })()
     }, [id])
 
     return (
@@ -45,17 +54,31 @@ const Reviews = () => {
                             </Pressable>
                             <Text style={{ fontSize: 18, fontWeight: 600 }}>{service?.business_name}</Text>
                         </View>
-                        {
-                            !service?.external_reviews || service?.external_reviews?.length < 1 || Object.keys(service?.external_reviews)?.length < 1 ?
-                                <Text style={{ marginVertical: 30, textAlign: "center", fontSize: 16 }}>No Review Yet</Text> :
-                                <View style={{ marginTop: 20 }}>
-                                    {
-                                        service?.external_reviews?.map((review, i) => (
-                                            <ReviewCard review={review} key={i} truncate={false} />
-                                        ))
-                                    }
-                                </View>
-                        }
+                        <View>
+                            {
+                                reviews?.length > 0 ?
+                                    <View style={{ marginTop: 20 }}>
+                                        {
+                                            reviews?.map((review, i) => (
+                                                <OurReview review={review} key={i} truncate={false} />
+                                            ))
+                                        }
+                                    </View> :
+                                    <View>
+                                        {
+                                            !service?.external_reviews || service?.external_reviews?.length < 1 || Object.keys(service?.external_reviews)?.length < 1 ?
+                                                <Text style={{ marginVertical: 30, textAlign: "center", fontSize: 16 }}>No Review Yet</Text> :
+                                                <View style={{ marginTop: 20 }}>
+                                                    {
+                                                        service?.external_reviews?.map((review, i) => (
+                                                            <ReviewCard review={review} key={i} truncate={false} />
+                                                        ))
+                                                    }
+                                                </View>
+                                        }
+                                    </View>
+                            }
+                        </View>
                     </>
             }
         </ScrollView>
