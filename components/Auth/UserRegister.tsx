@@ -117,6 +117,7 @@ const UserRegister = () => {
     <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.registerContainer}>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View style={styles.registerMain}>
+          <Image source={require("../../assets/images/logo.png")} />
           <Text style={{ ...styles.profileText }}>Create a profile</Text>
           <Controller
             control={control}
@@ -284,7 +285,6 @@ const styles = StyleSheet.create({
   registerInput: {
     height: 40,
     borderWidth: 1,
-    flexShrink: 1,
     width: '100%',
     marginBottom: 15,
     marginTop: 7,
@@ -329,7 +329,6 @@ const styles = StyleSheet.create({
   oauthButton: {
     height: 45,
     borderWidth: 1,
-    flexShrink: 1,
     width: '100%',
     marginBottom: 20,
     borderRadius: 10,

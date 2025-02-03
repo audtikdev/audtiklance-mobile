@@ -5,7 +5,7 @@ import Constants from 'expo-constants'
 import { formatCurrency } from '@/utils/helper'
 import { router } from 'expo-router'
 import ReviewCard from '../Review/ReviewCard'
-import { Service } from '@/types/service'
+import { Review, Service } from '@/types/service'
 import axios from 'axios'
 import LottieView from 'lottie-react-native'
 import { Modalize } from 'react-native-modalize'
@@ -14,10 +14,13 @@ import ExtProvider from './ExtProvider'
 import { RootState } from '../Store/store'
 import { useSelector } from 'react-redux'
 import FlagOrReportService from './FlagModal'
+import { getServiceReview } from '@/api/service'
+import OurReview from '../Review/OurReview'
 
 const ServiceDescription: React.FC<{ id: string }> = ({ id }) => {
     const authUser = useSelector((state: RootState) => state.authProvider.auth)
     const [service, setService] = useState<Service | null>(null)
+    const [reviews, setReviews] = useState<Review[]>([])
     const [load, setLoad] = useState(true)
     const ourProviderRef = useRef<Modalize>(null)
     const extProviderRef = useRef<Modalize>(null)
@@ -37,7 +40,12 @@ const ServiceDescription: React.FC<{ id: string }> = ({ id }) => {
                 console.error("getServices", error);
                 setLoad(false)
             });
-
+        (async () => {
+            const res = await getServiceReview(id)
+            if (res?.status === 200) {
+                setReviews(res?.data?.data)
+            }
+        })()
     }, [id])
 
     const bookService = () => {
@@ -69,12 +77,12 @@ const ServiceDescription: React.FC<{ id: string }> = ({ id }) => {
                         <View>
                             <View style={styles.heroText}>
                                 <View style={{ width: "100%", paddingHorizontal: 20 }}>
-                                    <View style={{display: "flex", flexDirection: "row", justifyContent: "space-between"}}>
+                                    <View style={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
                                         <Pressable onPress={() => router.back()} style={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
                                             <Ionicons name="chevron-back-outline" size={24} color="black" />
                                             <Text style={{ fontSize: 18 }}>Back</Text>
                                         </Pressable>
-                                        <Entypo onPress={()=> flagOrReportRef.current?.open()} name="dots-three-vertical" size={18} color="black" />
+                                        <Entypo onPress={() => flagOrReportRef.current?.open()} name="dots-three-vertical" size={18} color="black" />
                                     </View>
                                     <Text style={{ marginTop: 50, fontSize: 20 }}>{service?.business_name}</Text>
                                     {!service?.is_google_place && <Text style={{ marginTop: 10, fontSize: 30 }}>{formatCurrency("en-US", "USD", Number(service?.sub_category?.[0]?.cost!))}</Text>}
@@ -101,11 +109,21 @@ const ServiceDescription: React.FC<{ id: string }> = ({ id }) => {
                                     <Text style={{ fontSize: 20, fontWeight: 600 }}>Review From Client</Text>
                                     <Text onPress={() => router.push(`/reviews/${service?.id}`)} style={{ textDecorationLine: "underline" }}>View all</Text>
                                 </View>
-                                {
-                                    !service?.external_reviews || service?.external_reviews?.length < 1 || Object.keys(service?.external_reviews)?.length < 1 ?
-                                        <Text style={{ marginVertical: 30, textAlign: "center" }}>No Review Yet</Text> :
-                                        <ReviewCard review={service?.external_reviews?.[0]!} />
-                                }
+                                <View>
+                                    {
+                                        reviews?.length > 0 ?
+                                            <View>
+                                                <OurReview review={reviews[0]} />
+                                            </View> :
+                                            <View>
+                                                {
+                                                    !service?.external_reviews || service?.external_reviews?.length < 1 || Object.keys(service?.external_reviews)?.length < 1 ?
+                                                        <Text style={{ marginVertical: 30, textAlign: "center" }}>No Review Yet</Text> :
+                                                        <ReviewCard review={service?.external_reviews?.[0]!} />
+                                                }
+                                            </View>
+                                    }
+                                </View>
                                 <Pressable onPress={bookService} style={styles.bookButton}><Text style={{ color: "white", fontSize: 16 }}>Book Now</Text></Pressable>
                             </View>
                         </View>
@@ -113,7 +131,7 @@ const ServiceDescription: React.FC<{ id: string }> = ({ id }) => {
             </ScrollView>
             <OurProvider ourProviderRef={ourProviderRef} service={service!} />
             <ExtProvider extProviderRef={extProviderRef} service={service!} />
-            <FlagOrReportService flagOrReportRef={flagOrReportRef} name={service?.business_name!} bookService={bookService} />
+            <FlagOrReportService flagOrReportRef={flagOrReportRef} service={service!} bookService={bookService} />
         </>
     )
 }

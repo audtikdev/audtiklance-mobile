@@ -151,6 +151,7 @@ const ProviderRegister4 = () => {
                                     <Text style={{ ...styles.buttonText, ...generalStyle.text["dark"] }}>Continue</Text>
                             }
                         </Pressable>
+                        <Pressable onPress={() => router.back()} style={{ ...styles.backButton }}><Text style={{ ...styles.buttonText, color: "#1B64F1" }}>Go back</Text></Pressable>
                     </View>
                 </TouchableWithoutFeedback>
             </KeyboardAvoidingView>
@@ -278,6 +279,17 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginTop: 10,
         flexShrink: 1
+    },
+    backButton: {
+        width: "100%",
+        height: 45,
+        borderRadius: 10,
+        borderColor: "#1B64F1",
+        borderWidth: 1,
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: 10
     },
     buttonText: {
         fontSize: 18,

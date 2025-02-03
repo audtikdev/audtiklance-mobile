@@ -21,65 +21,67 @@ const ProviderRegister1 = () => {
   return (
     <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.registerContainer}>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <View style={styles.registerMain}>
-          <Image source={require("../../assets/images/logo.png")} />
-          <Text style={{ ...styles.profileText, marginBottom: 0 }}>Service Provider Profile Creation</Text>
-          <Text style={{ ...styles.profileText }}>Personal Information</Text>
-          <Controller
-            control={control}
-            name="firstname"
-            render={({ field: { onChange, onBlur, value } }) => (
-              <TextInput placeholderTextColor={"black"} onChangeText={onChange} onBlur={onBlur} value={value} style={{ ...styles.registerInput }} placeholder='First Name' />
-            )}
-          />
-          <View style={styles.errorContainer}>
-            {errors.firstname && <Text style={styles.errorText}>{errors.firstname.message}</Text>}
-          </View>
-          <Controller
-            control={control}
-            name="lastname"
-            render={({ field: { onChange, onBlur, value } }) => (
-              <TextInput placeholderTextColor={"black"} onChangeText={onChange} value={value} onBlur={onBlur} style={{ ...styles.registerInput }} placeholder='Last Name' />
-            )}
-          />
-          <View style={styles.errorContainer}>
-            {errors.lastname && <Text style={styles.errorText}>{errors.lastname.message}</Text>}
-          </View>
-          <Controller
-            control={control}
-            name="email"
-            render={({ field: { onChange, onBlur, value } }) => (
-              <TextInput placeholderTextColor={"black"} onChangeText={onChange} value={value?.toLowerCase()} onBlur={onBlur} style={{ ...styles.registerInput }} placeholder='Email' />
-            )}
-          />
-          <View style={styles.errorContainer}>
-            {errors.email && <Text style={styles.errorText}>{errors.email.message}</Text>}
-          </View>
-          <Controller
-            control={control}
-            name="password"
-            render={({ field: { onChange, onBlur, value } }) => (
-              <TextInput placeholderTextColor={"black"} onChangeText={onChange} value={value} onBlur={onBlur} style={{ ...styles.registerInput }} placeholder='Password' />
-            )}
-          />
+        <View style={{width: '100%'}}>
+          <View style={styles.registerMain}>
+            <Image source={require("../../assets/images/logo.png")} />
+            <Text style={{ ...styles.profileText, marginBottom: 0 }}>Service Provider Profile Creation</Text>
+            <Text style={{ ...styles.profileText }}>Personal Information</Text>
+            <Controller
+              control={control}
+              name="firstname"
+              render={({ field: { onChange, onBlur, value } }) => (
+                <TextInput placeholderTextColor={"black"} onChangeText={onChange} onBlur={onBlur} value={value} style={{ ...styles.registerInput }} placeholder='First Name' />
+              )}
+            />
             <View style={styles.errorContainer}>
-            {errors.password && <Text style={styles.errorText}>{errors.password.message}</Text>}
-          </View>
-          <Controller
-            control={control}
-            name="confirmPassword"
-            render={({ field: { onChange, onBlur, value } }) => (
-              <TextInput placeholderTextColor={"black"} onChangeText={onChange} onBlur={onBlur} value={value} style={{ ...styles.registerInput }} placeholder='Confirm Password' />
-            )}
-          />
+              {errors.firstname && <Text style={styles.errorText}>{errors.firstname.message}</Text>}
+            </View>
+            <Controller
+              control={control}
+              name="lastname"
+              render={({ field: { onChange, onBlur, value } }) => (
+                <TextInput placeholderTextColor={"black"} onChangeText={onChange} value={value} onBlur={onBlur} style={{ ...styles.registerInput }} placeholder='Last Name' />
+              )}
+            />
             <View style={styles.errorContainer}>
-            {errors.confirmPassword && <Text style={styles.errorText}>{errors.confirmPassword.message}</Text>}
+              {errors.lastname && <Text style={styles.errorText}>{errors.lastname.message}</Text>}
+            </View>
+            <Controller
+              control={control}
+              name="email"
+              render={({ field: { onChange, onBlur, value } }) => (
+                <TextInput placeholderTextColor={"black"} onChangeText={onChange} value={value?.toLowerCase()} onBlur={onBlur} style={{ ...styles.registerInput }} placeholder='Email' />
+              )}
+            />
+            <View style={styles.errorContainer}>
+              {errors.email && <Text style={styles.errorText}>{errors.email.message}</Text>}
+            </View>
+            <Controller
+              control={control}
+              name="password"
+              render={({ field: { onChange, onBlur, value } }) => (
+                <TextInput placeholderTextColor={"black"} onChangeText={onChange} value={value} onBlur={onBlur} style={{ ...styles.registerInput }} placeholder='Password' />
+              )}
+            />
+            <View style={styles.errorContainer}>
+              {errors.password && <Text style={styles.errorText}>{errors.password.message}</Text>}
+            </View>
+            <Controller
+              control={control}
+              name="confirmPassword"
+              render={({ field: { onChange, onBlur, value } }) => (
+                <TextInput placeholderTextColor={"black"} onChangeText={onChange} onBlur={onBlur} value={value} style={{ ...styles.registerInput }} placeholder='Confirm Password' />
+              )}
+            />
+            <View style={styles.errorContainer}>
+              {errors.confirmPassword && <Text style={styles.errorText}>{errors.confirmPassword.message}</Text>}
+            </View>
+            <Pressable onPress={handleSubmit(onSubmit)} style={{ ...styles.registerButton, }}><Text style={{ ...styles.buttonText }}>Continue</Text></Pressable>
+            <Text style={{ ...styles.loginText }}>Already have an account? <Text onPress={() => router.push("/login")} style={{ color: "#F0594C" }}>Log In</Text></Text>
           </View>
-          <Pressable onPress={handleSubmit(onSubmit)} style={{ ...styles.registerButton, }}><Text style={{ ...styles.buttonText }}>Continue</Text></Pressable>
-          <Text style={{ ...styles.loginText }}>Already have an account? <Text onPress={() => router.push("/login")} style={{ color: "#F0594C" }}>Log In</Text></Text>
           <View style={styles.termsContainer}>
             <Text style={{ textAlign: "center", fontSize: 12 }}>By signing up for an account, you agree to</Text>
-            <Text style={{ ...styles.termsText, fontSize: 12 }}>Audtiklance’s Terms of Service and Privacy Policy.</Text>
+            <Text style={{ ...styles.termsText, textAlign: 'center', fontSize: 12 }}>Audtiklance’s Terms of Service and Privacy Policy.</Text>
           </View>
         </View>
       </TouchableWithoutFeedback>
@@ -105,8 +107,8 @@ const styles = StyleSheet.create({
     paddingTop: 60,
     alignItems: "center",
     flexDirection: "column",
-    width: "99%",
-    height: "100%"
+    width: "100%",
+    height: "93%"
   },
   profileText: {
     fontSize: 16,
@@ -115,9 +117,8 @@ const styles = StyleSheet.create({
     marginBottom: 20
   },
   registerInput: {
-    height: 42,
+    height: 45,
     borderWidth: 1,
-    flexShrink: 1,
     width: '100%',
     marginBottom: 20,
     paddingLeft: 10,
@@ -125,7 +126,7 @@ const styles = StyleSheet.create({
   },
   registerButton: {
     width: "100%",
-    height: 45,
+    height: 47,
     borderRadius: 10,
     backgroundColor: "#1B64F1",
     display: 'flex',
@@ -171,7 +172,6 @@ const styles = StyleSheet.create({
   oauthButton: {
     height: 50,
     borderWidth: 1,
-    flexShrink: 1,
     width: '100%',
     marginBottom: 20,
     borderRadius: 10,
@@ -189,11 +189,10 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: 600,
     marginTop: 10
-    // marginBottom: 30
   },
   termsContainer: {
-    position: "absolute",
-    bottom: 30
+    marginTop: 5,
+    height: 50
   },
   termsText: {
     fontSize: 14,
