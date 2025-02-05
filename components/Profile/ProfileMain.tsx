@@ -1,6 +1,6 @@
 import { View, Text, StyleSheet, useColorScheme, Pressable, ScrollView } from 'react-native'
 import React, { useEffect, useRef } from 'react'
-import { AntDesign, Feather, Ionicons, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons'
+import { AntDesign, Feather, Fontisto, Ionicons, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons'
 import { generalStyle } from '@/style/generalStyle'
 import { Modalize } from 'react-native-modalize'
 import { AccountModal, NotifyModal, PasswordModal } from './ProfileModal'
@@ -37,7 +37,7 @@ const ProfileMain = () => {
                 <Text style={{ fontSize: 18, fontWeight: 600, textAlign: "center" }}>My Profile</Text>
                 <View style={{ marginTop: 30 }}>
                     <ScrollView showsVerticalScrollIndicator={false}>
-                        <View style={{paddingBottom: 130}}>
+                        <View style={{ paddingBottom: 130 }}>
                             <Pressable onPress={() => accountRef.current?.open()} style={{ display: "flex", justifyContent: "space-between", flexDirection: "row", alignItems: "baseline" }}>
                                 <View style={styles.box}>
                                     <View style={{ ...styles.iconView }}>
@@ -62,6 +62,15 @@ const ProfileMain = () => {
                                         <MaterialCommunityIcons name="history" size={20} color="black" />
                                     </View>
                                     <Text style={{ fontSize: 16, fontWeight: 600 }}>History</Text>
+                                </View>
+                                <AntDesign name="right" size={20} color={colorScheme === "light" ? "black" : "white"} />
+                            </Pressable>
+                            <Pressable onPress={() => router.push("/favorite")} style={{ display: "flex", justifyContent: "space-between", flexDirection: "row", alignItems: "baseline" }}>
+                                <View style={styles.box}>
+                                    <View style={{ ...styles.iconView }}>
+                                        <Fontisto name="favorite" size={24} color="black" />
+                                    </View>
+                                    <Text style={{ fontSize: 16, fontWeight: 600 }}>Favorite</Text>
                                 </View>
                                 <AntDesign name="right" size={20} color={colorScheme === "light" ? "black" : "white"} />
                             </Pressable>

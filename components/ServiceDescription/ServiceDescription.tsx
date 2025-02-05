@@ -13,7 +13,7 @@ import OurProvider from './OurProvider'
 import ExtProvider from './ExtProvider'
 import { RootState } from '../Store/store'
 import { useSelector } from 'react-redux'
-import FlagOrReportService from './FlagModal'
+import FlagOrReportService, { RateModal } from './FlagModal'
 import { getServiceReview } from '@/api/service'
 import OurReview from '../Review/OurReview'
 
@@ -25,10 +25,10 @@ const ServiceDescription: React.FC<{ id: string }> = ({ id }) => {
     const ourProviderRef = useRef<Modalize>(null)
     const extProviderRef = useRef<Modalize>(null)
     const flagOrReportRef = useRef<Modalize>(null)
+    const rateRef = useRef<Modalize>(null)
     const baseUrl = Constants.expoConfig?.extra?.BASE_API
 
-    useEffect(() => {
-        setLoad(true)
+    const fetchService = async () => {
         const url = `${baseUrl}/service/${id}`;
         axios.get(url)
             .then((response: any) => {
@@ -40,11 +40,16 @@ const ServiceDescription: React.FC<{ id: string }> = ({ id }) => {
                 console.error("getServices", error);
                 setLoad(false)
             });
+        const res = await getServiceReview(id)
+        if (res?.status === 200) {
+            setReviews(res?.data?.data)
+        }
+    }
+
+    useEffect(() => {
         (async () => {
-            const res = await getServiceReview(id)
-            if (res?.status === 200) {
-                setReviews(res?.data?.data)
-            }
+            setLoad(true)
+            await fetchService()
         })()
     }, [id])
 
@@ -125,6 +130,7 @@ const ServiceDescription: React.FC<{ id: string }> = ({ id }) => {
                                     }
                                 </View>
                                 <Pressable onPress={bookService} style={styles.bookButton}><Text style={{ color: "white", fontSize: 16 }}>Book Now</Text></Pressable>
+                                <Pressable onPress={() => rateRef.current?.open()} style={styles.reviewButton}><Text style={{ color: "#1B64F1", fontSize: 16 }}>Drop a review</Text></Pressable>
                             </View>
                         </View>
                 }
@@ -132,6 +138,7 @@ const ServiceDescription: React.FC<{ id: string }> = ({ id }) => {
             <OurProvider ourProviderRef={ourProviderRef} service={service!} />
             <ExtProvider extProviderRef={extProviderRef} service={service!} />
             <FlagOrReportService flagOrReportRef={flagOrReportRef} service={service!} bookService={bookService} />
+            <RateModal rateRef={rateRef} serviceID={service?.id!} />
         </>
     )
 }
@@ -190,6 +197,17 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         marginTop: 10,
         backgroundColor: "#1B64F1",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center"
+    },
+    reviewButton: {
+        width: "100%",
+        height: 50,
+        borderRadius: 10,
+        marginTop: 10,
+        borderColor: "#1B64F1",
+        borderWidth: 1,
         display: "flex",
         justifyContent: "center",
         alignItems: "center"

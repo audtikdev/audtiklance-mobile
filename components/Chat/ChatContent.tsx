@@ -34,9 +34,10 @@ const ChatContent: React.FC<{ convoId: string, recipientId: string }> = ({ convo
         if (response?.status === 201 || response?.status === 200) {
             const data = response.data?.data
             setMessages(data)
+            await getRecipient()
         } else {
             Toast.show({
-                type: "error",
+                type: "error",   
                 text1: "Error fetching conversation"
             })
         }
@@ -44,7 +45,10 @@ const ChatContent: React.FC<{ convoId: string, recipientId: string }> = ({ convo
 
     const getRecipient = async () => {
         const response = await getUserByID(recipientId)
-        console.log(response);
+        if (response?.status === 200) {            
+            setRecipient(response?.data)
+            console.log(response?.data);
+        }
 
     }
 
@@ -226,7 +230,7 @@ const ChatContent: React.FC<{ convoId: string, recipientId: string }> = ({ convo
                         </View>
                 }
             </KeyboardAvoidingView>
-            <ChatModal chatModalRef={chatModalRef} name={`${messages[0]?.receiver?.firstname} ${messages[0]?.receiver?.lastname}`} />
+            <ChatModal chatModalRef={chatModalRef} receiver={messages[0]?.receiver} />
         </>
     )
 }

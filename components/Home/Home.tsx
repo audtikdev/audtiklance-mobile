@@ -15,6 +15,8 @@ import LottieView from 'lottie-react-native'
 import { router } from 'expo-router'
 import { getUser } from '@/api/auth'
 import { updateAuth } from '../Context/authProvider'
+import { getFavorites } from '@/api/favorite'
+import { updateFavorite } from '../Context/favoriteProvider'
 
 const Home = () => {
     const authUser = useSelector((state: RootState) => state.authProvider.auth)
@@ -35,6 +37,11 @@ const Home = () => {
             if (response?.status === 201 || response?.status === 200) {
                 const data = response.data?.data
                 dispatch(updateAuth({ auth: data }))
+                const res = await getFavorites()
+                if (res?.status === 200) {
+                    const servicesID = res?.data?.results?.map((result: any) => result?.id)
+                    dispatch(updateFavorite({ favorite: servicesID }))
+                }
             }
         })()
     }, [])
@@ -89,7 +96,7 @@ const Home = () => {
             </View>
             <View style={styles.container}>
                 <ScrollView>
-                    <View style={{paddingBottom: 420}}>
+                    <View style={{ paddingBottom: 420 }}>
                         <View style={{ paddingHorizontal: 20, marginTop: 20 }}>
                             <Text style={{ ...styles.title }}>Popular Category</Text>
                             <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.categoryList}>

@@ -9,6 +9,19 @@ export type GoogleReview = {
   relativePublishTimeDescription?: string;
 };
 
+export type Review = {
+  comment: string;
+  created_at: Date;
+  id: string;
+  rating: number;
+  reviewer: {
+    firstname: string;
+    id: string;
+    lastname: string;
+    profile_picture: string;
+  };
+};
+
 export type Service = {
   id?: string;
   name: string;
@@ -32,9 +45,9 @@ export type Service = {
 };
 
 export type SubCategory = {
-    cost: string,
-    sub_category: string,
-    sub_category_id: string,
-    id: string,
-    time_frame: string
+  cost: string;
+  sub_category: string;
+  sub_category_id: string;
+  id: string;
+  time_frame: string;
 };
