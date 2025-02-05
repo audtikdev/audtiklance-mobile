@@ -19,7 +19,7 @@ jobs:
           node-version: '20'  # Replace with your required Node.js version
 
       - name: Install dependencies
-        run: npm install
+        run: npm install --force
 
       - name: Install EAS CLI
         run: npm install -g eas-cli
