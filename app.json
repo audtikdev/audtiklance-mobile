@@ -55,6 +55,12 @@
         {
           "locationAlwaysAndWhenInUsePermission": "Allow Audtiklance to use your location."
         }
+      ],
+      [
+        "@react-native-google-signin/google-signin",
+        {
+          "iosUrlScheme": "com.googleusercontent.apps.15571279761-v4q3rb97hueq6koviotj3fa3jflhvi4p"
+        }
       ]
     ],
     "experiments": {

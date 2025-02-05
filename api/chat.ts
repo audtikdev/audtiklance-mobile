@@ -77,3 +77,41 @@ export const sendMessage = async (id: string, body: {content: string}) => {
     }
   };
 
+export const blockUser = async (id: string) => {
+    try {
+      const res = await apiAxios.post(`/user/${id}/block-user/`);
+      return {
+        status: res.status,
+        data: res.data,
+      };
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        return {
+          status: error?.response?.status,
+          data: error?.response?.data?.error,
+        };
+      } else {
+        console.log(error);
+      }
+    }
+  };
+
+export const reportUser = async (body: {content: string}, id: string) => {
+    try {
+      const res = await apiAxios.post(`/user/${id}/report-user/`, body);
+      return {
+        status: res.status,
+        data: res.data,
+      };
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        return {
+          status: error?.response?.status,
+          data: error?.response?.data?.error,
+        };
+      } else {
+        console.log(error);
+      }
+    }
+  };
+

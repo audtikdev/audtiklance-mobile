@@ -59,6 +59,7 @@ export default function RootLayout() {
                 <Stack.Screen name="leads" options={{ headerShown: false }} />
                 <Stack.Screen name="createListing" options={{ headerShown: false }} />
                 <Stack.Screen name="listing" options={{ headerShown: false }} />
+                <Stack.Screen name="favorite" options={{ headerShown: false }} />
                 <Stack.Screen name="updateListing/[id]" options={{ headerShown: false }} />
                 <Stack.Screen name="chat/[recipientId]/[convoId]" options={{ headerShown: false }} />
                 <Stack.Screen name="+not-found" />

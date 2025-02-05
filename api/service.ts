@@ -81,3 +81,60 @@ export const updateServiceImage = async (body: any) => {
     }
   }
 };
+
+export const reportService = async (body: {content: string}, id: string) => {
+  try {
+    const res = await apiAxios.post(`/service/${id}/report-service/`, body);
+    return {
+      status: res.status,
+      data: res.data,
+    };
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      return {
+        status: error?.response?.status,
+        data: error?.response?.data?.error,
+      };
+    } else {
+      console.log(error);
+    }
+  }
+};
+
+export const reviewService = async (body: {comment: string, rating: number}, id: string) => {
+  try {
+    const res = await apiAxios.post(`/service/${id}/add-review/`, body);
+    return {
+      status: res.status,
+      data: res.data,
+    };
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      return {
+        status: error?.response?.status,
+        data: error?.response?.data?.error,
+      };
+    } else {
+      console.log(error);
+    }
+  }
+};
+
+export const getServiceReview = async (id: string) => {
+  try {
+    const res = await apiAxios.get(`/service/${id}/all-review/`);
+    return {
+      status: res.status,
+      data: res.data,
+    };
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      return {
+        status: error?.response?.status,
+        data: error?.response?.data?.error,
+      };
+    } else {
+      console.log(error);
+    }
+  }
+};

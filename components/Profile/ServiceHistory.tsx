@@ -7,6 +7,7 @@ import { IHandles } from 'react-native-modalize/lib/options'
 import StarRating from '../StarRating'
 import { Ionicons } from '@expo/vector-icons'
 import { router } from 'expo-router'
+import { reviewService } from '@/api/service'
 
 const ServiceHistory = () => {
     const colorScheme = useColorScheme() || "light"
@@ -52,18 +53,28 @@ export default ServiceHistory
 const RateModal: React.FC<{ rateRef: React.RefObject<IHandles> }> = ({ rateRef }) => {
     const colorScheme = useColorScheme() || "light"
     const [rating, setRating] = useState(0)
+    const [content, setContent] = useState("")
+
+    const handleRateService = async () => {
+        const body = {
+            rating: rating,
+            content: content
+        }
+        const res = await reviewService(body, '')
+        console.log(res);
+        
+    }
 
     return (
         <Modalize
             ref={rateRef}
             adjustToContentHeight={true}
-            modalStyle={{ ...generalStyle.modalBackground[colorScheme] }}
         >
             <View style={{ ...styles.shareModalContent, height: 340, paddingTop: 30 }}>
                 <Text style={{ fontSize: 16, fontWeight: 500, textAlign: "center", marginBottom: 30 }}>Rate this service provider</Text>
                 <StarRating setRating={setRating} rating={rating} />
-                <TextInput placeholderTextColor="#00000080" style={styles.input} multiline={true} textAlignVertical='top' placeholder='Tell us more about this service provider' />
-                <Pressable style={{ ...styles.numberButton, ...generalStyle.button.active }}><Text style={{ ...styles.buttonText, ...generalStyle.text.dark }}>Submit</Text></Pressable>
+                <TextInput onChangeText={(text)=> setContent(text)} value={content} placeholderTextColor="#00000080" style={styles.input} multiline={true} textAlignVertical='top' placeholder='Tell us more about this service provider' />
+                <Pressable onPress={handleRateService} style={{ ...styles.numberButton, ...generalStyle.button.active }}><Text style={{ ...styles.buttonText, ...generalStyle.text.dark }}>Submit</Text></Pressable>
             </View>
         </Modalize>
     )

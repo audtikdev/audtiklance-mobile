@@ -14,6 +14,7 @@ import registerProvider from "../Context/registerProvider";
 import locationProvider from "../Context/locationProvider";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import authProvider from "../Context/authProvider";
+import favoriteProvider from "../Context/favoriteProvider";
 
 const persistConfig = {
   key: "root",
@@ -24,7 +25,8 @@ const persistConfig = {
 const rootReducer = combineReducers({
   registerProvider: registerProvider,
   locationProvider: locationProvider,
-  authProvider: authProvider
+  authProvider: authProvider,
+  favoriteProvider: favoriteProvider
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

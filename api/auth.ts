@@ -234,3 +234,24 @@ export const deleteAccount = async () => {
     }
   }
 };
+
+export const updateNotification = async (status: boolean) => {
+  try {
+    const res = await apiAxios.patch("/user/update-notification-setting/", {
+      enable_notification: status
+    });
+    return {
+      status: res.status,
+      data: res.data,
+    };
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      return {
+        status: error?.response?.status,
+        data: error?.response?.data?.error,
+      };
+    } else {
+      console.log(error);
+    }
+  }
+};

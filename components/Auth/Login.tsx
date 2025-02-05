@@ -10,6 +10,7 @@ import { updateAuth } from '../Context/authProvider'
 import * as Google from 'expo-auth-session/providers/google';
 import * as AuthSession from 'expo-auth-session';
 import * as AppleAuthentication from 'expo-apple-authentication';
+import { jwtDecode } from "jwt-decode";
 // import { GoogleSignin,  statusCodes } from '@react-native-google-signin/google-signin';
 import Toast from 'react-native-toast-message'
 
@@ -61,7 +62,9 @@ const Login = () => {
                     AppleAuthentication.AppleAuthenticationScope.EMAIL,
                 ],
             });
-            console.log(credential);
+            // console.log(credential);
+            const decoded = jwtDecode(credential.identityToken!);
+            console.log(decoded);
 
             // Use credential.user, credential.email, and credential.fullName
 
@@ -112,7 +115,7 @@ const Login = () => {
         <>
             <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.registerContainer}>
                 <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-                    <View style={{width: '100%'}}>
+                    <View style={{ width: '100%' }}>
                         <View style={styles.registerMain}>
                             <Image source={require("../../assets/images/logo.png")} />
                             <Text style={{ ...styles.profileText }}>Welcome Back Rejoice!</Text>
@@ -155,7 +158,6 @@ const Login = () => {
             <Modalize
                 ref={modalizeRef}
                 adjustToContentHeight={true}
-            // modalStyle={generalStyle.modalBackground[colorScheme]}
             >
                 <View style={styles.modalContent}>
                     <Pressable onPress={() => router.push("/userRegister")} style={{ ...styles.loginButton, marginTop: 40 }}><Text style={{ ...styles.buttonText, ...generalStyle.buttonText.light }}>I am looking for service providers</Text></Pressable>

@@ -3,12 +3,50 @@ import React from 'react'
 import { Service } from '@/types/service'
 import { AntDesign } from '@expo/vector-icons'
 import { formatCurrency } from '@/utils/helper'
-import { generalStyle } from '@/style/generalStyle'
 import { router } from 'expo-router'
+import { addFavorite, removeFavorite } from '@/api/favorite'
+import { useDispatch, useSelector } from 'react-redux'
+import { RootState } from '../Store/store'
+import { updateFavorite } from '../Context/favoriteProvider'
+import Toast from 'react-native-toast-message'
 const screenWidth = Dimensions.get('window').width;
 
 const ServiceCard: React.FC<{ service: Service, width?: DimensionValue }> = ({ service, width = 200 }) => {
-    const colorScheme = useColorScheme() || "light"
+    const favorites = useSelector((state: RootState) => state.favoriteProvider.favorite)
+    const dispatch = useDispatch()
+
+    const handleAddFavorite = async () => {
+        const res = await addFavorite(service.id!)
+        if (res?.status === 200) {
+            dispatch(updateFavorite({ favorite: [...favorites, service.id!] }))
+            Toast.show({
+                type: 'success',
+                text1: 'Added to favorite'
+            })
+        } else {
+            Toast.show({
+                type: 'error',
+                text1: 'Error, try again'
+            })
+        }
+    }
+
+    const handleRemoveFavorite = async () => {
+        const res = await removeFavorite(service.id!)
+        if (res?.status === 200) {
+            const newArr = favorites?.filter((favorite) => favorite !== service.id)
+            dispatch(updateFavorite({ favorite: newArr }))
+            Toast.show({
+                type: 'success',
+                text1: 'Removed from favorite'
+            })
+        } else {
+            Toast.show({
+                type: 'error',
+                text1: 'Error, try again'
+            })
+        }
+    }
 
     return (
         <View style={{ ...styles.serviceContainer, width: width }}>
@@ -16,9 +54,15 @@ const ServiceCard: React.FC<{ service: Service, width?: DimensionValue }> = ({ s
                 {service?.is_google_place && <Pressable style={styles.thirdParty}>
                     <Text>Third Party</Text>
                 </Pressable>}
-                <Pressable style={styles.iconContainer}>
-                    <AntDesign name="hearto" size={14} color="black" />
-                </Pressable>
+                {
+                    !favorites?.includes(service.id!) ?
+                        <Pressable onPress={handleAddFavorite} style={styles.iconContainer}>
+                            <AntDesign name="hearto" size={14} color="#1B64F1" />
+                        </Pressable> :
+                        <Pressable onPress={handleRemoveFavorite} style={styles.iconContainer}>
+                            <AntDesign name="heart" size={16} color="#1B64F1" />
+                        </Pressable>
+                }
                 <Pressable onPress={() => router.push(`/service-detail/${service?.id}`)}>
                     <Image style={styles.image} source={{ uri: service?.profile_picture }} />
                 </Pressable>
