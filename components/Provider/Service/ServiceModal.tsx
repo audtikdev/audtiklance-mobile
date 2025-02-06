@@ -93,10 +93,10 @@ export const UpdateDetailModal: React.FC<{ showUpdateModal: boolean, setShowUpda
                 setShowUpdateModal(false);
             }}
         >
-            <View style={styles.modalOverlay}>
+            <Pressable onPress={()=> setShowUpdateModal(false)} style={styles.modalOverlay}>
                 <View style={{ ...styles.addModalContent, height: 300 }}>
-                    <Text style={{ ...styles.profileText, ...generalStyle.text[colorScheme] }}>Update Your Business Details</Text>
-                    <TextInput placeholderTextColor={generalStyle.text[colorScheme].color} onChangeText={(text) => handleInput("business_name", text)} value={userInfo?.business_name} style={{ ...styles.registerInput, ...generalStyle.border[colorScheme], ...generalStyle.text[colorScheme] }} placeholder='Business Name' />
+                    <Text style={{ ...styles.profileText }}>Update Your Business Details</Text>
+                    <TextInput placeholderTextColor={"black"} onChangeText={(text) => handleInput("business_name", text)} value={userInfo?.business_name} style={{ ...styles.registerInput }} placeholder='Business Name' />
                     <AutoSearch
                         key={"autoSearch"}
                         data={locations}
@@ -106,7 +106,7 @@ export const UpdateDetailModal: React.FC<{ showUpdateModal: boolean, setShowUpda
                         onChangeValue={handleLocationSelect}
                         objectKey='place_name'
                     />
-                    <Pressable onPress={updateBusinessDetail} style={{ ...styles.registerButton, marginTop: 10, ...(colorScheme === "light" && generalStyle.button.active), ...(colorScheme === "dark" && generalStyle.button.dark) }}>
+                    <Pressable onPress={updateBusinessDetail} style={{ ...styles.registerButton, marginTop: 10 }}>
                         {
                             load ?
                                 <ActivityIndicator size={"large"} color={"white"} /> :
@@ -114,7 +114,7 @@ export const UpdateDetailModal: React.FC<{ showUpdateModal: boolean, setShowUpda
                         }
                     </Pressable>
                 </View>
-            </View>
+            </Pressable>
         </Modal>
     )
 }
@@ -172,9 +172,9 @@ export const AddServiceModal: React.FC<{ priceRef: React.RefObject<IHandles>, se
                 setShowAddModal(false);
             }}
         >
-            <View style={styles.modalOverlay}>
+            <Pressable onPress={()=> setShowAddModal(false)} style={styles.modalOverlay}>
                 <View style={styles.addModalContent}>
-                    <Text style={{ ...styles.profileText, ...generalStyle.text[colorScheme] }}>Select A New Skill To Add</Text>
+                    <Text style={{ ...styles.profileText }}>Select A New Skill To Add</Text>
                     <AutoSearch
                         key={"autoSearch"}
                         data={services}
@@ -184,11 +184,11 @@ export const AddServiceModal: React.FC<{ priceRef: React.RefObject<IHandles>, se
                         onChangeValue={handleServiceSelect}
                         objectKey='name'
                     />
-                    <Pressable onPress={selectService} style={{ ...styles.registerButton, marginTop: 10, ...(colorScheme === "light" && generalStyle.button.active), ...(colorScheme === "dark" && generalStyle.button.dark) }}>
+                    <Pressable onPress={selectService} style={{ ...styles.registerButton, marginTop: 10 }}>
                         <Text style={{ ...styles.buttonText, ...generalStyle.text["dark"] }}>Continue</Text>
                     </Pressable>
                 </View>
-            </View>
+            </Pressable>
         </Modal>
     )
 }
@@ -258,19 +258,18 @@ export const ModifyPriceModal: React.FC<{ priceRef: React.RefObject<IHandles>, a
         <Modalize
             ref={priceRef}
             adjustToContentHeight={true}
-            modalStyle={generalStyle.modalBackground[colorScheme]}
         >
-            <View style={{ ...styles.modalContent, height: 620 }}>
+            <View style={{ ...styles.modalContent, height: 550 }}>
                 <View style={styles.activeServiceTitleContainer}>
                     <Text style={styles.activeServiceTitle}>{activeService?.name}</Text>
                 </View>
                 <Text style={styles.activeServiceText}>Pros with upfront pricing get hired more on Audtiklance.</Text>
                 <Text style={styles.activeServiceText}>Add a base price to help you get contacted and hired more, The price will include: Labor (excludes cost of parts).</Text>
                 <Text style={{ marginBottom: 5, marginTop: 10 }}>Enter your base price</Text>
-                <TextInput placeholderTextColor={generalStyle.text[colorScheme].color} onChangeText={(text) => handlePriceinput(text)} value={String(activeService?.price || 0)} keyboardType='phone-pad' style={{ ...styles.registerInput, ...generalStyle.border[colorScheme], ...generalStyle.text[colorScheme] }} placeholder='$0.00' />
+                <TextInput placeholderTextColor={"black"} onChangeText={(text) => handlePriceinput(text)} value={String(activeService?.price || 0)} keyboardType='phone-pad' style={{ ...styles.registerInput }} placeholder='$0.00' />
                 <View style={styles.buttonContainer}>
-                    <Pressable onPress={() => priceRef.current?.close()} style={{ ...styles.registerButton, width: "49%", marginTop: 0, backgroundColor: "white", borderWidth: 1, ...generalStyle.border[colorScheme] }}><Text style={{ ...styles.buttonText, ...generalStyle.text["light"] }}>Cancel</Text></Pressable>
-                    <Pressable onPress={addService} style={{ ...styles.registerButton, width: "49%", marginTop: 0, ...(colorScheme === "light" && generalStyle.button.active), ...(colorScheme === "dark" && generalStyle.button.dark) }}>
+                    <Pressable onPress={() => priceRef.current?.close()} style={{ ...styles.cancelButton, width: "49%", marginTop: 0, backgroundColor: "white" }}><Text style={{ ...styles.buttonText, color: '#1B64F1' }}>Cancel</Text></Pressable>
+                    <Pressable onPress={addService} style={{ ...styles.registerButton, width: "49%", marginTop: 0 }}>
                         {
                             load ?
                                 <ActivityIndicator size={"large"} color={"white"} /> :
@@ -312,16 +311,15 @@ export const DeleteModal: React.FC<{ deleteRef: React.RefObject<IHandles>, activ
         <Modalize
             ref={deleteRef}
             adjustToContentHeight={true}
-            modalStyle={generalStyle.modalBackground[colorScheme]}
         >
-            <View style={{ ...styles.modalContent, height: 500 }}>
+            <View style={{ ...styles.modalContent, height: 410 }}>
                 <View style={styles.activeServiceTitleContainer}>
                     <Text style={styles.activeServiceTitle}>{activeService?.name}</Text>
                 </View>
                 <Text style={{fontSize: 16, fontWeight: 600, textAlign: "center", marginTop: 25}}>Are you sure you want to delete this service?</Text>
                 <Text style={{fontSize: 16, fontWeight: 600, textAlign: "center", marginTop: 10, marginBottom: 25}}>This action cannot be undone.</Text>
                 <View style={styles.buttonContainer}>
-                    <Pressable onPress={() => deleteRef.current?.close()} style={{ ...styles.registerButton, width: "49%", marginTop: 0, backgroundColor: "white", borderWidth: 1, ...generalStyle.border[colorScheme] }}><Text style={{ ...styles.buttonText, ...generalStyle.text["light"] }}>Cancel</Text></Pressable>
+                    <Pressable onPress={() => deleteRef.current?.close()} style={{ ...styles.cancelButton, width: "49%", marginTop: 0, backgroundColor: "white" }}><Text style={{ ...styles.buttonText, color: '#1B64F1' }}>Cancel</Text></Pressable>
                     <Pressable onPress={deleteService} style={{ ...styles.registerButton, width: "49%", marginTop: 0, backgroundColor: "#D0190A" }}>
                         {
                             load ?
@@ -401,7 +399,18 @@ const styles = StyleSheet.create({
         width: "100%",
         height: 52,
         borderRadius: 10,
-        backgroundColor: "#00000080",
+        backgroundColor: "#1B64F1",
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: 10
+    },
+    cancelButton: {
+        width: "100%",
+        height: 52,
+        borderRadius: 10,
+        borderColor: "#1B64F1",
+        borderWidth: 1,
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',

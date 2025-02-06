@@ -4,55 +4,64 @@ import { generalStyle } from '@/style/generalStyle'
 import { LoginUserInfo } from '@/types/auth'
 import { router } from 'expo-router'
 import { Modalize } from 'react-native-modalize';
-import { loginUser } from '@/api/auth'
-import { useDispatch } from 'react-redux'
+import { appleRegisterUser, googleRegisterUser, loginUser } from '@/api/auth'
+import { useDispatch, useSelector } from 'react-redux'
 import { updateAuth } from '../Context/authProvider'
 import * as Google from 'expo-auth-session/providers/google';
 import * as AuthSession from 'expo-auth-session';
 import * as AppleAuthentication from 'expo-apple-authentication';
 import { jwtDecode } from "jwt-decode";
-// import { GoogleSignin,  statusCodes } from '@react-native-google-signin/google-signin';
+import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
 import Toast from 'react-native-toast-message'
+import { generateHmacSignature } from '@/utils/helper'
+import axios from 'axios'
+import apiAxios from '@/api'
+import { RootState } from '../Store/store'
 
 const Login = () => {
+    const authUser = useSelector((state: RootState) => state.authProvider.auth)
     const colorScheme = useColorScheme() || "light"
     const [userInfo, setUserInfo] = useState<LoginUserInfo>()
     const [load, setLoad] = useState(false)
     const modalizeRef = useRef<Modalize>(null)
     const dispatch = useDispatch()
     const redirectUri = AuthSession.makeRedirectUri();
-    // GoogleSignin.configure({
-    //     webClientId: '15571279761-v4q3rb97hueq6koviotj3fa3jflhvi4p.apps.googleusercontent.com', 
-    //     scopes: ['https://www.googleapis.com/auth/drive.readonly'],
-    //     offlineAccess: true, // if you want to access Google API on behalf of the user FROM YOUR SERVER
-    //     hostedDomain: '', // specifies a hosted domain restriction
-    //     forceCodeForRefreshToken: false, 
-    //     accountName: '',
-    //     iosClientId: '15571279761-v4q3rb97hueq6koviotj3fa3jflhvi4p.apps.googleusercontent.com', 
-    //     googleServicePlistPath: '',
-    //     openIdRealm: '',
-    //     profileImageSize: 120,
-    //   });
+    GoogleSignin.configure({
+        webClientId: '15571279761-50hvuoaofihijl2c8v6vuimpcgt751a3.apps.googleusercontent.com',
+        offlineAccess: true, // if you want to access Google API on behalf of the user FROM YOUR SERVER
+    });
 
     const [request, response, promptAsync] = Google.useAuthRequest({
-        clientId: '15571279761-v4q3rb97hueq6koviotj3fa3jflhvi4p.apps.googleusercontent.com',
+        clientId: '15571279761-50hvuoaofihijl2c8v6vuimpcgt751a3.apps.googleusercontent.com',
         androidClientId: "15571279761-66u2sfop0cfvc6eqtaj42alpo6fis65u.apps.googleusercontent.com",
         iosClientId: "15571279761-v4q3rb97hueq6koviotj3fa3jflhvi4p.apps.googleusercontent.com",
         redirectUri: redirectUri
     });
 
-    // const handleGoogleSignIn = async () => {
-    //     try {
-    //         await GoogleSignin.hasPlayServices();
-    //         const response = await GoogleSignin.signIn();
-    //         console.log(response.data);
+    const handleGoogleSignIn = async () => {
+        try {
+            await GoogleSignin.hasPlayServices();
+            await GoogleSignin.signIn();
+            const tokens = await GoogleSignin.getTokens();
+            const body = {
+                access_token: tokens.accessToken!,
+            }
+            const res = await googleRegisterUser(body)
+            if (res?.status === 201 || res?.status === 200) {
+                const data = res?.data?.data
+                dispatch(updateAuth({ auth: data }))
+                router.push("/(user)")
+            } else {
+                Toast.show({
+                    type: "error",
+                    text1: "Error, try again"
+                })
+            }
+        } catch (error: any) {
+            console.error(error);
+        }
 
-    //       } catch (error: any) {
-    //         console.log(error);
-
-    //       }
-
-    // }
+    }
 
     const handleAppleLogin = async () => {
         try {
@@ -62,19 +71,35 @@ const Login = () => {
                     AppleAuthentication.AppleAuthenticationScope.EMAIL,
                 ],
             });
-            // console.log(credential);
             const decoded = jwtDecode(credential.identityToken!);
             console.log(decoded);
 
-            // Use credential.user, credential.email, and credential.fullName
+            const body = {
+                // @ts-ignore
+                email: decoded?.email,
+                firstname: credential?.fullName?.givenName || "Rejoice",
+                lastname: credential?.fullName?.familyName || "Uahomo"
+            }
+            const res = await appleRegisterUser(body)
+            if (res?.status === 201 || res?.status === 200) {
+                const data = res?.data?.data
+                dispatch(updateAuth({ auth: data }))
+                router.push("/(user)")
+            } else {
+                Toast.show({
+                    type: "error",
+                    text1: "Email or password incorrect"
+                })
+            }
 
         } catch (error: any) {
             if (error.code === 'ERR_CANCELED') {
                 // User canceled the sign-in request
                 Alert.alert('Login canceled');
             } else {
-                // Handle other errors
-                Alert.alert('An error occurred', error.message);
+
+                console.log(error);
+
             }
         }
     };
@@ -118,7 +143,7 @@ const Login = () => {
                     <View style={{ width: '100%' }}>
                         <View style={styles.registerMain}>
                             <Image source={require("../../assets/images/logo.png")} />
-                            <Text style={{ ...styles.profileText }}>Welcome Back Rejoice!</Text>
+                            <Text style={{ ...styles.profileText }}>Welcome Back {authUser?.firstname}</Text>
                             <TextInput textContentType="emailAddress" autoCapitalize='none' autoCorrect={false} keyboardType='email-address' placeholderTextColor={"black"} onChangeText={(text) => handleInput("email", text)} value={userInfo?.email} style={{ ...styles.registerInput }} placeholder='Email' />
                             <TextInput textContentType="password" placeholderTextColor={"black"} onChangeText={(text) => handleInput("password", text)} value={userInfo?.password} style={{ ...styles.registerInput }} placeholder='Password' />
                             <Text onPress={() => router.push("/forgotPassword")} style={{ alignSelf: "flex-end", fontSize: 14, textDecorationLine: "underline", marginTop: -15 }}>Forgot Password?</Text>
@@ -134,7 +159,7 @@ const Login = () => {
                                 <Text style={{ ...styles.dividerText }}>OR</Text>
                                 <View style={{ ...styles.dividerLine, ...generalStyle.divider[colorScheme] }}></View>
                             </View>
-                            <Pressable onPress={() => promptAsync()} style={{ ...styles.oauthButton }}>
+                            <Pressable onPress={() => handleGoogleSignIn()} style={{ ...styles.oauthButton }}>
                                 <Image source={require("../../assets/images/google.png")} />
                                 <Text style={{ ...styles.oauthText }}>Continue with Google</Text>
                             </Pressable>

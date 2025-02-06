@@ -37,9 +37,12 @@ const ForgotPassword = () => {
                         <Pressable onPress={handleSubmit} style={{ ...styles.loginButton }}>
                             {
                                 load ?
-                                    <ActivityIndicator size={"large"} /> :
+                                    <ActivityIndicator color={"white"} /> :
                                     <Text style={{ ...styles.buttonText }}>Send Link</Text>
                             }
+                        </Pressable>
+                        <Pressable onPress={()=> router.push('/login')} style={{ ...styles.borderButton }}>
+                            <Text style={{ ...styles.buttonText, color: '#1B64F1' }}>Login</Text>
                         </Pressable>
                     </View>
                 </TouchableWithoutFeedback>
@@ -76,7 +79,7 @@ const styles = StyleSheet.create({
         marginBottom: 20
     },
     registerInput: {
-        height: 50,
+        height: 45,
         borderWidth: 1,
         flexShrink: 1,
         width: '100%',
@@ -86,9 +89,20 @@ const styles = StyleSheet.create({
     },
     loginButton: {
         width: "100%",
-        height: 52,
+        height: 47,
         borderRadius: 10,
         backgroundColor: "#1B64F1",
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: 10
+    },
+    borderButton: {
+        width: "100%",
+        height: 47,
+        borderRadius: 10,
+        borderColor: "#1B64F1",
+        borderWidth: 1,
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',

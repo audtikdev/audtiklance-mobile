@@ -1,4 +1,4 @@
-import { updatePassword, updateUser } from "@/api/auth"
+import { updateNotification, updatePassword, updateUser } from "@/api/auth"
 import { generalStyle } from "@/style/generalStyle"
 import { RegisterUserInfo } from "@/types/auth"
 import { FontAwesome6 } from "@expo/vector-icons"
@@ -41,7 +41,7 @@ export const AccountModal: React.FC<{ accountRef: React.RefObject<IHandles> }> =
             setLoad(true)
             const response = await updateUser({ ...userInfo, country_code: "1" })
             console.log(response);
-            
+
             if (response?.status === 200 || response?.status === 201) {
                 const data = response?.data?.data
                 dispatch(updateAuth({ auth: data }))
@@ -88,7 +88,7 @@ export const AccountModal: React.FC<{ accountRef: React.RefObject<IHandles> }> =
 
 export const PasswordModal: React.FC<{ passwordRef: React.RefObject<IHandles> }> = ({ passwordRef }) => {
     const colorScheme = useColorScheme() || "light"
-    const [userInfo, setUserInfo] = useState<{old_password: string, new_password: string}>()
+    const [userInfo, setUserInfo] = useState<{ old_password: string, new_password: string }>()
     const [showPass, setShowPass] = useState(true)
     const [load, setLoad] = useState(false)
 
@@ -106,7 +106,7 @@ export const PasswordModal: React.FC<{ passwordRef: React.RefObject<IHandles> }>
             if (response?.status === 200 || response?.status === 201) {
                 const data = response?.data?.data
                 console.log(data);
-                
+
                 Toast.show({
                     type: "success",
                     text1: "Password Updated Successfully"
@@ -144,8 +144,8 @@ export const PasswordModal: React.FC<{ passwordRef: React.RefObject<IHandles> }>
                 <Pressable onPress={updateUserPassword} style={{ ...styles.registerButton, marginTop: 10 }}>
                     {
                         load ?
-                        <ActivityIndicator /> :
-                        <Text style={{ ...styles.buttonText, ...generalStyle.text["dark"] }}>Update</Text>
+                            <ActivityIndicator /> :
+                            <Text style={{ ...styles.buttonText, ...generalStyle.text["dark"] }}>Update</Text>
                     }
                 </Pressable>
             </View>
@@ -155,20 +155,24 @@ export const PasswordModal: React.FC<{ passwordRef: React.RefObject<IHandles> }>
 
 export const NotifyModal: React.FC<{ notifyRef: React.RefObject<IHandles> }> = ({ notifyRef }) => {
     const colorScheme = useColorScheme() || "light"
-    const [notify, setNotify] = useState({ email: false, app: true })
+    const [notify, setNotify] = useState(false)
 
-    const updateNotification = () => {
+    const updateUserNotification = async () => {
+        console.log(notify);
+        const res = await updateNotification(notify)
+        console.log(res);
 
     }
+
 
     return (
         <Modalize
             ref={notifyRef}
             adjustToContentHeight={true}
         >
-            <View style={{ ...styles.modalContent, height: 280 }}>
+            <View style={{ ...styles.modalContent, height: 230 }}>
                 <Text style={{ ...styles.profileText }}>Update Your Notification Setting</Text>
-                <View style={styles.switchView}>
+                {/* <View style={styles.switchView}>
                     <Text style={{ ...styles.profileText }}>Email Notification</Text>
                     <Switch
                         trackColor={{ false: "#767577", true: "#1B64F1" }}
@@ -177,18 +181,18 @@ export const NotifyModal: React.FC<{ notifyRef: React.RefObject<IHandles> }> = (
                         onValueChange={() => setNotify({ ...notify, email: !notify.email })}
                         value={notify?.email}
                     />
-                </View>
+                </View> */}
                 <View style={styles.switchView}>
-                    <Text style={{ ...styles.profileText }}>App Notification</Text>
+                    <Text style={{ ...styles.profileText, fontSize: 14 }}>Allow Notification</Text>
                     <Switch
                         trackColor={{ false: "#767577", true: "#1B64F1" }}
-                        thumbColor={notify?.app ? "#f4f3f4" : "#f4f3f4"}
+                        thumbColor={notify ? "#f4f3f4" : "#f4f3f4"}
                         ios_backgroundColor="#3e3e3e"
-                        onValueChange={() => setNotify({ ...notify, app: !notify.app })}
-                        value={notify?.app}
+                        onValueChange={(value) => setNotify(value)}
+                        value={notify}
                     />
                 </View>
-                <Pressable onPress={updateNotification} style={{ ...styles.registerButton, marginTop: 30 }}><Text style={{ ...styles.buttonText, ...generalStyle.text["dark"] }}>Update</Text></Pressable>
+                <Pressable onPress={updateUserNotification} style={{ ...styles.registerButton, marginTop: 30 }}><Text style={{ ...styles.buttonText, ...generalStyle.text["dark"] }}>Update</Text></Pressable>
             </View>
         </Modalize>
     )
