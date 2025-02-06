@@ -59,6 +59,49 @@ export const registerUser = async (body: RegisterUserInfo) => {
   }
 };
 
+export const googleRegisterUser = async (body: {access_token: string}) => {
+  try {
+    const res = await apiAxios.post("https://api.audtiklance.com/google/", body);
+    return {
+      status: res.status,
+      data: res.data,
+    };
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      return {
+        status: error?.response?.status,
+        data: error?.response?.data?.error,
+      };
+    } else {
+      console.log(error);
+    }
+  }
+};
+
+export const appleRegisterUser = async (body: {email: string, firstname: string, lastname: string}) => {
+  try {
+    const res = await apiAxios.post("/apple/sign_in/", body, {
+      headers: {
+        'X-HMAC-Signature': 'eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzM4Nzk1NzkwLCJpYXQiOjE3Mzg3MDkzOTAsImp0aSI6ImUxY2RhZ',
+        'X-HMAC-Timestamp': Date.now()
+    }
+    });
+    return {
+      status: res.status,
+      data: res.data,
+    };
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      return {
+        status: error?.response?.status,
+        data: error?.response?.data?.error,
+      };
+    } else {
+      console.log(error);
+    }
+  }
+};
+
 export const registerProvider = async (body: FormData) => {
   try {
     const res = await apiAxios.post("/service/", body, {

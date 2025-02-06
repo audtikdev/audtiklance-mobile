@@ -101,12 +101,15 @@ const ResetPasswordOtp: React.FC<{ query: string }> = ({ query }) => {
                                     handleTextChange={(otp) => setInputValue(otp)}
                                 />
                             </View>
-                            <Pressable disabled={inputValue.length < 4} onPress={handleSubmit} style={{ ...styles.numberButton }}>
+                            <Pressable disabled={inputValue.length < 5} onPress={handleSubmit} style={{ ...styles.numberButton }}>
                                 {
                                     load ?
-                                    <ActivityIndicator size={"large"} /> :
-                                    <Text style={{ ...styles.buttonText  }}>Verify Code</Text>
+                                        <ActivityIndicator size={"large"} /> :
+                                        <Text style={{ ...styles.buttonText }}>Verify Code</Text>
                                 }
+                            </Pressable>
+                            <Pressable onPress={()=> router.back()} style={{ ...styles.borderButton }}>
+                                <Text style={{ ...styles.buttonText, color: '#1B64F1' }}>Back</Text>
                             </Pressable>
                         </View>
                         {
@@ -136,7 +139,7 @@ const styles = StyleSheet.create({
         justifyContent: "space-between",
         alignItems: "center",
         flexDirection: "column",
-        padding: 40,
+        padding: 15,
         width: "100%",
         height: "100%",
     },
@@ -179,7 +182,7 @@ const styles = StyleSheet.create({
     otpInputBox: {
         borderColor: "#F0F2F5",
         backgroundColor: "#F9FAFB",
-        width: 50,
+        width: 45,
         height: 60,
         borderRadius: 8
     },
@@ -210,9 +213,21 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center'
     },
+    borderButton: {
+        width: "100%",
+        height: 47,
+        borderRadius: 10,
+        borderColor: "#1B64F1",
+        borderWidth: 1,
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: 10
+    },
     buttonText: {
         fontSize: 18,
-        fontWeight: 600
+        fontWeight: 600,
+        color: 'white'
     },
     modalContent: {
         padding: 20,
