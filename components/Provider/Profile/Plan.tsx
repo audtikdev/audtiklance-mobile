@@ -1,16 +1,15 @@
-import { View, Text, Pressable, useColorScheme, StyleSheet, ActivityIndicator } from 'react-native'
+import { View, Text, Pressable, useColorScheme, StyleSheet, ActivityIndicator, Platform } from 'react-native'
 import React, { useEffect, useRef, useState } from 'react'
 import { Modalize } from 'react-native-modalize'
 import { IHandles } from 'react-native-modalize/lib/options'
 import { generalStyle } from '@/style/generalStyle'
 import { planBenefits } from '@/data/home'
 import { AntDesign } from '@expo/vector-icons'
-import { getSubscriptionPlan, subscribePlan } from '@/api/subscribe'
+import { getSubscriptionPlan } from '@/api/subscribe'
 import { PLAN } from '@/types/subscrbe'
 import { openLink } from '@/utils/helper'
 
 const Plan: React.FC<{ planRef: React.RefObject<IHandles> }> = ({ planRef }) => {
-    const colorScheme = useColorScheme() || "light"
     const subscribeRef = useRef<Modalize>(null)
     const [plan, setPlan] = useState<PLAN>()
 
@@ -39,7 +38,7 @@ const Plan: React.FC<{ planRef: React.RefObject<IHandles> }> = ({ planRef }) => 
                             </View>
                         ))
                     }
-                    <Pressable onPress={() => subscribeRef.current?.open()} style={{ ...styles.registerButton, marginTop: 40 }}>
+                    <Pressable onPress={() => openLink('https://app.audtiklance.com/pricing')} style={{ ...styles.registerButton, marginTop: 40 }}>
                         <Text style={{ ...styles.buttonText, ...generalStyle.text["dark"] }}>Upgrade</Text>
                     </Pressable>
                 </View>
@@ -52,17 +51,10 @@ const Plan: React.FC<{ planRef: React.RefObject<IHandles> }> = ({ planRef }) => 
 export default Plan
 
 const SubscribeModal: React.FC<{ subscribeRef: React.RefObject<IHandles>, plan: PLAN }> = ({ subscribeRef, plan }) => {
-    const colorScheme = useColorScheme() || "light"
     const [load, setLoad] = useState(false)
 
     const subscribe = async () => {
-        setLoad(true)
-        const response = await subscribePlan(plan?.id, { amount: plan?.max_cost })
-        if (response?.status === 200) {
-            openLink(response?.data?.data)
-        }
-        setLoad(false)
-        subscribeRef.current?.close()
+        
     }
 
     return (
