@@ -11,11 +11,8 @@ import * as Google from 'expo-auth-session/providers/google';
 import * as AuthSession from 'expo-auth-session';
 import * as AppleAuthentication from 'expo-apple-authentication';
 import { jwtDecode } from "jwt-decode";
-import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import Toast from 'react-native-toast-message'
-import { generateHmacSignature } from '@/utils/helper'
-import axios from 'axios'
-import apiAxios from '@/api'
 import { RootState } from '../Store/store'
 
 const Login = () => {
@@ -28,6 +25,7 @@ const Login = () => {
     const redirectUri = AuthSession.makeRedirectUri();
     GoogleSignin.configure({
         webClientId: '15571279761-50hvuoaofihijl2c8v6vuimpcgt751a3.apps.googleusercontent.com',
+        iosClientId: '15571279761-v4q3rb97hueq6koviotj3fa3jflhvi4p.apps.googleusercontent.com',
         offlineAccess: true, // if you want to access Google API on behalf of the user FROM YOUR SERVER
     });
 

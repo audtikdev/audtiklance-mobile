@@ -24,7 +24,8 @@
       "bundleIdentifier": "audtiklance",
       "usesAppleSignIn": true,
       "infoPlist": {
-        "NSLocationWhenInUseUsageDescription": "We use your location to show nearby service providers and personalized recommendations. For example, this helps us find service providers within 5 miles of you."
+        "NSLocationWhenInUseUsageDescription": "We use your location to show nearby service providers and personalized recommendations. For example, this helps us find service providers within 5 miles of you.",
+        "NSPhotoLibraryUsageDescription": "We need access to your photo library so you can upload service images and profile pictures."
       }
     },
     "android": {

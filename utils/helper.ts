@@ -55,14 +55,3 @@ export async function uriToFile(uri: string, fileName: string) {
   const file = new File([blob], fileName, { type: blob.type });
   return file;
 }
-
-export async function generateHmacSignature(secret: string, data: any) {
-  // Serialize the object into a JSON string
-  const jsonData = JSON.stringify({"email": "pnn5vmmndb@privaterelay.appleid.com", "firstname": "Rejoice", "lastname": "Uahomo"});
-  const secretKey = CryptoJS.enc.Utf8.parse(secret);
-  
-
-  const signature = CryptoJS.HmacSHA256(CryptoJS.enc.Utf8.parse(jsonData), secretKey).toString(CryptoJS.enc.Hex);
-
-  return signature;
-}
