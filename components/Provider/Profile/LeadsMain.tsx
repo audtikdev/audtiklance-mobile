@@ -9,6 +9,7 @@ import { getLeads } from '@/api/leads'
 import Plan from './Plan'
 import { LEAD } from '@/types/leads'
 import LottieView from 'lottie-react-native'
+import { openLink } from '@/utils/helper'
 
 const LeadsMain = () => {
     const colorScheme = useColorScheme() || "light"
@@ -50,9 +51,9 @@ const LeadsMain = () => {
                     </View> : leads.length < 1 ?
                         <View style={{display: "flex", alignItems: "center", justifyContent: "center", padding: 20, height: "90%"}}>
                             <Text style={{fontSize: 16, fontWeight: 500}}>You don't have any leads yet</Text>
-                            <Text style={{fontSize: 14, fontWeight: 600, textAlign: "center", paddingTop: 10}}>Subscribe to AudtikLance Preferred to rank higher in search</Text>
+                            <Text style={{fontSize: 14, fontWeight: 600, textAlign: "center", paddingTop: 10}}>Rank higher than others and get more leads</Text>
                             <Image style={{width: 300, height: 300, paddingVertical: 40}} source={require("../../../assets/images/Empty-product.png")} />
-                            <Pressable onPress={()=> planRef.current?.open()} style={{...styles.numberButton, ...generalStyle.button.active}}><Text style={{color: "white", fontSize: 16}}>Subscribe</Text></Pressable>
+                            <Pressable onPress={() => openLink('https://app.audtiklance.com/pricing')} style={{...styles.numberButton, ...generalStyle.button.active}}><Text style={{color: "white", fontSize: 16}}>Get more leads</Text></Pressable>
                         </View> :
                         <View style={styles.scrollContainer}>
                             <ScrollView>
@@ -99,8 +100,8 @@ const LeadModal: React.FC<{ leadRef: React.RefObject<IHandles>, planRef: React.R
                     <View style={{ ...styles.shareModalContent, height: 260, paddingTop: 30 }}>
                         <Text style={{ fontSize: 18, fontWeight: 700, textAlign: "center", marginBottom: 10 }}>{lead?.user?.firstname} {lead?.user?.lastname}</Text>
                         <Text style={{ fontSize: 16, fontWeight: 500 }}>{lead?.message}</Text>
-                        <Text style={{ fontSize: 16, fontWeight: 600, textAlign: "center", marginTop: 20 }}>Subscribe to get access to the customer contact details and many others like this</Text>
-                        <Pressable onPress={() => planRef.current?.open()} style={{ ...styles.numberButton, ...generalStyle.button.active }}><Text style={{ ...styles.buttonText, ...generalStyle.text.dark }}>Subscribe</Text></Pressable>
+                        <Text style={{ fontSize: 16, fontWeight: 600, textAlign: "center", marginTop: 20 }}>Your don't have access to the customer contact details and many others like this</Text>
+                        <Pressable onPress={() => planRef.current?.open()} style={{ ...styles.numberButton, ...generalStyle.button.active }}><Text style={{ ...styles.buttonText, ...generalStyle.text.dark }}>Get Access</Text></Pressable>
                     </View>
 
             }
