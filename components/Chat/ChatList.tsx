@@ -46,12 +46,12 @@ const ChatList = () => {
                             <Text style={{ fontSize: 14, fontWeight: 500 }}>You don't have any chats yet</Text>
                             {
                                 authUser?.service_profile &&
-                                <Text style={{ fontSize: 12, fontWeight: 600, textAlign: "center", paddingTop: 10 }}>Rank higher than others and get more leads</Text>
+                                <Text style={{ fontSize: 12, fontWeight: 600, textAlign: "center", paddingTop: 10 }}>Your chats will show up here when you have leads</Text>
                             }
                             <Image style={{ width: 300, height: 300, paddingVertical: 40 }} source={require("../../assets/images/Empty-product.png")} />
                             {
                                 authUser?.service_profile &&
-                                <Pressable onPress={() => openLink('https://app.audtiklance.com/pricing')} style={{ ...styles.numberButton, ...generalStyle.button.active }}><Text style={{ color: "white" }}>Get more leads</Text></Pressable>
+                                <Pressable onPress={() => openLink('https://app.audtiklance.com')} style={{ ...styles.numberButton, ...generalStyle.button.active }}><Text style={{ color: "white" }}>Learn more</Text></Pressable>
                             }
                         </View> :
                         <ScrollView showsVerticalScrollIndicator={false} style={{ width: "100%" }}>

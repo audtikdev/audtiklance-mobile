@@ -74,12 +74,12 @@ const ProfileMain = () => {
                                 </View>
                                 <AntDesign name="right" size={20} color={"black"} />
                             </Pressable>
-                            <Pressable onPress={() => openLink('https://app.audtiklance.com/pricing')} style={{ display: "flex", justifyContent: "space-between", flexDirection: "row", alignItems: "baseline" }}>
+                            <Pressable onPress={() => openLink('https://app.audtiklance.com')} style={{ display: "flex", justifyContent: "space-between", flexDirection: "row", alignItems: "baseline" }}>
                                 <View style={styles.box}>
                                     <View style={{ ...styles.iconView }}>
                                         <MaterialIcons name="upgrade" size={24} color="black" />
                                     </View>
-                                    <Text style={{ fontSize: 18, fontWeight: 600 }}>Get more leads</Text>
+                                    <Text style={{ fontSize: 18, fontWeight: 600 }}>Manage account</Text>
                                 </View>
                                 <AntDesign name="right" size={20} color={"black"} />
                             </Pressable>

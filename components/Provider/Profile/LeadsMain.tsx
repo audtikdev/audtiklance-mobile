@@ -51,9 +51,9 @@ const LeadsMain = () => {
                     </View> : leads.length < 1 ?
                         <View style={{display: "flex", alignItems: "center", justifyContent: "center", padding: 20, height: "90%"}}>
                             <Text style={{fontSize: 16, fontWeight: 500}}>You don't have any leads yet</Text>
-                            <Text style={{fontSize: 14, fontWeight: 600, textAlign: "center", paddingTop: 10}}>Rank higher than others and get more leads</Text>
+                            <Text style={{fontSize: 14, fontWeight: 600, textAlign: "center", paddingTop: 10}}>Your leads will show up here when customers contact you</Text>
                             <Image style={{width: 300, height: 300, paddingVertical: 40}} source={require("../../../assets/images/Empty-product.png")} />
-                            <Pressable onPress={() => openLink('https://app.audtiklance.com/pricing')} style={{...styles.numberButton, ...generalStyle.button.active}}><Text style={{color: "white", fontSize: 16}}>Get more leads</Text></Pressable>
+                            <Pressable onPress={() => openLink('https://app.audtiklance.com')} style={{...styles.numberButton, ...generalStyle.button.active}}><Text style={{color: "white", fontSize: 16}}>Learn more</Text></Pressable>
                         </View> :
                         <View style={styles.scrollContainer}>
                             <ScrollView>
