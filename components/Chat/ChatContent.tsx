@@ -13,6 +13,7 @@ import { useSelector } from 'react-redux'
 import { getUserByID } from '@/api/auth'
 import { Modalize } from 'react-native-modalize'
 import ChatModal from './ChatModal'
+import { openLink } from '@/utils/helper'
 
 const ChatContent: React.FC<{ convoId: string, recipientId: string }> = ({ convoId, recipientId }) => {
     const authUser = useSelector((state: RootState) => state.authProvider.auth)
@@ -20,7 +21,7 @@ const ChatContent: React.FC<{ convoId: string, recipientId: string }> = ({ convo
     const [expoPushToken, setExpoPushToken] = useState('');
     const [notification, setNotification] = useState(false);
     const [conversationID, setConversationID] = useState(convoId)
-    const [recipient, setRecipient] = useState()
+    const [recipient, setRecipient] = useState<{email: string}>()
     const colorScheme = useColorScheme() || "light"
     const [messages, setMessages] = useState<Array<MESSAGE>>([])
     const [inputValue, setInputValue] = useState("")
@@ -137,7 +138,7 @@ const ChatContent: React.FC<{ convoId: string, recipientId: string }> = ({ convo
             setLoad(true)
             if (conversationID !== "null") {
                 await getConversation()
-                // await getRecipient()
+                await getRecipient()
             } else {
                 const response = await createConversation({ user: recipientId })
                 if (response?.status === 201 || response?.status === 200) {
@@ -198,8 +199,8 @@ const ChatContent: React.FC<{ convoId: string, recipientId: string }> = ({ convo
                                 </Pressable>
                                 <Text style={{ fontSize: 15, textTransform: "capitalize" }}>{messages[0]?.receiver?.firstname} {messages[0]?.receiver?.lastname}</Text>
                                 <View style={{ ...styles.buttons, columnGap: 20 }}>
-                                    <Ionicons name="call-outline" size={18} color={"black"} />
-                                    <Fontisto name="email" size={18} color={"black"} />
+                                    {/* <Ionicons name="call-outline" size={18} color={"black"} /> */}
+                                    <Fontisto onPress={()=> openLink(`mailto:${recipient?.email ? recipient?.email : 'support@audtiklance.com'}`)} name="email" size={18} color={"black"} />
                                     <Entypo onPress={() => chatModalRef.current?.open()} name="dots-three-vertical" size={18} color="black" />
                                 </View>
                             </View>
@@ -230,7 +231,7 @@ const ChatContent: React.FC<{ convoId: string, recipientId: string }> = ({ convo
                         </View>
                 }
             </KeyboardAvoidingView>
-            <ChatModal chatModalRef={chatModalRef} receiver={messages[0]?.receiver} />
+            <ChatModal chatModalRef={chatModalRef} receiver={recipient} />
         </>
     )
 }
