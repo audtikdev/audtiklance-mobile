@@ -7,8 +7,9 @@ import { generalStyle } from '@/style/generalStyle'
 import { blockUser, reportUser } from '@/api/chat'
 import Toast from 'react-native-toast-message'
 import { CHAT_USER } from './type'
+import { openLink } from '@/utils/helper'
 
-const ChatModal: React.FC<{ chatModalRef: React.RefObject<IHandles>, receiver: CHAT_USER }> = ({ chatModalRef, receiver }) => {
+const ChatModal: React.FC<{ chatModalRef: React.RefObject<IHandles>, receiver: any }> = ({ chatModalRef, receiver }) => {
     const reportModalRef = useRef<Modalize>(null)
     const blockModalRef = useRef<Modalize>(null)
 
@@ -21,11 +22,11 @@ const ChatModal: React.FC<{ chatModalRef: React.RefObject<IHandles>, receiver: C
                 <View style={styles.modalContent}>
                     <Text style={{ ...styles.buttonText, textAlign: "center", textTransform: "capitalize" }}>{receiver?.firstname} {receiver?.lastname}</Text>
                     <View style={styles.buttonView}>
-                        <Pressable style={{ ...styles.registerButton }}>
+                        {/* <Pressable style={{ ...styles.registerButton }}>
                             <Ionicons name="call-outline" size={18} color={"white"} />
                             <Text style={{ ...styles.buttonText, ...generalStyle.text["dark"] }}>Call</Text>
-                        </Pressable>
-                        <Pressable style={{ ...styles.registerButton }}>
+                        </Pressable> */}
+                        <Pressable onPress={()=> openLink(`mailto:${receiver?.email ? receiver?.email : 'support@audtiklance.com'}`)} style={{ ...styles.registerButton }}>
                             <Fontisto name="email" size={18} color={"white"} />
                             <Text style={{ ...styles.buttonText, ...generalStyle.text["dark"] }}>Email</Text>
                         </Pressable>
@@ -164,7 +165,7 @@ const styles = StyleSheet.create({
         marginTop: 10
     },
     registerButton: {
-        width: "49%",
+        width: "100%",
         height: 52,
         borderRadius: 10,
         backgroundColor: "#1B64F1",
