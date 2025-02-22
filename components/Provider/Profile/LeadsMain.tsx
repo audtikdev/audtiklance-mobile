@@ -14,7 +14,6 @@ import { openLink } from '@/utils/helper'
 const LeadsMain = () => {
     const colorScheme = useColorScheme() || "light"
     const leadRef = useRef<Modalize>(null)
-    const planRef = useRef<Modalize>(null)
     const [leads, setLeads] = useState<Array<LEAD>>([])
     const [load, setLoad] = useState(false)
     const [selectedLead, setSelectedLead] = useState<LEAD>()
@@ -53,7 +52,6 @@ const LeadsMain = () => {
                             <Text style={{fontSize: 16, fontWeight: 500}}>You don't have any leads yet</Text>
                             <Text style={{fontSize: 14, fontWeight: 600, textAlign: "center", paddingTop: 10}}>Your leads will show up here when customers contact you</Text>
                             <Image style={{width: 300, height: 300, paddingVertical: 40}} source={require("../../../assets/images/Empty-product.png")} />
-                            <Pressable onPress={() => openLink('https://app.audtiklance.com')} style={{...styles.numberButton, ...generalStyle.button.active}}><Text style={{color: "white", fontSize: 16}}>Learn more</Text></Pressable>
                         </View> :
                         <View style={styles.scrollContainer}>
                             <ScrollView>
@@ -74,15 +72,14 @@ const LeadsMain = () => {
                             </ScrollView>
                         </View>
             }
-            <LeadModal leadRef={leadRef} planRef={planRef} lead={selectedLead!} />
-            <Plan planRef={planRef} />
+            <LeadModal leadRef={leadRef} lead={selectedLead!} />
         </View>
     )
 }
 
 export default LeadsMain
 
-const LeadModal: React.FC<{ leadRef: React.RefObject<IHandles>, planRef: React.RefObject<IHandles>, lead: LEAD }> = ({ leadRef, planRef, lead }) => {
+const LeadModal: React.FC<{ leadRef: React.RefObject<IHandles>, lead: LEAD }> = ({ leadRef, lead }) => {
     const colorScheme = useColorScheme() || "light"
 
     return (
@@ -100,8 +97,7 @@ const LeadModal: React.FC<{ leadRef: React.RefObject<IHandles>, planRef: React.R
                     <View style={{ ...styles.shareModalContent, height: 260, paddingTop: 30 }}>
                         <Text style={{ fontSize: 18, fontWeight: 700, textAlign: "center", marginBottom: 10 }}>{lead?.user?.firstname} {lead?.user?.lastname}</Text>
                         <Text style={{ fontSize: 16, fontWeight: 500 }}>{lead?.message}</Text>
-                        <Text style={{ fontSize: 16, fontWeight: 600, textAlign: "center", marginTop: 20 }}>Your don't have access to the customer contact details and many others like this</Text>
-                        <Pressable onPress={() => planRef.current?.open()} style={{ ...styles.numberButton, ...generalStyle.button.active }}><Text style={{ ...styles.buttonText, ...generalStyle.text.dark }}>Get Access</Text></Pressable>
+                        {/* <Text style={{ fontSize: 16, fontWeight: 600, textAlign: "center", marginTop: 20 }}>Your don't have access to the customer contact details and many others like this</Text> */}
                     </View>
 
             }
