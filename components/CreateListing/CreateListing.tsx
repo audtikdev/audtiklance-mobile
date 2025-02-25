@@ -11,6 +11,8 @@ import { ListingBody } from '@/types/listing';
 import Toast from 'react-native-toast-message';
 import { createListing } from '@/api/listing';
 import { openURL } from 'expo-linking';
+import { RootState } from '../Store/store';
+import { useSelector } from 'react-redux';
 
 export type ListingLocation = {
     longitude: string,
@@ -19,7 +21,6 @@ export type ListingLocation = {
 }
 
 const CreateListing = () => {
-    const colorScheme = useColorScheme() || "light"
     const [image, setImage] = useState("")
     const [showCatModal, setShowCatModal] = useState(false)
     const [showLocModal, setShowLocModal] = useState(false)
@@ -74,7 +75,7 @@ const CreateListing = () => {
         body.longitude = selectedLoc?.longitude!,
             body.latitude = selectedLoc?.latitude!,
             body.address = selectedLoc?.address!,
-            body.preferred_date = date.toISOString()
+            body.preferred_date = date.toISOString()?.split('T')[0]
         const formData = new FormData()
         Object.entries(body).forEach(([key, value]) => {
             formData.append(key, value as string)
@@ -86,10 +87,9 @@ const CreateListing = () => {
         let type = match ? `image/${match[1]}` : `image`;
 
         // @ts-ignore
-        formData.append('images[0]', { uri: image, name: filename, type });
-
-        const res = await createListing(body)
-
+        formData.append('images0', { uri: image, name: filename, type });
+        const res = await createListing(formData)
+        
         if (res?.status === 201 || res?.status === 200) {
             Toast.show({
                 type: 'success',

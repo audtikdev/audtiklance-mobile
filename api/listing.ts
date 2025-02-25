@@ -2,13 +2,14 @@ import { AxiosError } from "axios";
 import apiAxios from ".";
 import { ListingBody } from "@/types/listing";
 
-export const createListing = async (body: ListingBody) => {
+export const createListing = async (body: FormData) => {
     try {
       const res = await apiAxios.post(`/job/`, body, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
+
       return {
         status: res.status,
         data: res.data,
@@ -17,7 +18,7 @@ export const createListing = async (body: ListingBody) => {
       if (error instanceof AxiosError) {
         return {
           status: error?.response?.status,
-          data: error?.response?.data?.error,
+          data: error?.response?.data,
         };
       } else {
         console.log(error);

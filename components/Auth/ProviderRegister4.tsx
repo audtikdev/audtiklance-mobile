@@ -104,7 +104,6 @@ const ProviderRegister4 = () => {
         formData.append("address", providerDetails?.address!)
         formData.append("about_me", providerDetails?.about_me!)
         formData.append("is_active", "true")
-        console.log(formData.get("profile_picture"));
         const response = await registerProvider(formData)
         if (response?.status === 201 || response?.status === 200) {
             dispatch(updateAuth({ auth: response?.data?.data }))
