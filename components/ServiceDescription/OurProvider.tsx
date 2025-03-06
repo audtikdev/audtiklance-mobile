@@ -12,7 +12,6 @@ import { sendLead } from '@/api/leads'
 import Toast from 'react-native-toast-message'
 
 const OurProvider: React.FC<{ ourProviderRef: React.RefObject<IHandles>, service: Service }> = ({ ourProviderRef, service }) => {
-    const colorScheme = useColorScheme() || "light"
     const [message, setMessage] = useState("")
     const [load, setLoad] = useState(false)
 

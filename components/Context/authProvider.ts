@@ -6,7 +6,9 @@ interface AuthState {
 }
 
 const initialState: AuthState ={
-    auth: {}
+    auth: {
+        notify: true
+    }
 }
 
 const authSlice = createSlice({

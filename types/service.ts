@@ -28,6 +28,8 @@ export type Service = {
   profile_picture?: string;
   business_name?: string;
   about_me?: string;
+  owner_name?: string;
+  owner_plan_type?: string;
   phone?: string;
   price?: number;
   cost?: number;

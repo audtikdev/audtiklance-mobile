@@ -112,7 +112,9 @@ const ChatContent: React.FC<{ convoId: string, recipientId: string }> = ({ convo
                 const { type: eventName, content, sender } = JSON.parse(event.data);
                 console.log(eventName, content, sender);
                 if (eventName === "chat") {
-                    sendTestNotification(sender, content)
+                    if (authUser?.notify) {
+                        sendTestNotification(sender, content)
+                    }
                     getConversation()
                 }
             };
