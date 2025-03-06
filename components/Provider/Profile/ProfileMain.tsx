@@ -83,15 +83,6 @@ const ProfileMain = () => {
                                 </View>
                                 <AntDesign name="right" size={20} color={"black"} />
                             </Pressable>
-                            <Pressable onPress={() => router.push("/providerHistory")} style={{ display: "flex", justifyContent: "space-between", flexDirection: "row", alignItems: "baseline" }}>
-                                <View style={styles.box}>
-                                    <View style={{ ...styles.iconView }}>
-                                        <MaterialCommunityIcons name="history" size={24} color="black" />
-                                    </View>
-                                    <Text style={{ fontSize: 18, fontWeight: 600 }}>History</Text>
-                                </View>
-                                <AntDesign name="right" size={20} color={"black"} />
-                            </Pressable>
                             <Pressable onPress={() => router.push("/leads")} style={{ display: "flex", justifyContent: "space-between", flexDirection: "row", alignItems: "baseline" }}>
                                 <View style={styles.box}>
                                     <View style={{ ...styles.iconView }}>

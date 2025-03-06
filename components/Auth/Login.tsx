@@ -7,7 +7,6 @@ import { Modalize } from 'react-native-modalize';
 import { appleRegisterUser, googleRegisterUser, loginUser } from '@/api/auth'
 import { useDispatch, useSelector } from 'react-redux'
 import { updateAuth } from '../Context/authProvider'
-import * as Google from 'expo-auth-session/providers/google';
 import * as AuthSession from 'expo-auth-session';
 import * as AppleAuthentication from 'expo-apple-authentication';
 import { jwtDecode } from "jwt-decode";
@@ -20,6 +19,7 @@ const Login = () => {
     const colorScheme = useColorScheme() || "light"
     const [userInfo, setUserInfo] = useState<LoginUserInfo>()
     const [load, setLoad] = useState(false)
+    const [loadGoogle, setLoadGoogle] = useState(false)
     const modalizeRef = useRef<Modalize>(null)
     const dispatch = useDispatch()
     const redirectUri = AuthSession.makeRedirectUri();
@@ -29,15 +29,9 @@ const Login = () => {
         offlineAccess: true, // if you want to access Google API on behalf of the user FROM YOUR SERVER
     });
 
-    const [request, response, promptAsync] = Google.useAuthRequest({
-        clientId: '15571279761-50hvuoaofihijl2c8v6vuimpcgt751a3.apps.googleusercontent.com',
-        androidClientId: "15571279761-66u2sfop0cfvc6eqtaj42alpo6fis65u.apps.googleusercontent.com",
-        iosClientId: "15571279761-v4q3rb97hueq6koviotj3fa3jflhvi4p.apps.googleusercontent.com",
-        redirectUri: redirectUri
-    });
-
     const handleGoogleSignIn = async () => {
         try {
+            setLoadGoogle(true)
             await GoogleSignin.hasPlayServices();
             await GoogleSignin.signIn();
             const tokens = await GoogleSignin.getTokens();
@@ -55,8 +49,10 @@ const Login = () => {
                     text1: "Error, try again"
                 })
             }
+            setLoadGoogle(false)
         } catch (error: any) {
             console.error(error);
+            setLoadGoogle(false)
         }
 
     }
@@ -159,7 +155,11 @@ const Login = () => {
                             </View>
                             <Pressable onPress={() => handleGoogleSignIn()} style={{ ...styles.oauthButton }}>
                                 <Image source={require("../../assets/images/google.png")} />
-                                <Text style={{ ...styles.oauthText }}>Continue with Google</Text>
+                                {
+                                    loadGoogle ?
+                                    <ActivityIndicator color={'blue'} /> :
+                                    <Text style={{ ...styles.oauthText }}>Continue with Google</Text>
+                                }
                             </Pressable>
                             <AppleAuthentication.AppleAuthenticationButton
                                 buttonType={AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN}

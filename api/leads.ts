@@ -38,3 +38,22 @@ export const sendLead = async (body: {service_profile: string, message: string})
       }
     }
   };
+
+export const payLead = async (id: string, body: {amount: number}) => {
+    try {
+      const res = await apiAxios.post(`/lead/${id}/payment/`, body);
+      return {
+        status: res.status,
+        data: res.data,
+      };
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        return {
+          status: error?.response?.status,
+          data: error?.response?.data?.error,
+        };
+      } else {
+        console.log(error);
+      }
+    }
+  };

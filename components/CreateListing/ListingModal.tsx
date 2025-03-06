@@ -2,7 +2,6 @@
 import { View, Text, Modal, Pressable, Keyboard, TouchableWithoutFeedback, StyleSheet, useColorScheme } from 'react-native'
 import React, { Dispatch, SetStateAction, useEffect, useState } from 'react'
 import AutoSearch from '../AutoComplete';
-import { generalStyle } from '@/style/generalStyle';
 import { Service } from '@/types/service';
 import axios from 'axios';
 import { debounce } from 'lodash';
@@ -13,7 +12,6 @@ export const SelectCategory: React.FC<{ showModal: boolean, setShowModal: Dispat
     const [query, setQuery] = useState("");
     const [services, setServices] = useState<Service[]>([])
     const baseUrl = Constants.expoConfig?.extra?.BASE_API
-    const colorScheme = useColorScheme() || "light"
 
     useEffect(() => {
         // Debounce the search function to reduce API calls

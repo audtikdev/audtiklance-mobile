@@ -146,14 +146,12 @@ export const PasswordModal: React.FC<{ passwordRef: React.RefObject<IHandles> }>
 }
 
 export const NotifyModal: React.FC<{ notifyRef: React.RefObject<IHandles> }> = ({ notifyRef }) => {
-    const colorScheme = useColorScheme() || "light"
-    const [notify, setNotify] = useState(false)
+    const authUser = useSelector((state: RootState) => state.authProvider.auth)
+    const [notify, setNotify] = useState(authUser?.notify)
+    const dispatch = useDispatch()
 
     const updateUserNotification = async () => {
-        console.log(notify);
-        const res = await updateNotification(notify)
-        console.log(res);
-        
+        dispatch(updateAuth({auth: {notify: notify}}))
     }
 
     return (
@@ -163,16 +161,6 @@ export const NotifyModal: React.FC<{ notifyRef: React.RefObject<IHandles> }> = (
         >
             <View style={{ ...styles.modalContent, height: 250 }}>
                 <Text style={{ ...styles.profileText, fontSize: 16 }}>Update Your Notification Setting</Text>
-                {/* <View style={styles.switchView}>
-                    <Text style={{ ...styles.profileText, fontSize: 14 }}>Email Notification</Text>
-                    <Switch
-                        trackColor={{ false: "#767577", true: "#1B64F1" }}
-                        thumbColor={notify?.email ? "#f4f3f4" : "#f4f3f4"}
-                        ios_backgroundColor="#3e3e3e"
-                        onValueChange={() => setNotify({ ...notify, email: !notify.email })}
-                        value={notify?.email}
-                    />
-                </View> */}
                 <View style={styles.switchView}>
                     <Text style={{ ...styles.profileText, fontSize: 14 }}>Allow Notification</Text>
                     <Switch

@@ -15,6 +15,7 @@ const ForgotPassword = () => {
             email: email
         }
         const response = await sendForgotPasswordOtp(body)
+        
         if (response?.status === 201 || response?.status === 200) {
             router.push(`/resetPasswordOtp/email=${email}&secret=${response.data?.data}`)
         } else {

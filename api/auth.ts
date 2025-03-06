@@ -298,3 +298,22 @@ export const updateNotification = async (status: boolean) => {
     }
   }
 };
+
+export const getNotification = async () => {
+  try {
+    const res = await apiAxios.get("/notification/");
+    return {
+      status: res.status,
+      data: res.data,
+    };
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      return {
+        status: error?.response?.status,
+        data: error?.response?.data?.error,
+      };
+    } else {
+      console.log(error);
+    }
+  }
+};

@@ -48,8 +48,18 @@ export type RegisterProvider = {
 export type AuthUser = {
     access?: string;
     refresh?: string;
+    notify?: boolean;
     service_profile?: string;
     sub_category?: Array<SubCategory>
 } & RegisterProvider
 
 export type LoginUserInfo = Pick<RegisterUserInfo, "email" | "password">
+
+export type NOTIFICATION = {
+    id: string;
+    notification_message: string;
+    created_at: Date;
+    is_read: string;
+    notification_type: string;
+    owner: string;
+}
