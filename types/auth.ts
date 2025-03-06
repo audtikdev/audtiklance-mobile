@@ -54,3 +54,12 @@ export type AuthUser = {
 } & RegisterProvider
 
 export type LoginUserInfo = Pick<RegisterUserInfo, "email" | "password">
+
+export type NOTIFICATION = {
+    id: string;
+    notification_message: string;
+    created_at: Date;
+    is_read: string;
+    notification_type: string;
+    owner: string;
+}

@@ -2,7 +2,7 @@ import { View, Text, StyleSheet, useColorScheme, Image, Pressable } from 'react-
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '@/components/Store/store'
-import { getUser } from '@/api/auth'
+import { getNotification, getUser } from '@/api/auth'
 import { updateAuth } from '@/components/Context/authProvider'
 import { Feather, FontAwesome, Ionicons, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons'
 import { formatCurrency } from '@/utils/helper'
@@ -14,6 +14,7 @@ import { getServiceProfile } from '@/api/service'
 import { CHAT } from '@/components/Chat/type'
 import { getChatList } from '@/api/chat'
 import { getLeads } from '@/api/leads'
+import { NOTIFICATION } from '@/types/auth'
 
 const Home = () => {
     const authUser = useSelector((state: RootState) => state.authProvider.auth)
@@ -21,6 +22,7 @@ const Home = () => {
     const [load, setLoad] = useState(true)
     const [chatNum, setChatNum] = useState<number>(0)
     const [leadNum, setLeadNum] = useState<number>(0)
+    const [notifications, setNotifications] = useState<Array<NOTIFICATION>>([])
     const colorScheme = useColorScheme() || "light"
 
 
@@ -30,10 +32,13 @@ const Home = () => {
             const response = await getUser()
             const chatRes = await getChatList()
             const leadRes = await getLeads()
-
+            const notifyRes = await getNotification()
+            console.log(notifyRes?.data?.results);
+            
             if (response?.status === 201 || response?.status === 200) {
                 setChatNum(chatRes?.data?.count)
                 setLeadNum(leadRes?.data?.count)
+                setNotifications(notifyRes?.data?.results)
                 const data = response.data?.data
                 dispatch(updateAuth({ auth: data }))
                 const res = await getServiceProfile(data?.service_profile)
@@ -92,17 +97,17 @@ const Home = () => {
                                 </View>
                                 <View style={{ ...styles.smallContainer, width: "100%", marginTop: 20 }}>
                                     <View style={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
-                                        <Text style={{ fontSize: 16, fontWeight: 500 }}>Recent Activities</Text>
+                                        <Text style={{ fontSize: 16, fontWeight: 500 }}>Notifications</Text>
                                         <Feather name="activity" size={30} color="black" />
                                     </View>
                                     {
-                                        Array(3).fill("").map((_, i) => (
+                                        notifications?.slice(0, 6).map((notification, i) => (
                                             <View key={i} style={{ display: "flex", marginTop: 15, flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
                                                 <View style={{ display: "flex", flexDirection: "row", columnGap: 10, alignItems: "center" }}>
-                                                    <Image style={{ width: 50, height: 50, borderRadius: 50 }} source={require("../../../assets/images/react-logo.png")} />
-                                                    <Text>Olivia Martin</Text>
+
+                                                    <Text>{notification?.notification_message}</Text>
                                                 </View>
-                                                <Text>Completed appointment</Text>
+                                                <Text>{new Date(notification?.created_at).toLocaleDateString()}</Text>
                                             </View>
                                         ))
                                     }

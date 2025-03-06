@@ -1,15 +1,16 @@
-import { View, Text, useColorScheme, ScrollView, StyleSheet, Pressable, Image, TextInput } from 'react-native'
+import { View, Text, useColorScheme, ScrollView, StyleSheet, Pressable, Image, TextInput, ActivityIndicator } from 'react-native'
 import React, { useEffect, useRef, useState } from 'react'
 import { generalStyle } from '@/style/generalStyle'
 import { Modalize } from 'react-native-modalize'
 import { IHandles } from 'react-native-modalize/lib/options'
 import { AntDesign, Ionicons } from '@expo/vector-icons'
 import { router } from 'expo-router'
-import { getLeads } from '@/api/leads'
+import { getLeads, payLead } from '@/api/leads'
 import Plan from './Plan'
 import { LEAD } from '@/types/leads'
 import LottieView from 'lottie-react-native'
 import { openLink } from '@/utils/helper'
+import Toast from 'react-native-toast-message'
 
 const LeadsMain = () => {
     const colorScheme = useColorScheme() || "light"
@@ -48,10 +49,10 @@ const LeadsMain = () => {
                     <View style={{ display: "flex", justifyContent: "center", alignItems: "center", height: 750, width: "100%" }}>
                         <LottieView source={require("../../../assets/images/service2.json")} loop={true} autoPlay style={{ width: 300, height: 350 }} />
                     </View> : leads.length < 1 ?
-                        <View style={{display: "flex", alignItems: "center", justifyContent: "center", padding: 20, height: "90%"}}>
-                            <Text style={{fontSize: 16, fontWeight: 500}}>You don't have any leads yet</Text>
-                            <Text style={{fontSize: 14, fontWeight: 600, textAlign: "center", paddingTop: 10}}>Your leads will show up here when customers contact you</Text>
-                            <Image style={{width: 300, height: 300, paddingVertical: 40}} source={require("../../../assets/images/Empty-product.png")} />
+                        <View style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: 20, height: "90%" }}>
+                            <Text style={{ fontSize: 16, fontWeight: 500 }}>You don't have any leads yet</Text>
+                            <Text style={{ fontSize: 14, fontWeight: 600, textAlign: "center", paddingTop: 10 }}>Your leads will show up here when customers contact you</Text>
+                            <Image style={{ width: 300, height: 300, paddingVertical: 40 }} source={require("../../../assets/images/Empty-product.png")} />
                         </View> :
                         <View style={styles.scrollContainer}>
                             <ScrollView>
@@ -62,10 +63,10 @@ const LeadsMain = () => {
                                                 <Image source={{ uri: lead?.user?.profile_picture }} style={styles.iconView} />
                                                 <View>
                                                     <Text style={{ fontSize: 18, fontWeight: 600 }}>{lead?.user?.firstname} {lead?.user?.lastname}</Text>
-                                                    <Text style={{ fontSize: 16, fontWeight: 400 }}>{lead?.message}</Text>
+                                                    <Text style={{ fontSize: 16, fontWeight: 400, width: '80%' }}>{lead?.message}</Text>
                                                 </View>
                                             </View>
-                                            <AntDesign name="right" size={24} color={colorScheme === "dark" ? "white" : "black"} />
+                                            <AntDesign name="right" size={24} color={"black"} />
                                         </Pressable>
                                     ))
                                 }
@@ -80,7 +81,22 @@ const LeadsMain = () => {
 export default LeadsMain
 
 const LeadModal: React.FC<{ leadRef: React.RefObject<IHandles>, lead: LEAD }> = ({ leadRef, lead }) => {
-    const colorScheme = useColorScheme() || "light"
+    const [load, setLoad] = useState(false)
+
+    const payForLead = async (id: string) => {
+        setLoad(true)
+        const res = await payLead(id, { amount: 10 })
+        console.log(res);
+        if (res?.status === 200 || res?.status === 201) {
+            openLink(res?.data?.data)
+        } else {
+            Toast.show({
+                type: 'error',
+                text1: 'An error occurred'
+            })
+        }
+        setLoad(false)
+    }
 
     return (
         <Modalize
@@ -97,7 +113,16 @@ const LeadModal: React.FC<{ leadRef: React.RefObject<IHandles>, lead: LEAD }> = 
                     <View style={{ ...styles.shareModalContent, height: 260, paddingTop: 30 }}>
                         <Text style={{ fontSize: 18, fontWeight: 700, textAlign: "center", marginBottom: 10 }}>{lead?.user?.firstname} {lead?.user?.lastname}</Text>
                         <Text style={{ fontSize: 16, fontWeight: 500 }}>{lead?.message}</Text>
-                        {/* <Text style={{ fontSize: 16, fontWeight: 600, textAlign: "center", marginTop: 20 }}>Your don't have access to the customer contact details and many others like this</Text> */}
+                        <Pressable onPress={() => payForLead(lead?.id!)} style={styles.bookButton}>
+                            {
+                                load ?
+                                <ActivityIndicator color={"white"} /> :
+                                <Text style={{ color: "white", fontSize: 16 }}>Pay for lead</Text>
+                            }
+                        </Pressable>
+                        <Text style={{textAlign: 'center', marginTop: 10}}>Pay <Text style={{fontWeight: 600}}>$10</Text> to view this lead and
+                            gain valuable insights. This will help you connect with potential
+                            clients and grow your business.</Text>
                     </View>
 
             }
