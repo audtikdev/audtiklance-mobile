@@ -23,8 +23,6 @@ const Home = () => {
     const [chatNum, setChatNum] = useState<number>(0)
     const [leadNum, setLeadNum] = useState<number>(0)
     const [notifications, setNotifications] = useState<Array<NOTIFICATION>>([])
-    const colorScheme = useColorScheme() || "light"
-
 
     useEffect(() => {
         (async () => {
@@ -33,7 +31,6 @@ const Home = () => {
             const chatRes = await getChatList()
             const leadRes = await getLeads()
             const notifyRes = await getNotification()
-            console.log(notifyRes?.data?.results);
             
             if (response?.status === 201 || response?.status === 200) {
                 setChatNum(chatRes?.data?.count)
@@ -107,7 +104,7 @@ const Home = () => {
 
                                                     <Text>{notification?.notification_message}</Text>
                                                 </View>
-                                                <Text>{new Date(notification?.created_at).toLocaleDateString()}</Text>
+                                                <Text>{new Date(Date.parse(notification?.created_at as string)).toLocaleDateString()}</Text>
                                             </View>
                                         ))
                                     }
