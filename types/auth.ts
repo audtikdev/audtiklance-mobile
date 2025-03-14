@@ -11,6 +11,7 @@ export type RegisterUserInfo = {
     confirmPassword: string,
     otp?: string,
     phone?: string,
+    profile_picture?: string,
     country_code?: string,
     post_code?: string,
     secret_key?: string

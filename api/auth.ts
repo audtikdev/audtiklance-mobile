@@ -221,9 +221,13 @@ export const getUserByID = async (id: string) => {
 };
 
 
-export const updateUser = async (body: Pick<RegisterUserInfo, "firstname" | "lastname" | "phone" | "country_code">) => {
+export const updateUser = async (body: any) => {
   try {
-    const res = await apiAxios.put("/user/update-profile/", body);
+    const res = await apiAxios.put("/user/update-profile/", body, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
     return {
       status: res.status,
       data: res.data,
@@ -302,6 +306,25 @@ export const updateNotification = async (status: boolean) => {
 export const getNotification = async () => {
   try {
     const res = await apiAxios.get("/notification/");
+    return {
+      status: res.status,
+      data: res.data,
+    };
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      return {
+        status: error?.response?.status,
+        data: error?.response?.data?.error,
+      };
+    } else {
+      console.log(error);
+    }
+  }
+};
+
+export const referUser = async (body: {email: string}) => {
+  try {
+    const res = await apiAxios.post("/user/refer-user/", body);
     return {
       status: res.status,
       data: res.data,

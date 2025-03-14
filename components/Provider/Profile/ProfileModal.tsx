@@ -1,31 +1,34 @@
-import { updateNotification, updatePassword, updateUser } from "@/api/auth"
+import { referUser, updateNotification, updatePassword, updateUser } from "@/api/auth"
 import { generalStyle } from "@/style/generalStyle"
 import { RegisterUserInfo } from "@/types/auth"
-import { FontAwesome6 } from "@expo/vector-icons"
+import { FontAwesome6, Ionicons } from "@expo/vector-icons"
 import { useEffect, useState } from "react"
-import { ActivityIndicator, Pressable, StyleSheet, Switch, Text, TextInput, useColorScheme, View } from "react-native"
+import { ActivityIndicator, Alert, Image, Pressable, StyleSheet, Switch, Text, TextInput, useColorScheme, View } from "react-native"
 import { Modalize } from "react-native-modalize"
 import { IHandles } from "react-native-modalize/lib/options"
 import { RootState } from "../../Store/store"
 import { useDispatch, useSelector } from "react-redux"
 import Toast from "react-native-toast-message"
 import { updateAuth } from "../../Context/authProvider"
+import * as ImagePicker from 'expo-image-picker';
 
 export const AccountModal: React.FC<{ accountRef: React.RefObject<IHandles> }> = ({ accountRef }) => {
     const authUser = useSelector((state: RootState) => state.authProvider.auth)
-    const colorScheme = useColorScheme() || "light"
-    const [userInfo, setUserInfo] = useState<Pick<RegisterUserInfo, "firstname" | "lastname" | "phone" | "gender" | "dob" | "about_me">>()
+    const [userInfo, setUserInfo] = useState<Pick<RegisterUserInfo, "firstname" | "lastname" | "phone" | "gender" | "dob" | "about_me" | "profile_picture">>()
     const [load, setLoad] = useState(false)
+    const [image, setImage] = useState('')
     const dispatch = useDispatch()
 
     useEffect(() => {
+        console.log(authUser)
         setUserInfo({
             firstname: authUser?.firstname!,
             lastname: authUser?.lastname!,
             phone: authUser?.phone!,
             gender: authUser?.gender,
             dob: authUser?.dob,
-            about_me: authUser?.about_me
+            about_me: authUser?.about_me,
+            ...(authUser?.profile_picture && {profile_picture: authUser?.profile_picture})
         })
     }, [])
 
@@ -39,7 +42,31 @@ export const AccountModal: React.FC<{ accountRef: React.RefObject<IHandles> }> =
     const updateUserDetails = async () => {
         if (userInfo) {
             setLoad(true)
-            const response = await updateUser({ ...userInfo, country_code: "1" })
+            let formData = new FormData();
+
+            formData.append('firstname', userInfo?.firstname)
+            formData.append('lastname', userInfo?.lastname)
+            formData.append('gender', userInfo?.gender!)
+            if(userInfo?.dob) {
+                formData.append('dob', userInfo?.dob!)
+            }
+            formData.append('about_me', userInfo?.about_me!)
+            formData.append('phone', userInfo?.phone!)
+
+            if (image) {
+                let localUri = image;
+                let filename = localUri.split('/').pop();
+
+                let match = /\.(\w+)$/.exec(filename!);
+                let type = match ? `image/${match[1]}` : `image`;
+
+                // @ts-ignore
+                formData.append('profile_picture', { uri: localUri, name: filename, type })
+            }
+            formData.append('country_code', '1')
+            
+            const response = await updateUser(formData)
+            
             console.log(response);
 
             if (response?.status === 200 || response?.status === 201) {
@@ -60,6 +87,23 @@ export const AccountModal: React.FC<{ accountRef: React.RefObject<IHandles> }> =
         }
     }
 
+
+    const handleImageUpload = async () => {
+        const permissiomResult = await ImagePicker.requestMediaLibraryPermissionsAsync()
+        if (!permissiomResult.granted) {
+            Alert.alert('Permission Denied', 'You need to enable permission to select a file')
+            return
+        }
+        const result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ["images"],
+            allowsEditing: true,
+            quality: 1
+        })
+        if (!result.canceled) {
+            setImage(result.assets[0].uri!)
+        }
+    }
+
     return (
         <Modalize
             ref={accountRef}
@@ -67,6 +111,10 @@ export const AccountModal: React.FC<{ accountRef: React.RefObject<IHandles> }> =
         >
             <View style={styles.modalContent}>
                 <Text style={{ ...styles.profileText }}>Update Your Account Details</Text>
+                <View style={{display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 10, marginBottom: 20}}>
+                    <Image style={{width: 100, height: 100, borderRadius: 100, borderWidth: 1, borderColor: '#1B64F1'}} source={image ? {uri: image} : userInfo?.profile_picture ? {uri: userInfo?.profile_picture} : require('../../../assets/images/placeholder.png')} />
+                    <Ionicons onPress={handleImageUpload} name="cloud-upload-outline" size={24} color="black" />
+                </View>
                 <TextInput placeholderTextColor={"black"} onChangeText={(text) => handleInput("firstname", text)} value={userInfo?.firstname} style={{ ...styles.registerInput }} placeholder='First Name' />
                 <TextInput placeholderTextColor={"black"} onChangeText={(text) => handleInput("lastname", text)} value={userInfo?.lastname} style={{ ...styles.registerInput }} placeholder='Last Name' />
 
@@ -77,7 +125,7 @@ export const AccountModal: React.FC<{ accountRef: React.RefObject<IHandles> }> =
                 <Pressable onPress={updateUserDetails} style={{ ...styles.registerButton, marginTop: 10 }}>
                     {
                         load ?
-                            <ActivityIndicator /> :
+                            <ActivityIndicator color={'white'} /> :
                             <Text style={{ ...styles.buttonText, ...generalStyle.text["dark"] }}>Update</Text>
                     }
                 </Pressable>
@@ -87,7 +135,6 @@ export const AccountModal: React.FC<{ accountRef: React.RefObject<IHandles> }> =
 }
 
 export const PasswordModal: React.FC<{ passwordRef: React.RefObject<IHandles> }> = ({ passwordRef }) => {
-    const colorScheme = useColorScheme() || "light"
     const [userInfo, setUserInfo] = useState<{ old_password: string, new_password: string }>()
     const [showPass, setShowPass] = useState(true)
     const [load, setLoad] = useState(false)
@@ -172,16 +219,6 @@ export const NotifyModal: React.FC<{ notifyRef: React.RefObject<IHandles> }> = (
         >
             <View style={{ ...styles.modalContent, height: 230 }}>
                 <Text style={{ ...styles.profileText }}>Update Your Notification Setting</Text>
-                {/* <View style={styles.switchView}>
-                    <Text style={{ ...styles.profileText }}>Email Notification</Text>
-                    <Switch
-                        trackColor={{ false: "#767577", true: "#1B64F1" }}
-                        thumbColor={notify?.email ? "#f4f3f4" : "#f4f3f4"}
-                        ios_backgroundColor="#3e3e3e"
-                        onValueChange={() => setNotify({ ...notify, email: !notify.email })}
-                        value={notify?.email}
-                    />
-                </View> */}
                 <View style={styles.switchView}>
                     <Text style={{ ...styles.profileText, fontSize: 14 }}>Allow Notification</Text>
                     <Switch
@@ -198,10 +235,57 @@ export const NotifyModal: React.FC<{ notifyRef: React.RefObject<IHandles> }> = (
     )
 }
 
+
+export const ReferModal: React.FC<{referRef: React.RefObject<IHandles> }> = ({referRef}) => {
+    const [load, setLoad] = useState(false)
+    const [email, setEmail] = useState('')
+
+    const handleRefer = async () => {
+        if (!email) {
+            return
+        }
+        setLoad(true)
+        const res = await referUser({email: email})
+        if (res?.status === 200 || res?.status === 201) {
+            Toast.show({
+                type: 'success',
+                text1: 'Refer invite sent successfully'
+            })
+            referRef.current?.close()
+        } else {
+            Toast.show({
+                type: 'error',
+                text1: res?.data
+            })
+        }
+        setLoad(false)
+    }
+
+    return (
+        <Modalize
+            ref={referRef}
+            adjustToContentHeight={true}
+        >
+            <View style={{...styles.modalContent, height: 300}}>
+                <Text style={styles.profileText}>Refer And Earn</Text>
+                <Text style={{textAlign: 'center', marginBottom: 15}}>Enter the email of the person you want to refer and earn a reward when they sign up</Text>
+                <TextInput placeholder="email" style={styles.registerInput} onChangeText={(text)=> setEmail(text)} />
+                <Pressable onPress={handleRefer} style={styles.registerButton}>
+                    {
+                        load ?
+                        <ActivityIndicator color={'white'} /> :
+                        <Text style={styles.buttonText}>Refer</Text>
+                    }
+                </Pressable>
+            </View>
+        </Modalize>
+    )
+}
+
 const styles = StyleSheet.create({
     modalContent: {
         padding: 20,
-        height: 600,
+        height: 750,
     },
     profileText: {
         fontSize: 16,
