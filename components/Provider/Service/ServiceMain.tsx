@@ -10,18 +10,20 @@ import { Modalize } from 'react-native-modalize'
 import { AddServiceModal, DeleteModal, ModifyPriceModal, UpdateDetailModal } from './ServiceModal'
 import { updateAuth } from '@/components/Context/authProvider'
 import { Service, SubCategory } from '@/types/service'
-import { getCategory, updateServiceImage, updateServiceProfile } from '@/api/service'
+import { deleteServiceImage, getCategory, getServiceProfile, updateServiceImage, updateServiceProfile } from '@/api/service'
+import Toast from 'react-native-toast-message'
+import LoadingOverlay from '@/components/LoadingOverlay'
 
 const ServiceMain = () => {
     const authUser = useSelector((state: RootState) => state.authProvider.auth)
     const screenWidth = Dimensions.get('window').width;
-    const colorScheme = useColorScheme() || "light"
     const [showAddModal, setShowAddModal] = useState(false)
     const [showUpdateModal, setShowUpdateModal] = useState(false)
     const [activeService, setActiveService] = useState<Service>()
     const priceRef = useRef<Modalize>(null)
     const deleteRef = useRef<Modalize>(null)
     const dispatch = useDispatch()
+    const [load, setLoad] = useState(false)
 
     const handleImageSelect = async (type: string, num?: number) => {
         const permissiomResult = await ImagePicker.requestMediaLibraryPermissionsAsync()
@@ -34,8 +36,8 @@ const ServiceMain = () => {
             allowsEditing: true,
             quality: 1
         })
-
         if (!result.canceled) {
+            setLoad(true)
             if (type === "profile_picture") {
                 let localUri = result.assets[0].uri!;
                 let filename = localUri.split('/').pop();
@@ -65,7 +67,7 @@ const ServiceMain = () => {
                     let match = /\.(\w+)$/.exec(filename!);
                     let type = match ? `image/${match[1]}` : `image`;
                     // @ts-ignore
-                    formData.append(`images${i}`, { uri: image?.image_url, name: filename, type });
+                    formData.append(`images[${i}]`, { uri: image?.image_url, name: filename, type });
 
                 })
 
@@ -76,7 +78,27 @@ const ServiceMain = () => {
                     dispatch(updateAuth({ auth: response?.data?.data }))
                 }
             }
+            setLoad(false)
         }
+    }
+
+    const handleDeleteImage = async (id: string) => {
+        setLoad(true)
+        const res = await deleteServiceImage(id)
+        if (res?.status === 204) {
+            Toast.show({
+                type: 'success',
+                text1: 'Image Deleted Successfully'
+            })
+            const res = await getServiceProfile(authUser?.service_profile!)
+            dispatch(updateAuth({ auth: res?.data }))
+        } else {
+            Toast.show({
+                type: 'error',
+                text1: 'Error deleting image'
+            })
+        }
+        setLoad(false)
     }
 
     const editService = (service: SubCategory) => {
@@ -117,7 +139,7 @@ const ServiceMain = () => {
                 </View>
                 <View>
                     <ScrollView showsVerticalScrollIndicator={false}>
-                        <View style={{paddingBottom: 500}}>
+                        <View style={{ paddingBottom: 500 }}>
                             <View style={{ position: "relative" }}>
                                 <Image style={{ width: "100%", height: screenWidth > 600 ? 330 : 170, marginTop: 20, borderRadius: 10 }} source={{ uri: authUser?.profile_picture as unknown as string }} />
                                 <Pressable onPress={() => handleImageSelect("profile_picture")} style={{ position: "absolute", top: 30, right: 10, ...styles.iconView, width: 35, height: 35 }}>
@@ -126,24 +148,26 @@ const ServiceMain = () => {
                             </View>
                             <View style={{ marginTop: 20 }}>
                                 <Text style={{ fontSize: 14, fontWeight: 600 }}>Previous Work Images</Text>
-                                <View style={{ display: "flex", flexDirection: "row", columnGap: 10, marginTop: 10, alignItems: "flex-end" }}>
-                                    {
-                                        authUser?.images?.map((image, i) => (
-                                            <View key={i} style={{ position: "relative", width: "48%" }}>
-                                                <Image style={{ width: "100%", height: screenWidth > 600 ? 330 : 170, borderRadius: 10 }} source={{ uri: image?.image_url }} />
-                                                <Pressable onPress={() => handleImageSelect("images", i)} style={{ position: "absolute", top: 10, right: 10, ...styles.iconView, width: 35, height: 35 }}>
-                                                    <Feather name="edit" size={18} color="white" />
-                                                </Pressable>
-                                            </View>
-                                        ))
-                                    }
-                                    {
-                                        authUser?.images?.length! < 2 &&
-                                        <Pressable onPress={() => handleImageSelect("images", authUser?.images?.length!)} style={{ width: "48%", height: screenWidth > 600 ? 330 : 170, borderWidth: 0.6, display: "flex", borderRadius: 10, justifyContent: "center", alignItems: "center" }}>
-                                            <Entypo name="upload-to-cloud" size={50} color="black" />
-                                        </Pressable>
-                                    }
-                                </View>
+                                <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                                    <View style={{ display: "flex", flexDirection: "row", columnGap: 10, marginTop: 10, alignItems: "flex-end" }}>
+                                        {
+                                            authUser?.images?.map((image, i) => (
+                                                <View key={i} style={{ position: "relative", width: 300 }}>
+                                                    <Image style={{ width: "100%", height: screenWidth > 600 ? 330 : 170, borderRadius: 10 }} source={{ uri: image?.image_url }} />
+                                                    <Pressable onPress={() => handleDeleteImage(image?.id!)} style={{ position: "absolute", top: 10, right: 10, ...styles.iconView, width: 35, height: 35 }}>
+                                                        <AntDesign name="delete" size={18} color="red" />
+                                                    </Pressable>
+                                                </View>
+                                            ))
+                                        }
+                                        {
+                                            authUser?.images?.length! < 2 &&
+                                            <Pressable onPress={() => handleImageSelect("images", authUser?.images?.length!)} style={{ width: "48%", height: screenWidth > 600 ? 330 : 170, borderWidth: 0.6, display: "flex", borderRadius: 10, justifyContent: "center", alignItems: "center" }}>
+                                                <Entypo name="upload-to-cloud" size={50} color="black" />
+                                            </Pressable>
+                                        }
+                                    </View>
+                                </ScrollView>
                             </View>
                             <View style={{ marginTop: 20 }}>
                                 <View style={{ ...styles.serviceContainer }}>
@@ -175,6 +199,7 @@ const ServiceMain = () => {
             <AddServiceModal priceRef={priceRef} setActiveService={setActiveService} showAddModal={showAddModal} setShowAddModal={setShowAddModal} />
             <ModifyPriceModal priceRef={priceRef} activeService={activeService!} setActiveService={setActiveService} />
             <DeleteModal deleteRef={deleteRef} activeService={activeService!} />
+            <LoadingOverlay visible={load} />
         </>
     )
 }

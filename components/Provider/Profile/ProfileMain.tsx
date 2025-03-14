@@ -1,10 +1,10 @@
 import { View, Text, StyleSheet, useColorScheme, Pressable, ScrollView } from 'react-native'
 import React, { useEffect, useRef } from 'react'
-import { AntDesign, Feather, FontAwesome, Ionicons, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons'
+import { AntDesign, Feather, FontAwesome, FontAwesome5, Ionicons, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons'
 import { generalStyle } from '@/style/generalStyle'
 import { Modalize } from 'react-native-modalize'
 import * as Linking from 'expo-linking';
-import { AccountModal, NotifyModal, PasswordModal } from './ProfileModal'
+import { AccountModal, NotifyModal, PasswordModal, ReferModal } from './ProfileModal'
 import { openLink } from '@/utils/helper'
 import { useDispatch, useSelector } from 'react-redux'
 import { resetAuth } from '../../Context/authProvider'
@@ -22,6 +22,7 @@ const ProfileMain = () => {
     const notifyRef = useRef<Modalize>(null)
     const planRef = useRef<Modalize>(null)
     const deleteRef = useRef<Modalize>(null)
+    const referRef = useRef<Modalize>(null)
 
     useEffect(() => {
         if (!authUser?.access) {
@@ -101,6 +102,15 @@ const ProfileMain = () => {
                                 </View>
                                 <AntDesign name="right" size={20} color={"black"} />
                             </Pressable>
+                            <Pressable onPress={() => referRef.current?.open()} style={{ display: "flex", justifyContent: "space-between", flexDirection: "row", alignItems: "baseline" }}>
+                                <View style={styles.box}>
+                                    <View style={{ ...styles.iconView }}>
+                                        <FontAwesome5 name="coins" size={20} color="black" />
+                                    </View>
+                                    <Text style={{ fontSize: 16, fontWeight: 600 }}>Refer & Earn</Text>
+                                </View>
+                                <AntDesign name="right" size={20} color={colorScheme === "light" ? "black" : "white"} />
+                            </Pressable>
                             <Pressable onPress={() => openLink("mailto:support@audtiklance.com")} style={{ display: "flex", justifyContent: "space-between", flexDirection: "row", alignItems: "baseline" }}>
                                 <View style={styles.box}>
                                     <View style={{ ...styles.iconView }}>
@@ -137,6 +147,7 @@ const ProfileMain = () => {
             <NotifyModal notifyRef={notifyRef} />
             <Plan planRef={planRef} />
             <DeleteModal deleteRef={deleteRef} />
+            <ReferModal referRef={referRef} />
         </>
     )
 }

@@ -11,6 +11,7 @@ export type RegisterUserInfo = {
     confirmPassword: string,
     otp?: string,
     phone?: string,
+    profile_picture?: string,
     country_code?: string,
     post_code?: string,
     secret_key?: string
@@ -36,7 +37,7 @@ export type RegisterProvider = {
     dob?: string;
     secret_key?: string;
     about_me?: string;
-    images?: Array<{image_url: string}>;
+    images?: Array<{image_url: string, id?: string}>;
     profile_picture?: string;
     skill_data?: Array<{
         skill?: string;
@@ -58,7 +59,7 @@ export type LoginUserInfo = Pick<RegisterUserInfo, "email" | "password">
 export type NOTIFICATION = {
     id: string;
     notification_message: string;
-    created_at: Date;
+    created_at: Date | string;
     is_read: string;
     notification_type: string;
     owner: string;

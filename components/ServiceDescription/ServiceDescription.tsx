@@ -17,6 +17,7 @@ import FlagOrReportService, { RateModal } from './FlagModal'
 import { getServiceReview } from '@/api/service'
 import OurReview from '../Review/OurReview'
 import Quote from '../Quote/Quote'
+import Swiper from 'react-native-swiper'
 
 const ServiceDescription: React.FC<{ id: string }> = ({ id }) => {
     const authUser = useSelector((state: RootState) => state.authProvider.auth)
@@ -29,7 +30,7 @@ const ServiceDescription: React.FC<{ id: string }> = ({ id }) => {
     const flagOrReportRef = useRef<Modalize>(null)
     const rateRef = useRef<Modalize>(null)
     const baseUrl = Constants.expoConfig?.extra?.BASE_API
-
+    
     const fetchService = async () => {
         const url = `${baseUrl}/service/${id}`;
         axios.get(url)
@@ -91,7 +92,13 @@ const ServiceDescription: React.FC<{ id: string }> = ({ id }) => {
                         <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
                             <View style={{ paddingBottom: 20 }}>
                                 <Text style={{ marginTop: 10, fontSize: 16, fontWeight: 500 }}>{service?.business_name}</Text>
-                                <Image style={{ width: '100%', height: 300, marginTop: 20 }} source={service?.profile_picture ? { uri: service.profile_picture } : require("../../assets/images/placeholder.png")} />
+                                <Swiper autoplay loop style={styles.carouselView}>
+                                    {
+                                        [{image_url: service?.profile_picture}, ...service?.images || []]?.map((image, i)=> (
+                                            <Image key={i} style={{ width: '100%', height: '100%', marginTop: 20 }} source={image?.image_url ? { uri: image.image_url } : require("../../assets/images/placeholder.png")} />
+                                        ))
+                                    }
+                                </Swiper>
                                 <Text style={{ marginTop: 20, fontSize: 16, fontWeight: 500 }}>Services offered</Text>
                                 <View style={{ display: 'flex', flexDirection: 'row', gap: 10, marginTop: 5, flexWrap: 'wrap' }}>
                                     {
@@ -235,5 +242,8 @@ const styles = StyleSheet.create({
         display: "flex",
         justifyContent: "center",
         alignItems: "center"
+    },
+    carouselView: {
+        maxHeight: 400
     }
 })

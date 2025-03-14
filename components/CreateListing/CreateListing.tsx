@@ -1,7 +1,7 @@
 import { View, Text, StyleSheet, TextInput, useColorScheme, Pressable, ImageBackground, Alert, ScrollView, KeyboardAvoidingView, Platform, ActivityIndicator } from 'react-native'
 import React, { useState } from 'react'
 import * as ImagePicker from 'expo-image-picker';
-import { AntDesign, MaterialIcons } from '@expo/vector-icons'
+import { AntDesign, Feather, MaterialIcons } from '@expo/vector-icons'
 import { generalStyle } from '@/style/generalStyle'
 import { router } from 'expo-router';
 import { SelectCategory, SelectLocation } from './ListingModal';
@@ -27,13 +27,15 @@ const CreateListing = () => {
     const [selectedCat, setSelectedCat] = useState<Service>()
     const [selectedLoc, setSelectedLoc] = useState<ListingLocation>()
     const [date, setDate] = useState(new Date());
-    const [show, setShow] = useState(false);
     const [load, setLoad] = useState(false)
+    const [showDate, setShowDate] = useState(Platform.OS !== 'android')
     const [jobList, setJobList] = useState<ListingBody>()
 
     const onChange = (event: any, selectedDate: Date | undefined) => {
+        if (Platform.OS === 'android') {
+            setShowDate(false);
+        }
         const currentDate = selectedDate || date;
-        setShow(false);
         setDate(currentDate);
     };
 
@@ -89,13 +91,13 @@ const CreateListing = () => {
         // @ts-ignore
         formData.append('images0', { uri: image, name: filename, type });
         const res = await createListing(formData)
-        
+
         if (res?.status === 201 || res?.status === 200) {
             Toast.show({
                 type: 'success',
                 text1: 'Job Created, Redirecting...'
             })
-            setTimeout(()=> {
+            setTimeout(() => {
                 openURL(res?.data?.data)
             }, 1000)
         } else {
@@ -118,7 +120,7 @@ const CreateListing = () => {
                     <Text style={{ fontSize: 16, fontWeight: 600, marginTop: 30, textAlign: "center", marginBottom: 10 }}>Enter Job Information</Text>
                     <View style={styles.scrollContainer}>
                         <ScrollView showsVerticalScrollIndicator={false}>
-                            <View style={{paddingBottom: 10}}>
+                            <View style={{ paddingBottom: 10 }}>
                                 <View style={styles.inputContainer}>
                                     <Text style={styles.inputText}>Job Title</Text>
                                     <TextInput onChangeText={(text) => handleInput("title", text)} placeholderTextColor={"black"} style={{ ...styles.registerInput }} placeholder='Enter Job Title' />
@@ -155,13 +157,16 @@ const CreateListing = () => {
                                 </Pressable>
                                 <View style={{ ...styles.inputContainer, marginBottom: 10 }}>
                                     <Text style={styles.inputText}>Deadline</Text>
-                                    <DateTimePicker
+                                    {Platform.OS === 'android' && <Pressable style={{ display: 'flex', flexDirection: 'row', columnGap: 5, alignItems: 'center' }} onPress={() => setShowDate(true)}>
+                                        <Text>{date?.toLocaleString()}</Text>
+                                        <Feather name="edit" size={14} color="black" />
+                                    </Pressable>}
+                                    {showDate && <DateTimePicker
                                         value={date}
                                         mode="date"
                                         display="default"
                                         onChange={onChange}
-                                    />
-
+                                    />}
                                 </View>
 
                                 <View style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center", height: 60 }}>

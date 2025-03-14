@@ -33,6 +33,7 @@ export type Service = {
   phone?: string;
   price?: number;
   cost?: number;
+  images?: Array<{id?: string, image_url: string}>
   owner_id?: string;
   sub_category?: Array<{
     cost: string;
