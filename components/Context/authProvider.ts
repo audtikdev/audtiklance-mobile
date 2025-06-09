@@ -2,13 +2,11 @@ import { AuthUser } from '@/types/auth';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface AuthState {
-    auth: AuthUser
+    auth: AuthUser | null
 }
 
 const initialState: AuthState ={
-    auth: {
-        notify: true
-    }
+    auth: null
 }
 
 const authSlice = createSlice({

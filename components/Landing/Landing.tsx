@@ -21,8 +21,8 @@ const Landing = () => {
         (async () => {
             const response = await getUser()
             if (response?.status === 201 || response?.status === 200) {
-                const data = response?.data?.data
-                if (data?.service_profile) {
+                const data = response?.data
+                if (data?.user?.business) {
                     router.push("/(provider)")
                 } else {
                     router.push("/(user)")

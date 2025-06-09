@@ -3,7 +3,7 @@ import apiAxios from ".";
 
 export const addFavorite = async (id: string) => {
     try {
-      const res = await apiAxios.post(`/service/${id}/add-favorite/`);
+      const res = await apiAxios.post(`/businesses/${id}/favorite`);
       return {
         status: res.status,
         data: res.data,
@@ -22,7 +22,7 @@ export const addFavorite = async (id: string) => {
 
 export const removeFavorite = async (id: string) => {
     try {
-      const res = await apiAxios.post(`/service/${id}/remove-favorite/`);
+      const res = await apiAxios.delete(`/businesses/${id}/favorite`);
       return {
         status: res.status,
         data: res.data,
@@ -41,7 +41,7 @@ export const removeFavorite = async (id: string) => {
 
 export const getFavorites = async () => {
     try {
-      const res = await apiAxios.get(`/service/favorites/`);
+      const res = await apiAxios.get(`/businesses/favorites/get`);
       return {
         status: res.status,
         data: res.data,

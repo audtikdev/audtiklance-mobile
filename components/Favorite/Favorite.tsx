@@ -2,17 +2,17 @@ import { View, Text, Pressable, StyleSheet, Image, ScrollView } from 'react-nati
 import React, { useEffect, useState } from 'react'
 import { AntDesign } from '@expo/vector-icons'
 import { router } from 'expo-router'
-import { Service } from '@/types/service'
 import { getFavorites } from '@/api/favorite'
 import LottieView from 'lottie-react-native'
 import ServiceCard from '../Home/ServiceCard'
 import { generalStyle } from '@/style/generalStyle'
 import { useSelector } from 'react-redux'
 import { RootState } from '../Store/store'
+import { BusinessType } from '@/types/service'
 
 const Favorite = () => {
     const favoritesIDs = useSelector((state: RootState) => state.favoriteProvider.favorite)
-    const [favorites, setFavorites] = useState<Array<Service>>([])
+    const [favorites, setFavorites] = useState<Array<BusinessType>>([])
     const [load, setLoad] = useState(false)
 
     useEffect(() => {
@@ -21,7 +21,7 @@ const Favorite = () => {
             const res = await getFavorites()
             setLoad(false)
             if (res?.status === 200) {
-                setFavorites(res?.data?.results)
+                setFavorites(res?.data)
             }
         })()
     }, [favoritesIDs?.length])

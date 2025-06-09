@@ -3,7 +3,7 @@ import apiAxios from ".";
 
 export const getChatList = async () => {
     try {
-      const res = await apiAxios.get("/conversation/");
+      const res = await apiAxios.get("/chat/conversations");
       return {
         status: res.status,
         data: res.data,
@@ -20,9 +20,9 @@ export const getChatList = async () => {
     }
   };
 
-export const createConversation = async (body: {user: string}) => {
+export const createConversation = async (body: {receiverId: string}) => {
     try {
-      const res = await apiAxios.post("/conversation/", body);
+      const res = await apiAxios.post("/chat/initiate-chat", body);
       return {
         status: res.status,
         data: res.data,
@@ -41,7 +41,7 @@ export const createConversation = async (body: {user: string}) => {
 
 export const getPreviousConversation = async (id: string) => {
     try {
-      const res = await apiAxios.get(`/conversation/${id}/messages/`);
+      const res = await apiAxios.get(`/chat/${id}/history`);
       return {
         status: res.status,
         data: res.data,
@@ -60,7 +60,7 @@ export const getPreviousConversation = async (id: string) => {
 
 export const sendMessage = async (id: string, body: {content: string}) => {
     try {
-      const res = await apiAxios.post(`/conversation/${id}/send-message/`, body);
+      const res = await apiAxios.post(`/chat/${id}/send-message`, body);
       return {
         status: res.status,
         data: res.data,
@@ -79,7 +79,7 @@ export const sendMessage = async (id: string, body: {content: string}) => {
 
 export const blockUser = async (id: string) => {
     try {
-      const res = await apiAxios.post(`/user/${id}/block-user/`);
+      const res = await apiAxios.post(`/chat/${id}/block-user`);
       return {
         status: res.status,
         data: res.data,
@@ -98,7 +98,7 @@ export const blockUser = async (id: string) => {
 
 export const reportUser = async (body: {content: string}, id: string) => {
     try {
-      const res = await apiAxios.post(`/user/${id}/report-user/`, body);
+      const res = await apiAxios.post(`/chat/${id}/report-user`, body);
       return {
         status: res.status,
         data: res.data,

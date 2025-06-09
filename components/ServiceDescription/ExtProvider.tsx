@@ -6,7 +6,7 @@ import { IHandles } from 'react-native-modalize/lib/options'
 import { Service } from '@/types/service'
 import { makeCall } from '@/utils/helper'
 
-const ExtProvider: React.FC<{ extProviderRef: React.RefObject<IHandles>, service: Service }> = ({ extProviderRef, service }) => {
+const ExtProvider: React.FC<{ extProviderRef: React.RefObject<IHandles | null>, service: Service }> = ({ extProviderRef, service }) => {
     const colorScheme = useColorScheme() || "light"
 
     return (

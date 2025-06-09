@@ -18,7 +18,7 @@ const Listings = () => {
             setLoad(true)
             const res = await getMyListing()
             if (res?.status === 200) {
-                setListings(res?.data?.data || [])
+                setListings(res?.data || [])
             }
             setLoad(false)
         })()

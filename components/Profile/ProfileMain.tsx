@@ -22,7 +22,7 @@ const ProfileMain = () => {
     const referRef = useRef<Modalize>(null)
 
     useEffect(() => {
-        if (!authUser?.access) {
+        if (!authUser?.token) {
             logOutUser()
         }
     }, [])

@@ -3,7 +3,7 @@ import { generalStyle } from "@/style/generalStyle"
 import { RegisterUserInfo } from "@/types/auth"
 import { FontAwesome6, Ionicons } from "@expo/vector-icons"
 import { useEffect, useState } from "react"
-import { ActivityIndicator, Alert, Image, Pressable, StyleSheet, Switch, Text, TextInput, useColorScheme, View } from "react-native"
+import { ActivityIndicator, Alert, Image, KeyboardAvoidingView, Platform, Pressable, StyleSheet, Switch, Text, TextInput, TouchableWithoutFeedback, useColorScheme, View } from "react-native"
 import { Modalize } from "react-native-modalize"
 import { IHandles } from "react-native-modalize/lib/options"
 import { RootState } from "../Store/store"
@@ -11,21 +11,20 @@ import { useDispatch, useSelector } from "react-redux"
 import Toast from "react-native-toast-message"
 import * as ImagePicker from 'expo-image-picker';
 import { updateAuth } from "../Context/authProvider"
-
-export const AccountModal: React.FC<{ accountRef: React.RefObject<IHandles> }> = ({ accountRef }) => {
+export const AccountModal: React.FC<{ accountRef: React.RefObject<IHandles | null> }> = ({ accountRef }) => {
     const authUser = useSelector((state: RootState) => state.authProvider.auth)
     const colorScheme = useColorScheme() || "light"
-    const [userInfo, setUserInfo] = useState<Pick<RegisterUserInfo, "firstname" | "lastname" | "phone" | "profile_picture">>()
+    const [userInfo, setUserInfo] = useState<Pick<RegisterUserInfo, "firstName" | "lastName" | "phoneNumber" | "profilePicture">>()
     const [load, setLoad] = useState(false)
     const [image, setImage] = useState('')
     const dispatch = useDispatch()
 
     useEffect(() => {
         setUserInfo({
-            firstname: authUser?.firstname!,
-            lastname: authUser?.lastname!,
-            phone: authUser?.phone!,
-            ...(authUser?.profile_picture && {profile_picture: authUser?.profile_picture})
+            firstName: authUser?.user?.firstName!,
+            lastName: authUser?.user?.lastName!,
+            phoneNumber: authUser?.user?.phoneNumber!,
+            profilePicture: authUser?.user?.profilePicture!
         })
     }, [])
 
@@ -42,9 +41,9 @@ export const AccountModal: React.FC<{ accountRef: React.RefObject<IHandles> }> =
 
             let formData = new FormData();
 
-            formData.append('firstname', userInfo?.firstname)
-            formData.append('lastname', userInfo?.lastname)
-            formData.append('phone', userInfo?.phone!)
+            formData.append('firstName', userInfo?.firstName)
+            formData.append('lastName', userInfo?.lastName)
+            formData.append('phoneNumber', userInfo?.phoneNumber!)
 
             if (image) {
                 let localUri = image;
@@ -54,14 +53,13 @@ export const AccountModal: React.FC<{ accountRef: React.RefObject<IHandles> }> =
                 let type = match ? `image/${match[1]}` : `image`;
 
                 // @ts-ignore
-                formData.append('profile_picture', { uri: localUri, name: filename, type })
+                formData.append('profilePicture', { uri: localUri, name: filename, type })
             }
-            formData.append('country_code', '1')
-            
+
             const response = await updateUser(formData)
-            
+
             if (response?.status === 200 || response?.status === 201) {
-                const data = response?.data?.data
+                const data = response?.data
                 dispatch(updateAuth({ auth: data }))
                 Toast.show({
                     type: "success",
@@ -101,14 +99,14 @@ export const AccountModal: React.FC<{ accountRef: React.RefObject<IHandles> }> =
         >
             <View style={styles.modalContent}>
                 <Text style={{ ...styles.profileText }}>Update Your Account Details</Text>
-                <View style={{display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 10, marginBottom: 20}}>
-                    <Image style={{width: 100, height: 100, borderRadius: 100, borderWidth: 1, borderColor: '#1B64F1'}} source={image ? {uri: image} : userInfo?.profile_picture ? {uri: userInfo?.profile_picture} : require('../../assets/images/placeholder.png')} />
+                <View style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 10, marginBottom: 20 }}>
+                    <Image style={{ width: 100, height: 100, borderRadius: 100, borderWidth: 1, borderColor: '#1B64F1' }} source={image ? { uri: image } : userInfo?.profilePicture ? { uri: userInfo?.profilePicture } : require('../../assets/images/placeholder.png')} />
                     <Ionicons onPress={handleImageUpload} name="cloud-upload-outline" size={24} color="black" />
                 </View>
-                <TextInput placeholderTextColor={"black"} onChangeText={(text) => handleInput("firstname", text)} value={userInfo?.firstname} style={{ ...styles.registerInput }} placeholder='First Name' />
-                <TextInput placeholderTextColor={"black"} onChangeText={(text) => handleInput("lastname", text)} value={userInfo?.lastname} style={{ ...styles.registerInput }} placeholder='Last Name' />
+                <TextInput placeholderTextColor={"black"} onChangeText={(text) => handleInput("firstName", text)} value={userInfo?.firstName} style={{ ...styles.registerInput }} placeholder='First Name' />
+                <TextInput placeholderTextColor={"black"} onChangeText={(text) => handleInput("lastName", text)} value={userInfo?.lastName} style={{ ...styles.registerInput }} placeholder='Last Name' />
 
-                <TextInput placeholderTextColor={"black"} onChangeText={(text) => handleInput("phone", text)} value={userInfo?.phone} keyboardType='phone-pad' style={{ ...styles.registerInput }} placeholder='Phone Number' />
+                <TextInput placeholderTextColor={"black"} onChangeText={(text) => handleInput("phoneNumber", text)} value={userInfo?.phoneNumber} keyboardType='phone-pad' style={{ ...styles.registerInput }} placeholder='Phone Number' />
                 <Pressable onPress={updateUserDetails} style={{ ...styles.registerButton, marginTop: 10 }}>
                     {
                         load ?
@@ -121,9 +119,9 @@ export const AccountModal: React.FC<{ accountRef: React.RefObject<IHandles> }> =
     )
 }
 
-export const PasswordModal: React.FC<{ passwordRef: React.RefObject<IHandles> }> = ({ passwordRef }) => {
+export const PasswordModal: React.FC<{ passwordRef: React.RefObject<IHandles | null> }> = ({ passwordRef }) => {
     const colorScheme = useColorScheme() || "light"
-    const [userInfo, setUserInfo] = useState<{old_password: string, new_password: string}>()
+    const [userInfo, setUserInfo] = useState<{ currentPassword: string, newPassword: string }>()
     const [showPass, setShowPass] = useState(true)
     const [load, setLoad] = useState(false)
 
@@ -136,12 +134,20 @@ export const PasswordModal: React.FC<{ passwordRef: React.RefObject<IHandles> }>
 
     const updateUserPassword = async () => {
         if (userInfo) {
+            if (userInfo.newPassword.length < 8) {
+                Toast.show({
+                    type: "error",
+                    text1: "Password must be at least 8 characters long"
+                })
+                return
+            }
             setLoad(true)
             const response = await updatePassword(userInfo)
             if (response?.status === 200 || response?.status === 201) {
-                const data = response?.data?.data
+
+                const data = response?.data
                 console.log(data);
-                
+
                 Toast.show({
                     type: "success",
                     text1: "Password Updated Successfully"
@@ -162,16 +168,16 @@ export const PasswordModal: React.FC<{ passwordRef: React.RefObject<IHandles> }>
             ref={passwordRef}
             adjustToContentHeight={true}
         >
-            <View style={{ ...styles.modalContent, height: 320 }}>
+            <View style={{ ...styles.modalContent, height: 620 }}>
                 <Text style={{ ...styles.profileText }}>Update Your Password</Text>
                 <View style={{ ...styles.passwordContainer }}>
-                    <TextInput placeholderTextColor={"black"} secureTextEntry={showPass} onChangeText={(text) => handleInput("old_password", text)} value={userInfo?.old_password} style={{ ...styles.passwordInput }} placeholder='Current Password' />
+                    <TextInput placeholderTextColor={"black"} secureTextEntry={showPass} onChangeText={(text) => handleInput("currentPassword", text)} value={userInfo?.currentPassword} style={{ ...styles.passwordInput }} placeholder='Current Password' />
                     <Pressable onPress={() => setShowPass(!showPass)}>
                         <FontAwesome6 name={showPass ? "eye" : "eye-slash"} size={15} color="black" />
                     </Pressable>
                 </View>
                 <View style={{ ...styles.passwordContainer }}>
-                    <TextInput placeholderTextColor={"black"} secureTextEntry={showPass} onChangeText={(text) => handleInput("new_password", text)} value={userInfo?.new_password} style={{ ...styles.passwordInput }} placeholder='New Password' />
+                    <TextInput placeholderTextColor={"black"} secureTextEntry={showPass} onChangeText={(text) => handleInput("newPassword", text)} value={userInfo?.newPassword} style={{ ...styles.passwordInput }} placeholder='New Password' />
                     <Pressable onPress={() => setShowPass(!showPass)}>
                         <FontAwesome6 name={showPass ? "eye" : "eye-slash"} size={15} color="black" />
                     </Pressable>
@@ -179,8 +185,8 @@ export const PasswordModal: React.FC<{ passwordRef: React.RefObject<IHandles> }>
                 <Pressable onPress={updateUserPassword} style={{ ...styles.registerButton, marginTop: 10 }}>
                     {
                         load ?
-                        <ActivityIndicator /> :
-                        <Text style={{ ...styles.buttonText }}>Update</Text>
+                            <ActivityIndicator color={'white'} /> :
+                            <Text style={{ ...styles.buttonText }}>Update</Text>
                     }
                 </Pressable>
             </View>
@@ -188,13 +194,13 @@ export const PasswordModal: React.FC<{ passwordRef: React.RefObject<IHandles> }>
     )
 }
 
-export const NotifyModal: React.FC<{ notifyRef: React.RefObject<IHandles> }> = ({ notifyRef }) => {
+export const NotifyModal: React.FC<{ notifyRef: React.RefObject<IHandles | null> }> = ({ notifyRef }) => {
     const authUser = useSelector((state: RootState) => state.authProvider.auth)
-    const [notify, setNotify] = useState(authUser?.notify)
+    const [notify, setNotify] = useState(authUser?.user?.notify)
     const dispatch = useDispatch()
 
     const updateUserNotification = async () => {
-        dispatch(updateAuth({auth: {notify: notify}}))
+        dispatch(updateAuth({ auth: { user: { ...authUser?.user!, notify: notify! } } }))
     }
 
     return (
@@ -220,7 +226,7 @@ export const NotifyModal: React.FC<{ notifyRef: React.RefObject<IHandles> }> = (
     )
 }
 
-export const ReferModal: React.FC<{referRef: React.RefObject<IHandles> }> = ({referRef}) => {
+export const ReferModal: React.FC<{ referRef: React.RefObject<IHandles | null> }> = ({ referRef }) => {
     const [load, setLoad] = useState(false)
     const [email, setEmail] = useState('')
 
@@ -229,7 +235,7 @@ export const ReferModal: React.FC<{referRef: React.RefObject<IHandles> }> = ({re
             return
         }
         setLoad(true)
-        const res = await referUser({email: email})
+        const res = await referUser({ email: email })
         if (res?.status === 200 || res?.status === 201) {
             Toast.show({
                 type: 'success',
@@ -250,15 +256,15 @@ export const ReferModal: React.FC<{referRef: React.RefObject<IHandles> }> = ({re
             ref={referRef}
             adjustToContentHeight={true}
         >
-            <View style={{...styles.modalContent, height: 300}}>
+            <View style={{ ...styles.modalContent, height: 300 }}>
                 <Text style={styles.profileText}>Refer And Earn</Text>
-                <Text style={{textAlign: 'center', marginBottom: 15}}>Enter the email of the person you want to refer and earn a reward when they sign up</Text>
-                <TextInput placeholder="email" style={styles.registerInput} onChangeText={(text)=> setEmail(text)} />
+                <Text style={{ textAlign: 'center', marginBottom: 15 }}>Enter the email of the person you want to refer and earn a reward when they sign up</Text>
+                <TextInput placeholder="email" style={styles.registerInput} onChangeText={(text) => setEmail(text)} />
                 <Pressable onPress={handleRefer} style={styles.registerButton}>
                     {
                         load ?
-                        <ActivityIndicator color={'white'} /> :
-                        <Text style={styles.buttonText}>Refer</Text>
+                            <ActivityIndicator color={'white'} /> :
+                            <Text style={styles.buttonText}>Refer</Text>
                     }
                 </Pressable>
             </View>

@@ -76,14 +76,14 @@ const ProviderRegister2 = () => {
 
         if (!result.canceled) {
             setImage(result.assets[0].uri)
-            setValue("profile_picture", result.assets[0].uri, { shouldValidate: true })
+            setValue("profilePicture", result.assets[0].uri, { shouldValidate: true })
         }
     }
 
-    const onSubmit = (data: RegisterProvider) => {
+    const onSubmit = (data: Partial<RegisterProvider>) => {
         console.log(data);
 
-        dispatch(updateRegisterProvider({ provider: data }))
+        dispatch(updateRegisterProvider({ provider: data as RegisterProvider }))
         router.push("/providerRegister3")
     }
 
@@ -101,24 +101,24 @@ const ProviderRegister2 = () => {
                     <Text style={{ ...styles.profileText, }}>Business Information</Text>
                     <Controller
                         control={control}
-                        name="business_name"
+                        name="title"
                         render={({ field: { onChange, onBlur, value } }) => (
                             <TextInput placeholderTextColor={"black"} onChangeText={onChange} onBlur={onBlur} value={value} style={{ ...styles.registerInput }} placeholder='Business Name' />
                         )}
                     />
                     <View style={styles.errorContainer}>
-                        {errors.business_name && <Text style={styles.errorText}>{errors.business_name.message}</Text>}
+                        {errors.title && <Text style={styles.errorText}>{errors.title.message}</Text>}
                     </View>
 
                     <Controller
                         control={control}
-                        name="phone"
+                        name="phoneNumber"
                         render={({ field: { onChange, onBlur, value } }) => (
                             <TextInput placeholderTextColor={"black"} onChangeText={onChange} onBlur={onBlur} value={value} keyboardType='phone-pad' style={{ ...styles.registerInput }} placeholder='Phone Number' />
                         )}
                     />
                     <View style={styles.errorContainer}>
-                        {errors.phone && <Text style={styles.errorText}>{errors.phone.message}</Text>}
+                        {errors.phoneNumber && <Text style={styles.errorText}>{errors.phoneNumber.message}</Text>}
                     </View>
 
                     <AutoSearch
@@ -135,13 +135,13 @@ const ProviderRegister2 = () => {
                     </View>
                     <Controller
                         control={control}
-                        name="about_me"
+                        name="description"
                         render={({ field: { onChange, onBlur, value } }) => (
                             <TextInput multiline={true} numberOfLines={5} textAlignVertical='top' placeholderTextColor={"black"} onChangeText={onChange} value={value} onBlur={onBlur} style={{ ...styles.registerInput, height: 90, paddingTop: 10, marginTop: 10 }} placeholder='Business Description' />
                         )}
                     />
                     <View style={styles.errorContainer}>
-                        {errors.about_me && <Text style={styles.errorText}>{errors.about_me.message}</Text>}
+                        {errors.description && <Text style={styles.errorText}>{errors.description.message}</Text>}
                     </View>
 
                     <Pressable onPress={handleImageSelect} style={{ ...styles.uploadView }}>
@@ -159,7 +159,7 @@ const ProviderRegister2 = () => {
                         }
                     </Pressable>
                     <View style={{ ...styles.errorContainer, marginTop: -5 }}>
-                        {errors.profile_picture && <Text style={styles.errorText}>{errors.profile_picture.message}</Text>}
+                        {errors.profilePicture && <Text style={styles.errorText}>{errors.profilePicture.message}</Text>}
                     </View>
                     <Pressable onPress={handleSubmit(onSubmit)} style={{ ...styles.registerButton }}><Text style={{ ...styles.buttonText }}>Continue</Text></Pressable>
                     <Pressable onPress={()=> router.back()} style={{ ...styles.backButton }}><Text style={{ ...styles.buttonText, color: "#1B64F1" }}>Go back</Text></Pressable>

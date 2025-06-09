@@ -13,7 +13,6 @@ import { openLink } from '@/utils/helper'
 import Toast from 'react-native-toast-message'
 
 const LeadsMain = () => {
-    const colorScheme = useColorScheme() || "light"
     const leadRef = useRef<Modalize>(null)
     const [leads, setLeads] = useState<Array<LEAD>>([])
     const [load, setLoad] = useState(false)
@@ -24,7 +23,7 @@ const LeadsMain = () => {
             setLoad(true)
             const response = await getLeads()
             if (response?.status === 200) {
-                setLeads(response?.data?.results)
+                setLeads(response?.data)
             }
             setLoad(false)
         })()
@@ -60,9 +59,9 @@ const LeadsMain = () => {
                                     leads?.map((lead, i) => (
                                         <Pressable onPress={() => openLeadModal(lead)} key={i} style={{ display: "flex", marginTop: 10, justifyContent: "space-between", flexDirection: "row", alignItems: "center" }}>
                                             <View style={styles.box}>
-                                                <Image source={{ uri: lead?.user?.profile_picture }} style={styles.iconView} />
+                                                <Image source={{ uri: lead?.user?.profilePicture || `https://ui-avatars.com/api/?name=${lead?.user?.firstName}+${lead?.user?.lastName}` }} style={styles.iconView} />
                                                 <View>
-                                                    <Text style={{ fontSize: 18, fontWeight: 600 }}>{lead?.user?.firstname} {lead?.user?.lastname}</Text>
+                                                    <Text style={{ fontSize: 18, fontWeight: 600 }}>{lead?.user?.firstName} {lead?.user?.lastName}</Text>
                                                     <Text style={{ fontSize: 16, fontWeight: 400, width: '80%' }}>{lead?.message}</Text>
                                                 </View>
                                             </View>
@@ -80,7 +79,7 @@ const LeadsMain = () => {
 
 export default LeadsMain
 
-const LeadModal: React.FC<{ leadRef: React.RefObject<IHandles>, lead: LEAD }> = ({ leadRef, lead }) => {
+const LeadModal: React.FC<{ leadRef: React.RefObject<IHandles | null>, lead: LEAD }> = ({ leadRef, lead }) => {
     const [load, setLoad] = useState(false)
 
     const payForLead = async (id: string) => {
@@ -104,14 +103,14 @@ const LeadModal: React.FC<{ leadRef: React.RefObject<IHandles>, lead: LEAD }> = 
             adjustToContentHeight={true}
         >
             {
-                lead?.paid ?
+                lead?.isPaid ?
                     <View style={styles.modalContent}>
                         <Text style={{ marginVertical: 20, fontSize: 16, fontWeight: 500, textAlign: "center", borderBottomWidth: 0.5, paddingBottom: 15 }}>You can communicate with this customer using the following method</Text>
-                        <Pressable style={styles.bookButton}><Text style={{ color: "white", fontSize: 16 }}>Chat with customer</Text></Pressable>
-                        <Pressable style={styles.bookButton}><Text style={{ color: "white", fontSize: 16 }}>Call customer</Text></Pressable>
+                        <Pressable onPress={() => router.push(`/chat/${lead?.user?._id}/null`)} style={styles.bookButton}><Text style={{ color: "white", fontSize: 16 }}>Chat with customer</Text></Pressable>
+                        <Pressable onPress={() => openLink(`tel:${lead?.user?.phoneNumber}`)} style={styles.bookButton}><Text style={{ color: "white", fontSize: 16 }}>Call customer</Text></Pressable>
                     </View> :
                     <View style={{ ...styles.shareModalContent, height: 260, paddingTop: 30 }}>
-                        <Text style={{ fontSize: 18, fontWeight: 700, textAlign: "center", marginBottom: 10 }}>{lead?.user?.firstname} {lead?.user?.lastname}</Text>
+                        <Text style={{ fontSize: 18, fontWeight: 700, textAlign: "center", marginBottom: 10 }}>{lead?.user?.firstName} {lead?.user?.lastName}</Text>
                         <Text style={{ fontSize: 16, fontWeight: 500 }}>{lead?.message}</Text>
                         <Pressable onPress={() => payForLead(lead?.id!)} style={styles.bookButton}>
                             {

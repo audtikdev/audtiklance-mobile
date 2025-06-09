@@ -14,8 +14,8 @@ apiAxios.interceptors.request.use(
      (config) => {
           const rootState = store.getState();
           const authState = rootState.authProvider.auth;
-          if (authState?.access) {
-               config.headers.Authorization = `Bearer ${authState.access}`;
+          if (authState?.token) {
+               config.headers.Authorization = `Bearer ${authState.token}`;
           }
           return config;
      },

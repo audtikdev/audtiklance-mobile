@@ -9,21 +9,37 @@ import { formatCurrency } from '@/utils/helper'
 import { Modalize } from 'react-native-modalize'
 import { AddServiceModal, DeleteModal, ModifyPriceModal, UpdateDetailModal } from './ServiceModal'
 import { updateAuth } from '@/components/Context/authProvider'
-import { Service, SubCategory } from '@/types/service'
+import { BusinessType, ServiceType } from '@/types/service'
 import { deleteServiceImage, getCategory, getServiceProfile, updateServiceImage, updateServiceProfile } from '@/api/service'
 import Toast from 'react-native-toast-message'
 import LoadingOverlay from '@/components/LoadingOverlay'
+import LottieView from 'lottie-react-native'
 
 const ServiceMain = () => {
     const authUser = useSelector((state: RootState) => state.authProvider.auth)
     const screenWidth = Dimensions.get('window').width;
     const [showAddModal, setShowAddModal] = useState(false)
     const [showUpdateModal, setShowUpdateModal] = useState(false)
-    const [activeService, setActiveService] = useState<Service>()
+    const [activeService, setActiveService] = useState<ServiceType>()
     const priceRef = useRef<Modalize>(null)
     const deleteRef = useRef<Modalize>(null)
     const dispatch = useDispatch()
+    const [businessInfo, setBusinessInfo] = useState<BusinessType>()
+    const [isLoading, setIsLoading] = useState(false)
     const [load, setLoad] = useState(false)
+
+    const getBusinessInfo = async () => {
+        const res = await getServiceProfile(authUser?.user?.business?.id!)
+        setBusinessInfo(res?.data)
+    }
+
+    useEffect(() => {
+        (async () => {
+            setIsLoading(true)
+            await getBusinessInfo()
+            setIsLoading(false)
+        })()
+    }, [])
 
     const handleImageSelect = async (type: string, num?: number) => {
         const permissiomResult = await ImagePicker.requestMediaLibraryPermissionsAsync()
@@ -48,50 +64,44 @@ const ServiceMain = () => {
                 let formData = new FormData();
 
                 // @ts-ignore
-                formData.append('profile_picture', { uri: localUri, name: filename, type });
-                const response = await updateServiceImage(formData)
+                formData.append('mainImage', { uri: localUri, name: filename, type });
+                const response = await updateServiceProfile(formData, authUser?.user?.business?.id!)
                 console.log(response);
 
                 if (response?.status === 200) {
-                    dispatch(updateAuth({ auth: response?.data?.data }))
+                    await getBusinessInfo()
                 }
             } else {
-                const arr = authUser?.images ? [...authUser?.images] : []
-                arr[num || 0] = { image_url: result.assets[0].uri! }
+                let localUri = result.assets[0].uri!;
+                let filename = localUri.split('/').pop();
+
+                let match = /\.(\w+)$/.exec(filename!);
+                let type = match ? `image/${match[1]}` : `image`;
 
                 let formData = new FormData();
 
-                arr?.slice(0, 2)?.forEach((image, i) => {
-                    let filename = image?.image_url?.split('/').pop();
-
-                    let match = /\.(\w+)$/.exec(filename!);
-                    let type = match ? `image/${match[1]}` : `image`;
-                    // @ts-ignore
-                    formData.append(`images[${i}]`, { uri: image?.image_url, name: filename, type });
-
-                })
-
-                const response = await updateServiceImage(formData)
-                console.log(response);
-
+                // @ts-ignore
+                formData.append('images', { uri: localUri, name: filename, type });
+                const response = await updateServiceProfile(formData, authUser?.user?.business?.id!)
                 if (response?.status === 200) {
-                    dispatch(updateAuth({ auth: response?.data?.data }))
+                    await getBusinessInfo()
                 }
             }
             setLoad(false)
         }
     }
 
-    const handleDeleteImage = async (id: string) => {
+    const handleDeleteImage = async (imageUrl: string) => {
         setLoad(true)
-        const res = await deleteServiceImage(id)
-        if (res?.status === 204) {
+        console.log(authUser?.user?.business?.id!, { imageUrl });
+        const res = await deleteServiceImage(authUser?.user?.business?.id!, { imageUrl })
+        console.log(res);
+        if (res?.status === 200 || res?.status === 204) {
             Toast.show({
                 type: 'success',
                 text1: 'Image Deleted Successfully'
             })
-            const res = await getServiceProfile(authUser?.service_profile!)
-            dispatch(updateAuth({ auth: res?.data }))
+            await getBusinessInfo()
         } else {
             Toast.show({
                 type: 'error',
@@ -101,22 +111,22 @@ const ServiceMain = () => {
         setLoad(false)
     }
 
-    const editService = (service: SubCategory) => {
-        setActiveService({
-            id: service?.sub_category_id,
-            name: service?.sub_category,
-            price: Number(service?.cost)
-        })
+    const editService = (service: ServiceType) => {
+        setActiveService(service)
         priceRef.current?.open()
     }
 
-    const deleteService = (service: SubCategory) => {
-        setActiveService({
-            id: service?.sub_category_id,
-            name: service?.sub_category,
-            price: Number(service?.cost)
-        })
+    const deleteService = (service: ServiceType) => {
+        setActiveService(service)
         deleteRef.current?.open()
+    }
+
+    if (isLoading) {
+        return (
+            <View style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100%", width: "100%" }}>
+                <LottieView source={require("../../../assets/images/service2.json")} loop={true} autoPlay style={{ width: 300, height: 350 }} />
+            </View>
+        )
     }
 
     return (
@@ -127,21 +137,21 @@ const ServiceMain = () => {
                     <View style={{ ...styles.iconView }}>
                         <MaterialIcons name="home-repair-service" size={24} color={"black"} />
                     </View>
-                    <Text style={{ fontSize: 20, fontWeight: 600 }}>{authUser?.business_name}</Text>
+                    <Text style={{ fontSize: 20, fontWeight: 600 }}>{businessInfo?.title}</Text>
                     <Feather onPress={() => setShowUpdateModal(true)} style={{ marginTop: 5 }} name="edit" size={18} color="black" />
                 </View>
                 <View style={styles.box}>
                     <View style={{ ...styles.iconView }}>
                         <Ionicons name="location-sharp" size={24} color="black" />
                     </View>
-                    <Text style={{ fontSize: 12, fontWeight: 600, maxWidth: "75%" }}>Based in {authUser?.address}</Text>
+                    <Text style={{ fontSize: 12, fontWeight: 600, maxWidth: "75%" }}>Based in {businessInfo?.address}</Text>
                     <Feather onPress={() => setShowUpdateModal(true)} style={{ marginTop: 5 }} name="edit" size={18} color="black" />
                 </View>
                 <View>
                     <ScrollView showsVerticalScrollIndicator={false}>
                         <View style={{ paddingBottom: 500 }}>
                             <View style={{ position: "relative" }}>
-                                <Image style={{ width: "100%", height: screenWidth > 600 ? 330 : 170, marginTop: 20, borderRadius: 10 }} source={{ uri: authUser?.profile_picture as unknown as string }} />
+                                <Image style={{ width: "100%", height: screenWidth > 600 ? 330 : 170, marginTop: 20, borderRadius: 10 }} source={{ uri: businessInfo?.mainImage as unknown as string }} />
                                 <Pressable onPress={() => handleImageSelect("profile_picture")} style={{ position: "absolute", top: 30, right: 10, ...styles.iconView, width: 35, height: 35 }}>
                                     <Feather name="edit" size={18} color="white" />
                                 </Pressable>
@@ -151,18 +161,18 @@ const ServiceMain = () => {
                                 <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                                     <View style={{ display: "flex", flexDirection: "row", columnGap: 10, marginTop: 10, alignItems: "flex-end" }}>
                                         {
-                                            authUser?.images?.map((image, i) => (
+                                            businessInfo?.previousWorkImages?.map((image, i) => (
                                                 <View key={i} style={{ position: "relative", width: 300 }}>
-                                                    <Image style={{ width: "100%", height: screenWidth > 600 ? 330 : 170, borderRadius: 10 }} source={{ uri: image?.image_url }} />
-                                                    <Pressable onPress={() => handleDeleteImage(image?.id!)} style={{ position: "absolute", top: 10, right: 10, ...styles.iconView, width: 35, height: 35 }}>
+                                                    <Image style={{ width: "100%", height: screenWidth > 600 ? 330 : 170, borderRadius: 10 }} source={{ uri: image }} />
+                                                    <Pressable onPress={() => handleDeleteImage(image)} style={{ position: "absolute", top: 10, right: 10, ...styles.iconView, width: 35, height: 35 }}>
                                                         <AntDesign name="delete" size={18} color="red" />
                                                     </Pressable>
                                                 </View>
                                             ))
                                         }
                                         {
-                                            authUser?.images?.length! < 2 &&
-                                            <Pressable onPress={() => handleImageSelect("images", authUser?.images?.length!)} style={{ width: "48%", height: screenWidth > 600 ? 330 : 170, borderWidth: 0.6, display: "flex", borderRadius: 10, justifyContent: "center", alignItems: "center" }}>
+                                            businessInfo?.previousWorkImages?.length! < 2 &&
+                                            <Pressable onPress={() => handleImageSelect("images", businessInfo?.previousWorkImages?.length!)} style={{ width: "48%", height: screenWidth > 600 ? 330 : 170, borderWidth: 0.6, display: "flex", borderRadius: 10, justifyContent: "center", alignItems: "center" }}>
                                                 <Entypo name="upload-to-cloud" size={50} color="black" />
                                             </Pressable>
                                         }
@@ -176,11 +186,11 @@ const ServiceMain = () => {
                                 </View>
                                 <View style={{ marginTop: 10 }}>
                                     {
-                                        authUser?.sub_category?.map((serv) => (
+                                        businessInfo?.services?.map((serv) => (
                                             <View key={serv?.id} style={{ ...styles.serviceContainer, marginTop: 15, paddingTop: 15, borderTopWidth: 0.6 }}>
                                                 <View>
-                                                    <Text style={{ fontSize: 18, fontWeight: 600 }}>{serv?.sub_category}</Text>
-                                                    <Text style={{ fontSize: 16, fontWeight: 500, marginTop: 3 }}>{formatCurrency("en-US", "USD", Number(serv?.cost))} - {serv?.time_frame}</Text>
+                                                    <Text style={{ fontSize: 18, fontWeight: 600 }}>{serv?.category?.name}</Text>
+                                                    <Text style={{ fontSize: 16, fontWeight: 500, marginTop: 3 }}>{formatCurrency("en-US", "USD", Number(serv?.price))}</Text>
                                                 </View>
                                                 <View style={{ display: "flex", flexDirection: "row", columnGap: 10, alignItems: "center" }}>
                                                     <Feather onPress={() => editService(serv)} name="edit" size={24} color="black" />
@@ -197,8 +207,8 @@ const ServiceMain = () => {
             </View>
             <UpdateDetailModal showUpdateModal={showUpdateModal} setShowUpdateModal={setShowUpdateModal} />
             <AddServiceModal priceRef={priceRef} setActiveService={setActiveService} showAddModal={showAddModal} setShowAddModal={setShowAddModal} />
-            <ModifyPriceModal priceRef={priceRef} activeService={activeService!} setActiveService={setActiveService} />
-            <DeleteModal deleteRef={deleteRef} activeService={activeService!} />
+            <ModifyPriceModal priceRef={priceRef} activeService={activeService!} getBusinessInfo={getBusinessInfo} />
+            <DeleteModal deleteRef={deleteRef} activeService={activeService!} getBusinessInfo={getBusinessInfo} />
             <LoadingOverlay visible={load} />
         </>
     )

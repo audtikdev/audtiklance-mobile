@@ -59,21 +59,21 @@ const UserRegister = () => {
     }
   };
 
-  const onSubmit = async () => {
-    setLoad(true)
-    const body: RegisterUserInfo = {
-      ...userInfo!,
-      otp: otp,
-      secret_key: secret,
-      country_code: "1"
+  const onSubmit = async (data: Partial<RegisterUserInfo>) => {
+    if (data?.password !== data?.confirmPassword) {
+      Toast.show({
+        type: "error",
+        text1: "Password and confirm password do not match"
+      })
+      return
     }
-    console.log(body);
-
+    setLoad(true)
+    const { confirmPassword, ...body } = data
     const response = await registerUser(body)
 
     if (response?.status === 201 || response?.status === 200) {
       console.log("success");
-      const data = response?.data?.data
+      const data = response?.data
       dispatch(updateAuth({ auth: data }))
       router.push("/(user)")
     } else {
@@ -85,33 +85,33 @@ const UserRegister = () => {
     setLoad(false)
   }
 
-  const handleSendOtp = async (data: RegisterUserInfo) => {
-    if (userInfo?.password !== userInfo?.confirmPassword) {
-      Toast.show({
-        type: "error",
-        text1: "Password and confirm password do not match"
-      })
-      return
-    }
-    setUserInfo(data)
-    setLoad(true)
-    const response = await sendOtp({ email: data?.email })
-    if (response?.status === 201 || response?.status === 200) {
-      setSecret(response?.data?.data)
-      Keyboard.dismiss()
-      Toast.show({
-        type: "success",
-        text1: "OTP Code Sent To Your Email"
-      })
-      modalizeRef.current?.open()
-    } else {
-      Toast.show({
-        type: "error",
-        text1: response?.data
-      })
-    }
-    setLoad(false)
-  }
+  // const handleSendOtp = async (data: RegisterUserInfo) => {
+  //   if (userInfo?.password !== userInfo?.confirmPassword) {
+  //     Toast.show({
+  //       type: "error",
+  //       text1: "Password and confirm password do not match"
+  //     })
+  //     return
+  //   }
+  //   setUserInfo(data)
+  //   setLoad(true)
+  //   const response = await sendOtp({ email: data?.email })
+  //   if (response?.status === 201 || response?.status === 200) {
+  //     setSecret(response?.data?.data)
+  //     Keyboard.dismiss()
+  //     Toast.show({
+  //       type: "success",
+  //       text1: "OTP Code Sent To Your Email"
+  //     })
+  //     modalizeRef.current?.open()
+  //   } else {
+  //     Toast.show({
+  //       type: "error",
+  //       text1: response?.data
+  //     })
+  //   }
+  //   setLoad(false)
+  // }
 
   return (
     <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.registerContainer}>
@@ -121,23 +121,23 @@ const UserRegister = () => {
           <Text style={{ ...styles.profileText }}>Create a profile</Text>
           <Controller
             control={control}
-            name="firstname"
+            name="firstName"
             render={({ field: { onChange, onBlur, value } }) => (
               <TextInput placeholderTextColor={"black"} onChangeText={onChange} onBlur={onBlur} value={value} style={{ ...styles.registerInput }} placeholder='First Name' />
             )}
           />
           <View style={styles.errorContainer}>
-            {errors.firstname && <Text style={styles.errorText}>{errors.firstname.message}</Text>}
+            {errors.firstName && <Text style={styles.errorText}>{errors.firstName.message}</Text>}
           </View>
           <Controller
             control={control}
-            name="lastname"
+            name="lastName"
             render={({ field: { onChange, onBlur, value } }) => (
               <TextInput placeholderTextColor={"black"} onChangeText={onChange} onBlur={onBlur} value={value} style={{ ...styles.registerInput }} placeholder='Last Name' />
             )}
           />
           <View style={styles.errorContainer}>
-            {errors.lastname && <Text style={styles.errorText}>{errors.lastname.message}</Text>}
+            {errors.lastName && <Text style={styles.errorText}>{errors.lastName.message}</Text>}
           </View>
           <Controller
             control={control}
@@ -151,13 +151,13 @@ const UserRegister = () => {
           </View>
           <Controller
             control={control}
-            name="phone"
+            name="phoneNumber"
             render={({ field: { onChange, onBlur, value } }) => (
               <TextInput placeholderTextColor={"black"} onChangeText={onChange} value={value} onBlur={onBlur} keyboardType='phone-pad' style={{ ...styles.registerInput }} placeholder='Phone Number' />
             )}
           />
           <View style={styles.errorContainer}>
-            {errors.phone && <Text style={styles.errorText}>{errors.phone.message}</Text>}
+            {errors.phoneNumber && <Text style={styles.errorText}>{errors.phoneNumber.message}</Text>}
           </View>
           <Controller
             control={control}
@@ -179,7 +179,7 @@ const UserRegister = () => {
           <View style={styles.errorContainer}>
             {errors.confirmPassword && <Text style={styles.errorText}>{errors.confirmPassword.message}</Text>}
           </View>
-          <Pressable onPress={handleSubmit(handleSendOtp)} style={{ ...styles.registerButton }}>
+          <Pressable onPress={handleSubmit(onSubmit)} style={{ ...styles.registerButton }}>
             {
               load ?
                 <View><ActivityIndicator color={"white"} size="large" /></View> :
@@ -226,7 +226,7 @@ const UserRegister = () => {
                 textInputStyle={{ ...styles.otpInputBox, ...generalStyle.background[colorScheme] }}
                 handleTextChange={(otp) => setOtp(otp)}
               />
-              <Pressable onPress={onSubmit} style={{ ...styles.registerButton, marginTop: 40 }}>
+              <Pressable onPress={handleSubmit(onSubmit)} style={{ ...styles.registerButton, marginTop: 40 }}>
                 {
                   load ?
                     <View><ActivityIndicator color={"white"} size="large" /></View> :

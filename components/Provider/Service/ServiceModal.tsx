@@ -4,20 +4,19 @@ import axios from "axios"
 import { debounce } from "lodash"
 import Constants from 'expo-constants'
 import { Dispatch, SetStateAction, useEffect, useState } from "react"
-import { ActivityIndicator, Button, Keyboard, Modal, Pressable, StyleSheet, Text, TextInput, useColorScheme, View } from "react-native"
+import { ActivityIndicator, Keyboard, Modal, Pressable, StyleSheet, Text, TextInput, View } from "react-native"
 import { Modalize } from "react-native-modalize"
 import { IHandles } from "react-native-modalize/lib/options"
-import { RegisterProvider } from "@/types/auth"
-import { Service } from "@/types/service"
+import { BusinessType, CategoryType, ServiceType } from "@/types/service"
 import { RootState } from "@/components/Store/store"
 import { useDispatch, useSelector } from "react-redux"
-import { updateServiceProfile } from "@/api/service"
+import { createService, deleteService, updateService, updateServiceProfile } from "@/api/service"
 import { updateAuth } from "@/components/Context/authProvider"
+import Toast from "react-native-toast-message"
 
 export const UpdateDetailModal: React.FC<{ showUpdateModal: boolean, setShowUpdateModal: any }> = ({ showUpdateModal, setShowUpdateModal }) => {
     const authUser = useSelector((state: RootState) => state.authProvider.auth)
-    const colorScheme = useColorScheme() || "light"
-    const [userInfo, setUserInfo] = useState<RegisterProvider>()
+    const [businessInfo, setBusinessInfo] = useState<Omit<BusinessType, "provider">>()
     const [query, setQuery] = useState("");
     const [locations, setLocations] = useState([]);
     const dispatch = useDispatch()
@@ -50,14 +49,12 @@ export const UpdateDetailModal: React.FC<{ showUpdateModal: boolean, setShowUpda
     }, [query])
 
     useEffect(() => {
-        setUserInfo({
-            business_name: authUser?.business_name
-        })
+        setBusinessInfo(authUser?.user?.business)
     }, [])
 
     const handleInput = (type: string, value: string) => {
-        setUserInfo((prevUserInfo) => ({
-            ...prevUserInfo!,
+        setBusinessInfo((prevBusinessInfo) => ({
+            ...prevBusinessInfo!,
             [type!]: value!,
         }));
     }
@@ -67,18 +64,20 @@ export const UpdateDetailModal: React.FC<{ showUpdateModal: boolean, setShowUpda
     };
 
     const handleLocationSelect = (location: any) => {
-        setUserInfo((prevUserInfo) => ({
-            ...prevUserInfo!,
+        setBusinessInfo((prevBusinessInfo) => ({
+            ...prevBusinessInfo!,
             address: location?.place_name!,
-            longitude: location?.geometry?.coordinates[0],
-            latitude: location?.geometry?.coordinates[1]
+            location: {
+                coordinates: [location?.geometry?.coordinates[0], location?.geometry?.coordinates[1]],
+                type: "Point"
+            }
         }));
         setQuery(location?.place_name)
     }
 
     const updateBusinessDetail = async () => {
         setLoad(true)
-        const response = await updateServiceProfile(userInfo!)
+        const response = await updateServiceProfile(businessInfo!, authUser?.user?.business?.id!)
         dispatch(updateAuth({ auth: response?.data?.data }))
         setLoad(false)
         setShowUpdateModal(false)
@@ -93,10 +92,10 @@ export const UpdateDetailModal: React.FC<{ showUpdateModal: boolean, setShowUpda
                 setShowUpdateModal(false);
             }}
         >
-            <Pressable onPress={()=> setShowUpdateModal(false)} style={styles.modalOverlay}>
+            <Pressable onPress={() => setShowUpdateModal(false)} style={styles.modalOverlay}>
                 <View style={{ ...styles.addModalContent, height: 300 }}>
                     <Text style={{ ...styles.profileText }}>Update Your Business Details</Text>
-                    <TextInput placeholderTextColor={"black"} onChangeText={(text) => handleInput("business_name", text)} value={userInfo?.business_name} style={{ ...styles.registerInput }} placeholder='Business Name' />
+                    <TextInput placeholderTextColor={"black"} onChangeText={(text) => handleInput("title", text)} value={businessInfo?.title} style={{ ...styles.registerInput }} placeholder='Business Name' />
                     <AutoSearch
                         key={"autoSearch"}
                         data={locations}
@@ -119,20 +118,19 @@ export const UpdateDetailModal: React.FC<{ showUpdateModal: boolean, setShowUpda
     )
 }
 
-export const AddServiceModal: React.FC<{ priceRef: React.RefObject<IHandles>, setActiveService: Dispatch<SetStateAction<Service | undefined>>, showAddModal: boolean, setShowAddModal: any }> = ({ showAddModal, priceRef, setActiveService, setShowAddModal }) => {
-    const colorScheme = useColorScheme() || "light"
+export const AddServiceModal: React.FC<{ priceRef: React.RefObject<IHandles | null>, setActiveService: Dispatch<SetStateAction<ServiceType | undefined>>, showAddModal: boolean, setShowAddModal: any }> = ({ showAddModal, priceRef, setActiveService, setShowAddModal }) => {
     const [query, setQuery] = useState("");
-    const [services, setServices] = useState<Service[]>([])
+    const [services, setServices] = useState<ServiceType[]>([])
     const baseUrl = Constants.expoConfig?.extra?.BASE_API
 
     useEffect(() => {
         // Debounce the search function to reduce API calls
         const delayedSearch = debounce(() => {
             if (query.trim() !== "") {
-                const url = `${baseUrl}/category/?search=${query}&is_subcategory=true`;
+                const url = `${baseUrl}/categories/search?q=${query}`;
                 axios.get(url)
                     .then((response: any) => {
-                        setServices(response.data.results);
+                        setServices(response.data);
                     })
                     .catch((error: any) => {
                         console.error(error);
@@ -152,9 +150,13 @@ export const AddServiceModal: React.FC<{ priceRef: React.RefObject<IHandles>, se
         setQuery(text);
     };
 
-    const handleServiceSelect = (service: Service) => {
-        setActiveService(service)
-        setQuery(service?.name)
+    const handleServiceSelect = (category: CategoryType) => {
+        setActiveService({
+            category: category,
+            price: "0",
+            id: "",
+        })
+        setQuery(category?.name)
         Keyboard.dismiss()
     }
 
@@ -172,7 +174,7 @@ export const AddServiceModal: React.FC<{ priceRef: React.RefObject<IHandles>, se
                 setShowAddModal(false);
             }}
         >
-            <Pressable onPress={()=> setShowAddModal(false)} style={styles.modalOverlay}>
+            <Pressable onPress={() => setShowAddModal(false)} style={styles.modalOverlay}>
                 <View style={styles.addModalContent}>
                     <Text style={{ ...styles.profileText }}>Select A New Skill To Add</Text>
                     <AutoSearch
@@ -193,63 +195,55 @@ export const AddServiceModal: React.FC<{ priceRef: React.RefObject<IHandles>, se
     )
 }
 
-export const ModifyPriceModal: React.FC<{ priceRef: React.RefObject<IHandles>, activeService: Service, setActiveService: Dispatch<SetStateAction<Service | undefined>> }> = ({ priceRef, activeService, setActiveService }) => {
-    const colorScheme = useColorScheme() || "light"
-    const authUser = useSelector((state: RootState) => state.authProvider.auth)
-    const dispatch = useDispatch()
+export const ModifyPriceModal: React.FC<{ priceRef: React.RefObject<IHandles | null>, activeService: ServiceType, getBusinessInfo: () => void }> = ({ priceRef, activeService, getBusinessInfo }) => {
     const [load, setLoad] = useState(false)
-    const handlePriceinput = (text: string) => {
-        setActiveService((prev) => ({ ...prev!, price: Number(text) }))
-    }
+    const [price, setPrice] = useState(activeService?.price)
+    const authUser = useSelector((state: RootState) => state.authProvider.auth)
+
+    useEffect(() => {
+        setPrice(activeService?.price)
+    }, [activeService?.price])
 
     const addService = async () => {
         setLoad(true)
-        let arr;
-        const previousService = authUser?.sub_category?.map((serv) => {
-            if (serv?.sub_category_id === activeService?.id) {
-                return {
-                    skill: activeService?.id,
-                    cost: activeService?.price,
-                    time_frame: "HOURLY"
-                }
+
+        const body: { price: string, businessID?: string, category?: string } = {
+            price: price,
+        }
+
+        let response
+
+        if (activeService?.id) {
+            response = await updateService(body, activeService?.id)
+            if (response?.status === 200) {
+                Toast.show({
+                    type: 'success',
+                    text1: 'Service price updated successfully'
+                })
+                getBusinessInfo()
             } else {
-                return {
-                    skill: serv?.sub_category_id,
-                    cost: serv?.cost,
-                    time_frame: "HOURLY"
-                }
-            }
-        })
-        if (previousService) {
-            const skillExists = authUser?.sub_category?.some((skill) => skill.sub_category_id === activeService?.id);
-            if (skillExists) {
-                arr = [
-                    ...previousService
-                ]
-            } else {
-                arr = [
-                    ...previousService,
-                    {
-                        skill: activeService?.id,
-                        cost: activeService?.price,
-                        time_frame: "HOURLY"
-                    }
-                ]
+                Toast.show({
+                    type: 'error',
+                    text1: 'Error updating service price'
+                })
             }
         } else {
-            arr = [
-                {
-                    skill: activeService?.id,
-                    cost: activeService?.price,
-                    time_frame: "HOURLY"
-                }
-            ]
+            body.businessID = authUser?.user?.business?.id!
+            body.category = activeService?.category?.id!
+            response = await createService(body)
+            if (response?.status === 200 || response?.status === 201) {
+                Toast.show({
+                    type: 'success',
+                    text1: 'Service created successfully'
+                })
+                getBusinessInfo()
+            } else {
+                Toast.show({
+                    type: 'error',
+                    text1: 'Error creating service'
+                })
+            }
         }
-        const body = {
-            skill_data: arr
-        }
-        const response = await updateServiceProfile(body)
-        dispatch(updateAuth({ auth: response?.data?.data }))
         setLoad(false)
         priceRef.current?.close()
     }
@@ -261,12 +255,12 @@ export const ModifyPriceModal: React.FC<{ priceRef: React.RefObject<IHandles>, a
         >
             <View style={{ ...styles.modalContent, height: 550 }}>
                 <View style={styles.activeServiceTitleContainer}>
-                    <Text style={styles.activeServiceTitle}>{activeService?.name}</Text>
+                    <Text style={styles.activeServiceTitle}>{activeService?.category?.name}</Text>
                 </View>
                 <Text style={styles.activeServiceText}>Pros with upfront pricing get hired more on Audtiklance.</Text>
                 <Text style={styles.activeServiceText}>Add a base price to help you get contacted and hired more, The price will include: Labor (excludes cost of parts).</Text>
                 <Text style={{ marginBottom: 5, marginTop: 10 }}>Enter your base price</Text>
-                <TextInput placeholderTextColor={"black"} onChangeText={(text) => handlePriceinput(text)} value={String(activeService?.price || 0)} keyboardType='phone-pad' style={{ ...styles.registerInput }} placeholder='$0.00' />
+                <TextInput placeholderTextColor={"black"} onChangeText={(text) => setPrice(text)} value={String(price)} keyboardType='phone-pad' style={{ ...styles.registerInput }} placeholder='$0.00' />
                 <View style={styles.buttonContainer}>
                     <Pressable onPress={() => priceRef.current?.close()} style={{ ...styles.cancelButton, width: "49%", marginTop: 0, backgroundColor: "white" }}><Text style={{ ...styles.buttonText, color: '#1B64F1' }}>Cancel</Text></Pressable>
                     <Pressable onPress={addService} style={{ ...styles.registerButton, width: "49%", marginTop: 0 }}>
@@ -282,27 +276,26 @@ export const ModifyPriceModal: React.FC<{ priceRef: React.RefObject<IHandles>, a
     )
 }
 
-export const DeleteModal: React.FC<{ deleteRef: React.RefObject<IHandles>, activeService: Service }> = ({ deleteRef, activeService }) => {
-    const colorScheme = useColorScheme() || "light"
+export const DeleteModal: React.FC<{ deleteRef: React.RefObject<IHandles | null>, activeService: ServiceType, getBusinessInfo: () => void }> = ({ deleteRef, activeService, getBusinessInfo }) => {
     const authUser = useSelector((state: RootState) => state.authProvider.auth)
-    const dispatch = useDispatch()
     const [load, setLoad] = useState(false)
 
 
-    const deleteService = async () => {
+    const handleDeleteService = async () => {
         setLoad(true)
-        const services = authUser?.sub_category?.map((serv)=> {
-            return {
-                skill: serv?.sub_category_id,
-                cost: serv?.cost,
-                time_frame: "HOURLY"
-            }
-        })?.filter((serv)=> serv?.skill !== activeService?.id)
-        const body = {
-            skill_data: services
+        const response = await deleteService(activeService?.id, authUser?.user?.business?.id!)
+        if (response?.status === 200 || response?.status === 204) {
+            getBusinessInfo()
+            Toast.show({
+                type: 'success',
+                text1: 'Service deleted successfully'
+            })
+        } else {
+            Toast.show({
+                type: 'error',
+                text1: 'Error deleting service'
+            })
         }
-        const response = await updateServiceProfile(body)
-        dispatch(updateAuth({ auth: response?.data?.data }))
         setLoad(false)
         deleteRef.current?.close()
     }
@@ -314,13 +307,13 @@ export const DeleteModal: React.FC<{ deleteRef: React.RefObject<IHandles>, activ
         >
             <View style={{ ...styles.modalContent, height: 410 }}>
                 <View style={styles.activeServiceTitleContainer}>
-                    <Text style={styles.activeServiceTitle}>{activeService?.name}</Text>
+                    <Text style={styles.activeServiceTitle}>{activeService?.category?.name}</Text>
                 </View>
-                <Text style={{fontSize: 16, fontWeight: 600, textAlign: "center", marginTop: 25}}>Are you sure you want to delete this service?</Text>
-                <Text style={{fontSize: 16, fontWeight: 600, textAlign: "center", marginTop: 10, marginBottom: 25}}>This action cannot be undone.</Text>
+                <Text style={{ fontSize: 16, fontWeight: 600, textAlign: "center", marginTop: 25 }}>Are you sure you want to delete this service?</Text>
+                <Text style={{ fontSize: 16, fontWeight: 600, textAlign: "center", marginTop: 10, marginBottom: 25 }}>This action cannot be undone.</Text>
                 <View style={styles.buttonContainer}>
                     <Pressable onPress={() => deleteRef.current?.close()} style={{ ...styles.cancelButton, width: "49%", marginTop: 0, backgroundColor: "white" }}><Text style={{ ...styles.buttonText, color: '#1B64F1' }}>Cancel</Text></Pressable>
-                    <Pressable onPress={deleteService} style={{ ...styles.registerButton, width: "49%", marginTop: 0, backgroundColor: "#D0190A" }}>
+                    <Pressable onPress={handleDeleteService} style={{ ...styles.registerButton, width: "49%", marginTop: 0, backgroundColor: "#D0190A" }}>
                         {
                             load ?
                                 <ActivityIndicator size={"large"} color={"white"} /> :

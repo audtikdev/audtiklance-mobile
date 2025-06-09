@@ -6,7 +6,7 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../Store/store';
 import AutoSearch from '../AutoComplete';
-import { Service } from '@/types/service';
+import { CategoryType, ServiceType } from '@/types/service';
 import { router } from 'expo-router';
 import { Modalize } from 'react-native-modalize';
 import { debounce } from 'lodash';
@@ -14,13 +14,13 @@ import Constants from 'expo-constants'
 import axios from 'axios';
 import { updateRegisterProvider } from '../Context/registerProvider';
 import { AntDesign } from '@expo/vector-icons';
-
+import { RegisterProvider } from '@/types/auth';
 const ProviderRegister3 = () => {
     const colorScheme = useColorScheme() || "light"
     const providerDetails = useSelector((state: RootState) => state.registerProvider.provider)
-    const [services, setServices] = useState<Service[]>([])
-    const [activeService, setActiveService] = useState<Service>()
-    const [selectedServices, setSelectedServices] = useState<Service[]>([])
+    const [services, setServices] = useState<ServiceType[]>([])
+    const [activeService, setActiveService] = useState<ServiceType>()
+    const [selectedServices, setSelectedServices] = useState<ServiceType[]>([])
     const [query, setQuery] = useState("");
     const dispatch = useDispatch()
     const modalizeRef = useRef<Modalize>(null)
@@ -30,10 +30,10 @@ const ProviderRegister3 = () => {
         // Debounce the search function to reduce API calls
         const delayedSearch = debounce(() => {
             if (query.trim() !== "") {
-                const url = `${baseUrl}/category/?search=${query}&is_subcategory=true`;
+                const url = `${baseUrl}/categories/search?q=${query}`;
                 axios.get(url)
                     .then((response: any) => {
-                        setServices(response.data.results);
+                        setServices(response.data);
                     })
                     .catch((error: any) => {
                         console.error(error);
@@ -53,32 +53,32 @@ const ProviderRegister3 = () => {
         setQuery(text);
     };
 
-    const handleServiceSelect = (service: Service) => {
-        setActiveService(service)
+    const handleServiceSelect = (service: CategoryType) => {
+        setActiveService((prev: any) => ({ ...prev!, category: service }))
         setQuery(service?.name)
         Keyboard.dismiss()
         modalizeRef.current?.open()
     }
 
     const addService = () => {
-        const filteredServices = selectedServices?.filter((service) => service.name !== activeService?.name)
+        const filteredServices = selectedServices?.filter((service) => service.category?.name !== activeService?.category?.name)
         setSelectedServices([...filteredServices, activeService!])
         modalizeRef.current?.close()
         setQuery("")
     }
 
-    const editService = (service: Service) => {
+    const editService = (service: ServiceType) => {
         setActiveService(service)
         modalizeRef.current?.open()
     }
 
-    const removeService = (service: Service) => {
-        const filteredServices = selectedServices?.filter((serv) => serv.name !== service?.name)
+    const removeService = (service: ServiceType) => {
+        const filteredServices = selectedServices?.filter((serv) => serv.category?.name !== service?.category?.name)
         setSelectedServices(filteredServices)
     }
 
     const handlePriceinput = (text: string) => {
-        setActiveService((prev) => ({ ...prev!, price: Number(text) }))
+        setActiveService((prev: any) => ({ ...prev!, price: Number(text) }))
     }
 
     const handleSubmit = () => {
@@ -87,13 +87,13 @@ const ProviderRegister3 = () => {
         }
         const skill_data = selectedServices?.map((service) => {
             return {
-                skill: service?.id,
+                skill: service?.category?.id,
                 cost: service?.price,
                 time_frame: "HOURLY"
             }
         })
 
-        dispatch(updateRegisterProvider({ provider: { skill_data: skill_data } }))
+        dispatch(updateRegisterProvider({ provider: { skill_data: skill_data } as RegisterProvider }))
         router.push("/providerRegister4")
     }
 
@@ -105,7 +105,7 @@ const ProviderRegister3 = () => {
                         <Image source={require("../../assets/images/logo.png")} />
                         <Text style={{ ...styles.profileText }}>Service Provider Profile Creation</Text>
                         <Text style={{ ...styles.profileText }}>Choose Your Services</Text>
-                        <Text style={{ ...styles.profileText, marginTop: 25 }}>{providerDetails?.business_name}</Text>
+                        <Text style={{ ...styles.profileText, marginTop: 25 }}>{providerDetails?.title}</Text>
                         <View style={{ display: 'flex', alignItems: 'flex-end', flexDirection: 'row', columnGap: 10, marginBottom: 40 }}>
                             <Ionicons name="location-sharp" size={24} color={"black"} />
                             <Text style={{ ...styles.profileText }}>{providerDetails?.address}</Text>
@@ -123,7 +123,7 @@ const ProviderRegister3 = () => {
                             {
                                 selectedServices?.map((service, i) => (
                                     <Pressable onPress={() => editService(service)} key={i} style={styles.selectedService}>
-                                        <Text>{service?.name}</Text>
+                                        <Text>{service?.category?.name}</Text>
                                         <MaterialIcons onPress={() => removeService(service)} name="cancel" size={18} color="black" />
                                     </Pressable>
                                 ))
@@ -141,12 +141,12 @@ const ProviderRegister3 = () => {
             >
                 <View style={styles.modalContent}>
                     <View style={styles.activeServiceTitleContainer}>
-                        <Text style={styles.activeServiceTitle}>{activeService?.name}</Text>
+                        <Text style={styles.activeServiceTitle}>{activeService?.category?.name}</Text>
                     </View>
                     <Text style={styles.activeServiceText}>Pros with upfront pricing get hired more on Audtiklance.</Text>
                     <Text style={styles.activeServiceText}>Add a base price to help you get contacted and hired more, The price will include: Labor (excludes cost of parts).</Text>
                     <Text style={{ marginBottom: 5, marginTop: 10 }}>Enter your base price</Text>
-                    <TextInput placeholderTextColor={"black"} onChangeText={(text) => handlePriceinput(text)} value={activeService?.sub_category?.[0]?.cost} keyboardType='phone-pad' style={{ ...styles.registerInput }} placeholder='$0.00' />
+                    <TextInput placeholderTextColor={"black"} onChangeText={(text) => handlePriceinput(text)} value={activeService?.price} keyboardType='phone-pad' style={{ ...styles.registerInput }} placeholder='$0.00' />
                     <View style={styles.buttonContainer}>
                         <Pressable onPress={() => modalizeRef.current?.close()} style={{ ...styles.registerButton, marginTop: 0, backgroundColor: "white", borderWidth: 1 }}><Text style={{ ...styles.buttonText, ...generalStyle.text["light"] }}>Cancel</Text></Pressable>
                         <Pressable onPress={addService} style={{ ...styles.registerButton, marginTop: 0 }}><Text style={{ ...styles.buttonText, ...generalStyle.text["dark"] }}>Submit</Text></Pressable>

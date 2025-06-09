@@ -10,7 +10,7 @@ import { updateAuth } from '../Context/authProvider'
 import * as AuthSession from 'expo-auth-session';
 import * as AppleAuthentication from 'expo-apple-authentication';
 import { jwtDecode } from "jwt-decode";
-import { GoogleSignin } from '@react-native-google-signin/google-signin';
+// import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import Toast from 'react-native-toast-message'
 import { RootState } from '../Store/store'
 
@@ -23,39 +23,39 @@ const Login = () => {
     const modalizeRef = useRef<Modalize>(null)
     const dispatch = useDispatch()
     const redirectUri = AuthSession.makeRedirectUri();
-    GoogleSignin.configure({
-        webClientId: '15571279761-50hvuoaofihijl2c8v6vuimpcgt751a3.apps.googleusercontent.com',
-        iosClientId: '15571279761-v4q3rb97hueq6koviotj3fa3jflhvi4p.apps.googleusercontent.com',
-        offlineAccess: true, // if you want to access Google API on behalf of the user FROM YOUR SERVER
-    });
+    // GoogleSignin.configure({
+    //     webClientId: '15571279761-50hvuoaofihijl2c8v6vuimpcgt751a3.apps.googleusercontent.com',
+    //     iosClientId: '15571279761-v4q3rb97hueq6koviotj3fa3jflhvi4p.apps.googleusercontent.com',
+    //     offlineAccess: true, // if you want to access Google API on behalf of the user FROM YOUR SERVER
+    // });
 
-    const handleGoogleSignIn = async () => {
-        try {
-            setLoadGoogle(true)
-            await GoogleSignin.hasPlayServices();
-            await GoogleSignin.signIn();
-            const tokens = await GoogleSignin.getTokens();
-            const body = {
-                access_token: tokens.accessToken!,
-            }
-            const res = await googleRegisterUser(body)
-            if (res?.status === 201 || res?.status === 200) {
-                const data = res?.data?.data
-                dispatch(updateAuth({ auth: data }))
-                router.push("/(user)")
-            } else {
-                Toast.show({
-                    type: "error",
-                    text1: "Error, try again"
-                })
-            }
-            setLoadGoogle(false)
-        } catch (error: any) {
-            console.error(error);
-            setLoadGoogle(false)
-        }
+    // const handleGoogleSignIn = async () => {
+    //     try {
+    //         setLoadGoogle(true)
+    //         await GoogleSignin.hasPlayServices();
+    //         await GoogleSignin.signIn();
+    //         const tokens = await GoogleSignin.getTokens();
+    //         const body = {
+    //             accessToken: tokens.accessToken!,
+    //         }
+    //         const res = await googleRegisterUser(body)
+    //         if (res?.status === 201 || res?.status === 200) {
+    //             const data = res?.data
+    //             dispatch(updateAuth({ auth: data }))
+    //             router.push("/(user)")
+    //         } else {
+    //             Toast.show({
+    //                 type: "error",
+    //                 text1: "Error, try again"
+    //             })
+    //         }
+    //         setLoadGoogle(false)
+    //     } catch (error: any) {
+    //         console.error(error);
+    //         setLoadGoogle(false)
+    //     }
 
-    }
+    // }
 
     const handleAppleLogin = async () => {
         try {
@@ -65,18 +65,20 @@ const Login = () => {
                     AppleAuthentication.AppleAuthenticationScope.EMAIL,
                 ],
             });
+            console.log(credential);
             const decoded = jwtDecode(credential.identityToken!);
             console.log(decoded);
 
             const body = {
                 // @ts-ignore
                 email: decoded?.email,
-                firstname: credential?.fullName?.givenName || "Rejoice",
-                lastname: credential?.fullName?.familyName || "Uahomo"
+                firstName: credential?.fullName?.givenName || "John",
+                lastName: credential?.fullName?.familyName || "Doe",
+                sub: decoded?.sub
             }
             const res = await appleRegisterUser(body)
             if (res?.status === 201 || res?.status === 200) {
-                const data = res?.data?.data
+                const data = res?.data
                 dispatch(updateAuth({ auth: data }))
                 router.push("/(user)")
             } else {
@@ -114,9 +116,9 @@ const Login = () => {
         console.log(response);
 
         if (response?.status === 201 || response?.status === 200) {
-            const data = response?.data?.data
+            const data = response?.data
             dispatch(updateAuth({ auth: data }))
-            if (data?.service_profile) {
+            if (data?.user?.business) {
                 router.push("/(provider)")
             } else {
                 router.push("/(user)")
@@ -137,7 +139,7 @@ const Login = () => {
                     <View style={{ width: '100%' }}>
                         <View style={styles.registerMain}>
                             <Image source={require("../../assets/images/logo.png")} />
-                            <Text style={{ ...styles.profileText }}>Welcome Back {authUser?.firstname}</Text>
+                            <Text style={{ ...styles.profileText }}>Welcome Back {authUser?.user?.firstName}</Text>
                             <TextInput textContentType="emailAddress" autoCapitalize='none' autoCorrect={false} keyboardType='email-address' placeholderTextColor={"black"} onChangeText={(text) => handleInput("email", text)} value={userInfo?.email} style={{ ...styles.registerInput }} placeholder='Email' />
                             <TextInput textContentType="password" placeholderTextColor={"black"} onChangeText={(text) => handleInput("password", text)} value={userInfo?.password} style={{ ...styles.registerInput }} placeholder='Password' />
                             <Text onPress={() => router.push("/forgotPassword")} style={{ alignSelf: "flex-end", fontSize: 14, textDecorationLine: "underline", marginTop: -15 }}>Forgot Password?</Text>
@@ -153,14 +155,14 @@ const Login = () => {
                                 <Text style={{ ...styles.dividerText }}>OR</Text>
                                 <View style={{ ...styles.dividerLine, ...generalStyle.divider[colorScheme] }}></View>
                             </View>
-                            <Pressable onPress={() => handleGoogleSignIn()} style={{ ...styles.oauthButton }}>
+                            {/* <Pressable onPress={() => handleGoogleSignIn()} style={{ ...styles.oauthButton }}>
                                 <Image source={require("../../assets/images/google.png")} />
                                 {
                                     loadGoogle ?
                                     <ActivityIndicator color={'blue'} /> :
                                     <Text style={{ ...styles.oauthText }}>Continue with Google</Text>
                                 }
-                            </Pressable>
+                            </Pressable> */}
                             <AppleAuthentication.AppleAuthenticationButton
                                 buttonType={AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN}
                                 buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.BLACK}

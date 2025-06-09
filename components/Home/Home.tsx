@@ -9,7 +9,6 @@ import * as Location from 'expo-location';
 import { useDispatch, useSelector } from 'react-redux'
 import { updateLocation } from '../Context/locationProvider'
 import { RootState } from '../Store/store'
-import { Service } from '@/types/service'
 import axios from 'axios'
 import LottieView from 'lottie-react-native'
 import { router } from 'expo-router'
@@ -17,16 +16,15 @@ import { getUser } from '@/api/auth'
 import { updateAuth } from '../Context/authProvider'
 import { getFavorites } from '@/api/favorite'
 import { updateFavorite } from '../Context/favoriteProvider'
-
+import { BusinessType } from '@/types/service'
 const Home = () => {
     const authUser = useSelector((state: RootState) => state.authProvider.auth)
     const userLocation = useSelector((state: RootState) => state.locationProvider.location)
-    const colorScheme = useColorScheme() || "light"
     const [status, requestPermission] = Location.useForegroundPermissions();
     const [load, setLoad] = useState(false)
     const [loadTop, setLoadTop] = useState(false)
-    const [services, setServices] = useState<Service[]>([])
-    const [topServices, setTopServices] = useState<Service[]>([])
+    const [services, setServices] = useState<BusinessType[]>([])
+    const [topServices, setTopServices] = useState<BusinessType[]>([])
     const dispatch = useDispatch()
 
     const baseUrl = Constants.expoConfig?.extra?.BASE_API
@@ -35,11 +33,11 @@ const Home = () => {
         (async () => {
             const response = await getUser()
             if (response?.status === 201 || response?.status === 200) {
-                const data = response.data?.data
+                const data = response.data
                 dispatch(updateAuth({ auth: data }))
                 const res = await getFavorites()
                 if (res?.status === 200) {
-                    const servicesID = res?.data?.results?.map((result: any) => result?.id)
+                    const servicesID = res?.data?.map((result: any) => result?.businessId)
                     dispatch(updateFavorite({ favorite: servicesID }))
                 }
             }
@@ -65,13 +63,13 @@ const Home = () => {
         (async () => {
             setLoad(true)
             if (userLocation?.coords?.longitude && userLocation?.coords?.latitude) {
-                const url = `${baseUrl}/service/?longitude=${userLocation?.coords?.longitude}&latitude=${userLocation?.coords?.latitude}&page=1`;
+                const url = `${baseUrl}/businesses/search?lng=${userLocation?.coords?.longitude}&lat=${userLocation?.coords?.latitude}`;
                 const response1 = await axios.get(url)
-                setServices(response1?.data.results);
+                setServices(response1?.data);
             } else {
-                const url = `${baseUrl}/service/?page=3`;
+                const url = `${baseUrl}/businesses/search`;
                 const response1 = await axios.get(url)
-                setServices(response1?.data.results);
+                setServices(response1?.data);
             }
             setLoad(false)
         })()
@@ -80,10 +78,9 @@ const Home = () => {
     useEffect(() => {
         (async () => {
             setLoadTop(true)
-
-            const url2 = `${baseUrl}/service/`;
+            const url2 = `${baseUrl}/businesses/search`;
             const response2 = await axios.get(url2)
-            setTopServices(response2?.data?.results)
+            setTopServices(response2?.data)
             setLoadTop(false)
         })()
     }, [])
@@ -91,7 +88,7 @@ const Home = () => {
     return (
         <View>
             <View style={styles.heroText}>
-                <Text style={{ ...styles.title, ...generalStyle.text.light }}>Hi {authUser?.firstname}</Text>
+                <Text style={{ ...styles.title, ...generalStyle.text.light }}>Hi {authUser?.user?.firstName}</Text>
                 <Text style={{ ...styles.greeting, ...generalStyle.text.light }}>What services do you need?</Text>
             </View>
             <View style={styles.container}>

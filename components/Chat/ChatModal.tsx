@@ -6,10 +6,10 @@ import { IHandles } from 'react-native-modalize/lib/options'
 import { generalStyle } from '@/style/generalStyle'
 import { blockUser, reportUser } from '@/api/chat'
 import Toast from 'react-native-toast-message'
-import { CHAT_USER } from './type'
 import { openLink } from '@/utils/helper'
+import { RegisterUserInfo } from '@/types/auth'
 
-const ChatModal: React.FC<{ chatModalRef: React.RefObject<IHandles>, receiver: any }> = ({ chatModalRef, receiver }) => {
+const ChatModal: React.FC<{ chatModalRef: React.RefObject<IHandles | null>, receiver: RegisterUserInfo }> = ({ chatModalRef, receiver }) => {
     const reportModalRef = useRef<Modalize>(null)
     const blockModalRef = useRef<Modalize>(null)
 
@@ -20,12 +20,12 @@ const ChatModal: React.FC<{ chatModalRef: React.RefObject<IHandles>, receiver: a
                 adjustToContentHeight={true}
             >
                 <View style={styles.modalContent}>
-                    <Text style={{ ...styles.buttonText, textAlign: "center", textTransform: "capitalize" }}>{receiver?.firstname} {receiver?.lastname}</Text>
+                    <Text style={{ ...styles.buttonText, textAlign: "center", textTransform: "capitalize" }}>{receiver?.firstName} {receiver?.lastName}</Text>
                     <View style={styles.buttonView}>
-                        {/* <Pressable style={{ ...styles.registerButton }}>
+                        <Pressable onPress={()=> openLink(`tel:${receiver?.phoneNumber}`)} style={{ ...styles.registerButton }}>
                             <Ionicons name="call-outline" size={18} color={"white"} />
                             <Text style={{ ...styles.buttonText, ...generalStyle.text["dark"] }}>Call</Text>
-                        </Pressable> */}
+                        </Pressable>
                         <Pressable onPress={()=> openLink(`mailto:${receiver?.email ? receiver?.email : 'support@audtiklance.com'}`)} style={{ ...styles.registerButton }}>
                             <Fontisto name="email" size={18} color={"white"} />
                             <Text style={{ ...styles.buttonText, ...generalStyle.text["dark"] }}>Email</Text>
@@ -49,13 +49,13 @@ const ChatModal: React.FC<{ chatModalRef: React.RefObject<IHandles>, receiver: a
 
 export default ChatModal
 
-const ReportUser: React.FC<{ reportModalRef: React.RefObject<IHandles>, receiver: CHAT_USER }> = ({ reportModalRef, receiver }) => {
+const ReportUser: React.FC<{ reportModalRef: React.RefObject<IHandles | null>, receiver: RegisterUserInfo }> = ({ reportModalRef, receiver }) => {
     const [reason, setReason] = useState("")
     const [load, setLoad] = useState(false)
 
     const handleReportUser = async () => {
         setLoad(true)
-        const res = await reportUser({ content: reason }, receiver?.id!)
+        const res = await reportUser({ content: reason }, receiver?._id!)
         
         if (res?.status === 200) {
             Toast.show({
@@ -78,7 +78,7 @@ const ReportUser: React.FC<{ reportModalRef: React.RefObject<IHandles>, receiver
             adjustToContentHeight={true}
         >
             <View style={styles.modalContent}>
-                <Text style={{ ...styles.buttonText, fontSize: 14, textAlign: "center", textTransform: "capitalize" }}>Are you sure you want to report {receiver?.firstname} {receiver?.lastname}</Text>
+                <Text style={{ ...styles.buttonText, fontSize: 14, textAlign: "center", textTransform: "capitalize" }}>Are you sure you want to report {receiver?.firstName} {receiver?.lastName}</Text>
                 <TextInput onChangeText={(text) => setReason(text)} multiline numberOfLines={5} placeholderTextColor={"black"} style={{ ...styles.registerInput, height: 100, padding: 10 }} placeholder='Give a reason why you want to report this user...' />
                 <Pressable onPress={handleReportUser} style={styles.deleteButton}>
                     {
@@ -95,14 +95,14 @@ const ReportUser: React.FC<{ reportModalRef: React.RefObject<IHandles>, receiver
     )
 }
 
-const BlockUser: React.FC<{ blockModalRef: React.RefObject<IHandles>, receiver: CHAT_USER }> = ({ blockModalRef, receiver }) => {
+const BlockUser: React.FC<{ blockModalRef: React.RefObject<IHandles | null>, receiver: RegisterUserInfo }> = ({ blockModalRef, receiver }) => {
     const [load, setLoad] = useState(false)
 
     const handleBlockUser = async () => {
         setLoad(true)
-        console.log(receiver?.id);
+        console.log(receiver?._id);
         
-        const res = await blockUser(receiver?.id!)
+        const res = await blockUser(receiver?._id!)
         console.log(res);
         
         if (res?.status === 200) {
@@ -126,7 +126,7 @@ const BlockUser: React.FC<{ blockModalRef: React.RefObject<IHandles>, receiver: 
             adjustToContentHeight={true}
         >
             <View style={{ ...styles.modalContent, height: 240 }}>
-                <Text style={{ ...styles.buttonText, fontSize: 14, marginBottom: 20, textAlign: "center", textTransform: "capitalize" }}>Are you sure you want to block {receiver?.firstname} {receiver?.lastname}</Text>
+                <Text style={{ ...styles.buttonText, fontSize: 14, marginBottom: 20, textAlign: "center", textTransform: "capitalize" }}>Are you sure you want to block {receiver?.firstName} {receiver?.lastName}</Text>
                 <Pressable onPress={handleBlockUser} style={styles.deleteButton}>
                     {
                         load ?
@@ -165,7 +165,7 @@ const styles = StyleSheet.create({
         marginTop: 10
     },
     registerButton: {
-        width: "100%",
+        width: "48%",
         height: 52,
         borderRadius: 10,
         backgroundColor: "#1B64F1",

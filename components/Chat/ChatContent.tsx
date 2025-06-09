@@ -7,117 +7,112 @@ import { Entypo, Feather, Fontisto, Ionicons } from '@expo/vector-icons'
 import { generalStyle } from '@/style/generalStyle'
 import { router } from 'expo-router'
 import LottieView from 'lottie-react-native'
-import * as Notifications from 'expo-notifications';
+// import * as Notifications from 'expo-notifications';
 import { RootState } from '../Store/store'
 import { useSelector } from 'react-redux'
 import { getUserByID } from '@/api/auth'
 import { Modalize } from 'react-native-modalize'
 import ChatModal from './ChatModal'
 import { openLink } from '@/utils/helper'
+import { RegisterUserInfo } from '@/types/auth'
+import Constants from 'expo-constants'
+import { io, Socket } from 'socket.io-client'
 
 const ChatContent: React.FC<{ convoId: string, recipientId: string }> = ({ convoId, recipientId }) => {
     const authUser = useSelector((state: RootState) => state.authProvider.auth)
-    const [socket, setSocket] = useState<WebSocket | null>(null);
+    const [socket, setSocket] = useState<Socket | null>(null);
     const [expoPushToken, setExpoPushToken] = useState('');
     const [notification, setNotification] = useState(false);
     const [conversationID, setConversationID] = useState(convoId)
-    const [recipient, setRecipient] = useState<{email: string}>()
-    const colorScheme = useColorScheme() || "light"
+    const [recipient, setRecipient] = useState<RegisterUserInfo>()
     const [messages, setMessages] = useState<Array<MESSAGE>>([])
     const [inputValue, setInputValue] = useState("")
     const [load, setLoad] = useState(false)
     const [sendLoad, setSendLoad] = useState(false)
     const scrollViewRef = useRef<ScrollView>(null);
     const chatModalRef = useRef<Modalize>(null)
+    const baseURL = Constants.expoConfig?.extra?.BASE_API
 
     const getConversation = async () => {
-        const response = await getPreviousConversation(conversationID)
+        const response = await getPreviousConversation(recipientId)
+
         if (response?.status === 201 || response?.status === 200) {
-            const data = response.data?.data
+
+            const data = response.data?.messages
+            const receiver = response.data?.otherUser
+
             setMessages(data)
-            await getRecipient()
+            setRecipient(receiver)
         } else {
             Toast.show({
-                type: "error",   
+                type: "error",
                 text1: "Error fetching conversation"
             })
         }
     }
 
-    const getRecipient = async () => {
-        const response = await getUserByID(recipientId)
-        if (response?.status === 200) {            
-            setRecipient(response?.data)
-            console.log(response?.data);
-        }
+    // async function registerForPushNotificationsAsync() {
+    //     let token;
+    //     if (Platform.OS === 'ios') {
+    //         const { status } = await Notifications.requestPermissionsAsync();
+    //         if (status !== 'granted') {
+    //             alert('Permission for notifications required!');
+    //             return;
+    //         }
+    //     }
+    //     token = (await Notifications.getExpoPushTokenAsync()).data;
+    //     console.log(token);
+    //     return token;
+    // }
 
-    }
-
-    async function registerForPushNotificationsAsync() {
-        let token;
-        if (Platform.OS === 'ios') {
-            const { status } = await Notifications.requestPermissionsAsync();
-            if (status !== 'granted') {
-                alert('Permission for notifications required!');
-                return;
-            }
-        }
-        token = (await Notifications.getExpoPushTokenAsync()).data;
-        console.log(token);
-        return token;
-    }
-
-    async function sendTestNotification(name: string, message: string) {
-        await Notifications.scheduleNotificationAsync({
-            content: {
-                title: name,
-                body: message,
-            },
-            // @ts-ignore
-            trigger: { seconds: 0 },
-        });
-    }
+    // async function sendTestNotification(name: string, message: string) {
+    //     await Notifications.scheduleNotificationAsync({
+    //         content: {
+    //             title: name,
+    //             body: message,
+    //         },
+    //         // @ts-ignore
+    //         trigger: { seconds: 0 },
+    //     });
+    // }
 
     useEffect(() => {
-        registerForPushNotificationsAsync().then(token => setExpoPushToken(token as string));
+        // registerForPushNotificationsAsync().then(token => setExpoPushToken(token as string));
 
-        // Listener for foreground notifications
-        const subscription = Notifications.addNotificationReceivedListener(notification => {
-            // @ts-ignore
-            setNotification(notification);
-        });
-        const responeReceiver = Notifications.addNotificationResponseReceivedListener(response => {
-            console.log('Notification clicked:', response);
-        });
+        // // Listener for foreground notifications
+        // const subscription = Notifications.addNotificationReceivedListener(notification => {
+        //     // @ts-ignore
+        //     setNotification(notification);
+        // });
+        // const responeReceiver = Notifications.addNotificationResponseReceivedListener(response => {
+        //     console.log('Notification clicked:', response);
+        // });
 
         const createSocket = () => {
-            const newSocket = new WebSocket(
-                `https://api.audtiklance.com/ws/chat/?token=${authUser?.access}`
+            const newSocket = io(
+                `${baseURL}?userId=${authUser?.user?._id}`, {
+                auth: {
+                    token: authUser?.token
+                }
+            }
             );
 
-            newSocket.onopen = () => {
+            newSocket.on("connect", () => {
                 console.log("WebSocket connection established hook");
-            };
+            });
 
-            newSocket.onclose = () => {
+            newSocket.on("disconnect", () => {
                 console.log("WebSocket connection closed");
-            };
+            });
 
-            newSocket.onerror = (error) => {
+            newSocket.on("error", (error) => {
                 console.error("WebSocket error:", error);
-            };
+            });
 
-            newSocket.onmessage = (event) => {
-                console.log("WebSocket message received:", event.data);
-                const { type: eventName, content, sender } = JSON.parse(event.data);
-                console.log(eventName, content, sender);
-                if (eventName === "chat") {
-                    if (authUser?.notify) {
-                        sendTestNotification(sender, content)
-                    }
-                    getConversation()
-                }
-            };
+            newSocket.on("newMessage", (event) => {
+                console.log("WebSocket message received:", event);
+                setMessages((prev: Array<MESSAGE>) => [...prev, event]);
+            });
 
             setSocket(newSocket);
         };
@@ -130,8 +125,8 @@ const ChatContent: React.FC<{ convoId: string, recipientId: string }> = ({ convo
             if (socket) {
                 socket.close();
             }
-            subscription.remove()
-            responeReceiver.remove()
+            // subscription.remove()
+            // responeReceiver.remove()
         };
     }, [convoId])
 
@@ -140,11 +135,11 @@ const ChatContent: React.FC<{ convoId: string, recipientId: string }> = ({ convo
             setLoad(true)
             if (conversationID !== "null") {
                 await getConversation()
-                await getRecipient()
             } else {
-                const response = await createConversation({ user: recipientId })
+                const response = await createConversation({ receiverId: recipientId })
+                console.log(response);
                 if (response?.status === 201 || response?.status === 200) {
-                    const data = response.data?.data
+                    const data = response.data
                     setConversationID(data?.id)
                 } else {
                     Toast.show({
@@ -163,26 +158,30 @@ const ChatContent: React.FC<{ convoId: string, recipientId: string }> = ({ convo
         }, 100);
     }, [messages?.length])
 
+    const emitEvent = (eventName: string, data?: any) => {
+        if (!socket || !socket.connected) return;
+        socket.emit(eventName, data);
+    };
+
     const sendUserMessage = async () => {
         if (!inputValue) {
             return
         }
-        setSendLoad(true)
-        const body = {
-            content: inputValue
-        }
-        const response = await sendMessage(conversationID, body)
-        if (response?.status === 201 || response?.status === 200) {
-            const data = response.data?.data
-            setMessages([...messages, data])
-            setInputValue("")
-        } else {
-            Toast.show({
-                type: "error",
-                text1: "Error sending message"
-            })
-        }
-        setSendLoad(false)
+        const paylaod = {
+            receiverId: recipientId,
+            message: inputValue,
+        };
+        if (!socket) return;
+        setMessages([...messages, {
+            id: '',
+            isSender: true,
+            message: inputValue,
+            sender: authUser?.user as RegisterUserInfo,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+        }])
+        emitEvent("sendMessage", paylaod);
+        setInputValue("")
     }
 
     return (
@@ -199,10 +198,10 @@ const ChatContent: React.FC<{ convoId: string, recipientId: string }> = ({ convo
                                     <Ionicons name="arrow-back" size={24} color={"black"} />
                                     <Text>Back</Text>
                                 </Pressable>
-                                <Text style={{ fontSize: 15, textTransform: "capitalize" }}>{messages[0]?.receiver?.firstname} {messages[0]?.receiver?.lastname}</Text>
+                                <Text style={{ fontSize: 15, textTransform: "capitalize" }}>{recipient?.firstName} {recipient?.lastName}</Text>
                                 <View style={{ ...styles.buttons, columnGap: 20 }}>
-                                    {/* <Ionicons name="call-outline" size={18} color={"black"} /> */}
-                                    <Fontisto onPress={()=> openLink(`mailto:${recipient?.email ? recipient?.email : 'support@audtiklance.com'}`)} name="email" size={18} color={"black"} />
+                                    <Ionicons onPress={() => openLink(`tel:${recipient?.phoneNumber}`)} name="call-outline" size={18} color={"black"} />
+                                    <Fontisto onPress={() => openLink(`mailto:${recipient?.email ? recipient?.email : 'support@audtiklance.com'}`)} name="email" size={18} color={"black"} />
                                     <Entypo onPress={() => chatModalRef.current?.open()} name="dots-three-vertical" size={18} color="black" />
                                 </View>
                             </View>
@@ -210,11 +209,11 @@ const ChatContent: React.FC<{ convoId: string, recipientId: string }> = ({ convo
                                 <ScrollView ref={scrollViewRef} showsVerticalScrollIndicator={false} style={{ width: "100%" }}>
                                     {
                                         messages?.map((message, i) => (
-                                            <View key={i} style={{ ...styles.chatView, alignSelf: message?.is_sender ? "flex-end" : "flex-start" }}>
+                                            <View key={i} style={{ ...styles.chatView, alignSelf: message?.isSender ? "flex-end" : "flex-start" }}>
                                                 <View style={{ display: "flex", width: "75%", flexDirection: 'row', flexWrap: 'wrap' }}>
-                                                    <Text style={{ width: "100%", color: "white" }}>{message?.content}</Text>
+                                                    <Text style={{ width: "100%", color: "white" }}>{message?.message}</Text>
                                                 </View>
-                                                <Text style={{ color: "white", fontSize: 10 }}>{new Date(message?.updated_at)?.toLocaleTimeString()}</Text>
+                                                <Text style={{ color: "white", fontSize: 10 }}>{new Date(message?.updatedAt)?.toLocaleDateString()}</Text>
                                             </View>
                                         ))
                                     }
@@ -233,7 +232,7 @@ const ChatContent: React.FC<{ convoId: string, recipientId: string }> = ({ convo
                         </View>
                 }
             </KeyboardAvoidingView>
-            <ChatModal chatModalRef={chatModalRef} receiver={recipient} />
+            <ChatModal chatModalRef={chatModalRef} receiver={recipient!} />
         </>
     )
 }

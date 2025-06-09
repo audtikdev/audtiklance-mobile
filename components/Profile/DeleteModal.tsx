@@ -9,7 +9,7 @@ import { resetAuth } from '../Context/authProvider'
 import { useDispatch } from 'react-redux'
 import Toast from 'react-native-toast-message'
 
-const DeleteModal: React.FC<{ deleteRef: React.RefObject<IHandles> }> = ({ deleteRef }) => {
+const DeleteModal: React.FC<{ deleteRef: React.RefObject<IHandles | null> }> = ({ deleteRef }) => {
     const colorScheme = useColorScheme() || "light"
     const dispatch = useDispatch()
 

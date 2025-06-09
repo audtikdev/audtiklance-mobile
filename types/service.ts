@@ -1,3 +1,5 @@
+import { RegisterUserInfo } from "./auth";
+
 export type GoogleReview = {
   authorAttribution?: {
     displayName: string;
@@ -10,47 +12,39 @@ export type GoogleReview = {
 };
 
 export type Review = {
-  comment: string;
-  created_at: Date;
-  id: string;
+  business: BusinessType;
+  message: string;
   rating: number;
-  reviewer: {
-    firstname: string;
-    id: string;
-    lastname: string;
-    profile_picture: string;
-  };
+  user: RegisterUserInfo;
+  createdAt: Date;
 };
 
-export type Service = {
-  id?: string;
-  name: string;
-  profile_picture?: string;
-  business_name?: string;
-  about_me?: string;
-  owner_name?: string;
-  owner_plan_type?: string;
-  phone?: string;
-  price?: number;
-  cost?: number;
-  images?: Array<{id?: string, image_url: string}>
-  owner_id?: string;
-  sub_category?: Array<{
-    cost: string;
-    sub_category: string;
-    id: string;
-    time_frame: string;
-  }>;
-  address?: string;
-  is_google_place?: boolean;
-  external_rating?: string;
-  external_reviews?: Array<GoogleReview>;
-};
-
-export type SubCategory = {
-  cost: string;
-  sub_category: string;
-  sub_category_id: string;
+export interface ServiceType {
   id: string;
-  time_frame: string;
+  category: CategoryType;
+  price: string;
+}
+
+export type BusinessType = {
+  id: string;
+  title: string;
+  description: string;
+  location: {
+    coordinates: [number, number];
+    type: string;
+  };
+  address: string;
+  price: number;
+  mainImage: string;
+  previousWorkImages: string[];
+  is_google_place: boolean;
+  provider: Omit<RegisterUserInfo, "business">;
+  reviews: any[];
+  services: Array<ServiceType>;
+};
+
+export type CategoryType = {
+  id: string;
+  name: string;
+  description: string;
 };

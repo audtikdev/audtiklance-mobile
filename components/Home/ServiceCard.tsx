@@ -1,6 +1,5 @@
-import { View, Text, Image, StyleSheet, Pressable, useColorScheme, DimensionValue, Dimensions } from 'react-native'
+import { View, Text, Image, StyleSheet, Pressable, DimensionValue, Dimensions } from 'react-native'
 import React from 'react'
-import { Service } from '@/types/service'
 import { AntDesign } from '@expo/vector-icons'
 import { formatCurrency } from '@/utils/helper'
 import { router } from 'expo-router'
@@ -9,15 +8,16 @@ import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '../Store/store'
 import { updateFavorite } from '../Context/favoriteProvider'
 import Toast from 'react-native-toast-message'
+import { BusinessType } from '@/types/service'
 const screenWidth = Dimensions.get('window').width;
 
-const ServiceCard: React.FC<{ service: Service, width?: DimensionValue }> = ({ service, width = 200 }) => {
+const ServiceCard: React.FC<{ service: BusinessType, width?: DimensionValue }> = ({ service, width = 200 }) => {
     const favorites = useSelector((state: RootState) => state.favoriteProvider.favorite)
     const dispatch = useDispatch()
 
     const handleAddFavorite = async () => {
         const res = await addFavorite(service.id!)
-        if (res?.status === 200) {
+        if (res?.status === 200 || res?.status === 201) {
             dispatch(updateFavorite({ favorite: [...favorites, service.id!] }))
             Toast.show({
                 type: 'success',
@@ -64,12 +64,12 @@ const ServiceCard: React.FC<{ service: Service, width?: DimensionValue }> = ({ s
                         </Pressable>
                 }
                 <Pressable onPress={() => router.push(`/service-detail/${service?.id}`)}>
-                    <Image style={styles.image} source={{ uri: service?.profile_picture }} />
+                    <Image style={styles.image} source={{ uri: service?.mainImage }} />
                 </Pressable>
             </View>
-            <Text onPress={() => router.push(`/service-detail/${service?.id}`)} numberOfLines={1} style={{ fontSize: 13, fontWeight: 500, marginTop: 20, marginBottom: 0 }}>{service?.business_name}</Text>
-            <Text onPress={() => router.push(`/service-detail/${service?.id}`)} style={{ fontSize: 13, fontWeight: 400, marginVertical: 2 }}>{service?.sub_category?.[0]?.sub_category}</Text>
-            {!service?.is_google_place && <Text onPress={() => router.push(`/service-detail/${service?.id}`)} style={{ fontSize: 13, fontWeight: 500, marginTop: 0 }}>{formatCurrency("en-US", "USD", Number(service?.sub_category?.[0]?.cost))}</Text>}
+            <Text onPress={() => router.push(`/service-detail/${service?.id}`)} numberOfLines={1} style={{ fontSize: 13, fontWeight: 500, marginTop: 20, marginBottom: 0 }}>{service?.title}</Text>
+            <Text onPress={() => router.push(`/service-detail/${service?.id}`)} style={{ fontSize: 13, fontWeight: 400, marginVertical: 2 }}>{service?.services?.[0]?.category?.name}</Text>
+            {!service?.is_google_place && <Text onPress={() => router.push(`/service-detail/${service?.id}`)} style={{ fontSize: 13, fontWeight: 500, marginTop: 0 }}>{formatCurrency("en-US", "USD", Number(service?.services?.[0]?.price))}</Text>}
         </View>
     )
 }

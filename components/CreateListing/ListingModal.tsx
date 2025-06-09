@@ -1,26 +1,25 @@
-
 import { View, Text, Modal, Pressable, Keyboard, TouchableWithoutFeedback, StyleSheet, useColorScheme } from 'react-native'
 import React, { Dispatch, SetStateAction, useEffect, useState } from 'react'
 import AutoSearch from '../AutoComplete';
-import { Service } from '@/types/service';
+import { CategoryType } from '@/types/service';
 import axios from 'axios';
 import { debounce } from 'lodash';
 import Constants from 'expo-constants'
 import { ListingLocation } from './CreateListing';
 
-export const SelectCategory: React.FC<{ showModal: boolean, setShowModal: Dispatch<SetStateAction<boolean>>, setSelectedCat: Dispatch<SetStateAction<Service>> }> = ({ showModal, setShowModal, setSelectedCat }) => {
+export const SelectCategory: React.FC<{ showModal: boolean, setShowModal: Dispatch<SetStateAction<boolean>>, setSelectedCat: Dispatch<SetStateAction<CategoryType | undefined>> }> = ({ showModal, setShowModal, setSelectedCat }) => {
     const [query, setQuery] = useState("");
-    const [services, setServices] = useState<Service[]>([])
+    const [services, setServices] = useState<CategoryType[]>([])
     const baseUrl = Constants.expoConfig?.extra?.BASE_API
 
     useEffect(() => {
         // Debounce the search function to reduce API calls
         const delayedSearch = debounce(() => {
             if (query.trim() !== "") {
-                const url = `${baseUrl}/category/?search=${query}&is_subcategory=true`;
+                const url = `${baseUrl}/categories/search?q=${query}`;
                 axios.get(url)
                     .then((response: any) => {
-                        setServices(response.data.results);
+                        setServices(response.data);
                     })
                     .catch((error: any) => {
                         console.error(error);
@@ -40,7 +39,7 @@ export const SelectCategory: React.FC<{ showModal: boolean, setShowModal: Dispat
         setQuery(text);
     };
 
-    const handleServiceSelect = (service: Service) => {
+    const handleServiceSelect = (service: CategoryType) => {
         setSelectedCat(service)
         setQuery(service?.name)
         Keyboard.dismiss()
@@ -84,7 +83,6 @@ export const SelectLocation: React.FC<{ showModal: boolean, setShowModal: Dispat
     const [query, setQuery] = useState("");
     const [locations, setLocations] = useState([]);
     const mapKey = Constants.expoConfig?.extra?.MAPBOX_KEY
-    const colorScheme = useColorScheme() || "light"
 
     useEffect(() => {
         // Debounce the search function to reduce API calls

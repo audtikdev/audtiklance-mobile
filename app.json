@@ -11,7 +11,7 @@
     "newArchEnabled": true,
     "extra": {
       "MAPBOX_KEY": "pk.eyJ1IjoidmlrdG9oIiwiYSI6ImNrcmpyamM1ZjA1ZG8ydnBjbWRpOWtjN2kifQ.auBvgsbud2l08nrj8lXZfg",
-      "BASE_API": "https://api.audtiklance.com/api",
+      "BASE_API": "https://api.audtiklance.com",
       "router": {
         "origin": false
       },
@@ -33,6 +33,7 @@
         "foregroundImage": "./assets/images/logo.jpg",
         "backgroundColor": "#ffffff"
       },
+      "softwareKeyboardLayoutMode": "resize",
       "package": "com.richey24.audtiklance_mobile"
     },
     "web": {
@@ -62,7 +63,9 @@
         {
           "iosUrlScheme": "com.googleusercontent.apps.15571279761-v4q3rb97hueq6koviotj3fa3jflhvi4p"
         }
-      ]
+      ],
+      "expo-font",
+      "expo-web-browser"
     ],
     "experiments": {
       "typedRoutes": true
