@@ -3,7 +3,7 @@
     "name": "Audtiklance",
     "owner": "audtiklance",
     "slug": "audtiklance_mobile",
-    "version": "1.0.3",
+    "version": "1.0.4",
     "orientation": "portrait",
     "icon": "./assets/images/logo.jpg",
     "scheme": "audtiklance",
@@ -11,7 +11,7 @@
     "newArchEnabled": true,
     "extra": {
       "MAPBOX_KEY": "pk.eyJ1IjoidmlrdG9oIiwiYSI6ImNrcmpyamM1ZjA1ZG8ydnBjbWRpOWtjN2kifQ.auBvgsbud2l08nrj8lXZfg",
-      "BASE_API": "https://api.audtiklance.com/api",
+      "BASE_API": "https://api.audtiklance.com",
       "router": {
         "origin": false
       },
@@ -25,7 +25,8 @@
       "usesAppleSignIn": true,
       "infoPlist": {
         "NSLocationWhenInUseUsageDescription": "We use your location to show nearby service providers and personalized recommendations. For example, this helps us find service providers within 5 miles of you.",
-        "NSPhotoLibraryUsageDescription": "We need access to your photo library so you can upload service images and profile pictures."
+        "NSPhotoLibraryUsageDescription": "We need access to your photo library so you can upload service images and profile pictures.",
+        "ITSAppUsesNonExemptEncryption": false
       }
     },
     "android": {
@@ -33,7 +34,12 @@
         "foregroundImage": "./assets/images/logo.jpg",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.richey24.audtiklance_mobile"
+      "softwareKeyboardLayoutMode": "resize",
+      "package": "com.richey24.audtiklance_mobile",
+      "permissions": [
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION"
+      ]
     },
     "web": {
       "bundler": "metro",
@@ -62,7 +68,9 @@
         {
           "iosUrlScheme": "com.googleusercontent.apps.15571279761-v4q3rb97hueq6koviotj3fa3jflhvi4p"
         }
-      ]
+      ],
+      "expo-font",
+      "expo-web-browser"
     ],
     "experiments": {
       "typedRoutes": true

@@ -14,8 +14,8 @@ const OurReview: React.FC<{review: Review, truncate?: boolean}> = ({review, trun
                     ))
                 }
             </View>
-            <Text style={{ marginVertical: 5, color: "grey", }}>{review?.reviewer?.firstname} {review?.reviewer?.lastname} | {new Date(review?.created_at)?.toLocaleDateString()}</Text>
-            <Text numberOfLines={truncate ? 5 : undefined} style={{ marginTop: 5, lineHeight: 20 }}>{review?.comment}</Text>
+            <Text style={{ marginVertical: 5, color: "grey", }}>{review?.user?.firstName} {review?.user?.lastName} | {new Date(review?.createdAt)?.toLocaleDateString()}</Text>
+            <Text numberOfLines={truncate ? 5 : undefined} style={{ marginTop: 5, lineHeight: 20 }}>{review?.message}</Text>
         </View>
     )
 }

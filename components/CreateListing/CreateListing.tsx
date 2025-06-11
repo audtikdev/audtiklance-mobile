@@ -1,11 +1,10 @@
-import { View, Text, StyleSheet, TextInput, useColorScheme, Pressable, ImageBackground, Alert, ScrollView, KeyboardAvoidingView, Platform, ActivityIndicator } from 'react-native'
+import { View, Text, StyleSheet, TextInput, Pressable, ImageBackground, Alert, ScrollView, KeyboardAvoidingView, Platform, ActivityIndicator } from 'react-native'
 import React, { useState } from 'react'
 import * as ImagePicker from 'expo-image-picker';
 import { AntDesign, Feather, MaterialIcons } from '@expo/vector-icons'
 import { generalStyle } from '@/style/generalStyle'
 import { router } from 'expo-router';
 import { SelectCategory, SelectLocation } from './ListingModal';
-import { Service } from '@/types/service';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { ListingBody } from '@/types/listing';
 import Toast from 'react-native-toast-message';
@@ -13,7 +12,7 @@ import { createListing } from '@/api/listing';
 import { openURL } from 'expo-linking';
 import { RootState } from '../Store/store';
 import { useSelector } from 'react-redux';
-
+import { CategoryType } from '@/types/service';
 export type ListingLocation = {
     longitude: string,
     latitude: string,
@@ -24,7 +23,7 @@ const CreateListing = () => {
     const [image, setImage] = useState("")
     const [showCatModal, setShowCatModal] = useState(false)
     const [showLocModal, setShowLocModal] = useState(false)
-    const [selectedCat, setSelectedCat] = useState<Service>()
+    const [selectedCat, setSelectedCat] = useState<CategoryType>()
     const [selectedLoc, setSelectedLoc] = useState<ListingLocation>()
     const [date, setDate] = useState(new Date());
     const [load, setLoad] = useState(false)
@@ -73,23 +72,21 @@ const CreateListing = () => {
         }
         setLoad(true)
         const body: ListingBody = { ...jobList! }
-        body.category = selectedCat?.id!
-        body.longitude = selectedLoc?.longitude!,
-            body.latitude = selectedLoc?.latitude!,
+        body.categoryId = selectedCat?.id!
             body.address = selectedLoc?.address!,
-            body.preferred_date = date.toISOString()?.split('T')[0]
+            body.deadline = date.toISOString()?.split('T')[0]
         const formData = new FormData()
         Object.entries(body).forEach(([key, value]) => {
             formData.append(key, value as string)
         })
-
+        formData.append("location", JSON.stringify({ lat: selectedLoc?.latitude, lng: selectedLoc?.longitude }))
         let filename = image.split('/').pop();
 
         let match = /\.(\w+)$/.exec(filename!);
         let type = match ? `image/${match[1]}` : `image`;
 
         // @ts-ignore
-        formData.append('images0', { uri: image, name: filename, type });
+        formData.append('images', { uri: image, name: filename, type });
         const res = await createListing(formData)
 
         if (res?.status === 201 || res?.status === 200) {
@@ -97,9 +94,7 @@ const CreateListing = () => {
                 type: 'success',
                 text1: 'Job Created, Redirecting...'
             })
-            setTimeout(() => {
-                openURL(res?.data?.data)
-            }, 1000)
+            router.push('/listing')
         } else {
             Toast.show({
                 type: 'error',
@@ -131,11 +126,11 @@ const CreateListing = () => {
                                 </View>
                                 <View style={styles.inputContainer}>
                                     <Text style={styles.inputText}>Category</Text>
-                                    <TextInput readOnly value={selectedCat?.name} onPress={() => setShowCatModal(true)} placeholderTextColor={"black"} style={{ ...styles.registerInput }} placeholder='Select Category' />
+                                    <Pressable style={{ ...styles.registerInput, display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingRight: 10 }} onPress={() => setShowCatModal(true)}><Text>{selectedCat?.name || "Select Category"}</Text><Feather name="chevron-down" size={14} color="black" /></Pressable>
                                 </View>
                                 <View style={styles.inputContainer}>
                                     <Text style={styles.inputText}>Location</Text>
-                                    <TextInput readOnly value={selectedLoc?.address} onPress={() => setShowLocModal(true)} placeholderTextColor={"black"} style={{ ...styles.registerInput }} placeholder='Select Location' />
+                                    <Pressable style={{ ...styles.registerInput, display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingRight: 10 }} onPress={() => setShowLocModal(true)}><Text>{selectedLoc?.address || "Select Location"}</Text><Feather name="chevron-down" size={14} color="black" /></Pressable>
                                 </View>
                                 <View style={styles.inputContainer}>
                                     <Text style={styles.inputText}>Job Description</Text>

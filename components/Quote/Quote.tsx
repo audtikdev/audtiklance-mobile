@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Modal, Pressable, TextInput, ImageBackground, Alert, Platform } from 'react-native'
+import { View, Text, StyleSheet, Modal, Pressable, TextInput, ImageBackground, Alert, Platform, Keyboard } from 'react-native'
 import React, { useState } from 'react'
 import * as ImagePicker from 'expo-image-picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -43,12 +43,11 @@ const Quote: React.FC<{ showModal: boolean, setShowModal: any, serviceID: string
     const submitQuote = async () => {
         setLoad(true)
         const body = {
-            service_profile: serviceID,
-            description: description,
-            deadline: date.toISOString()?.split('T')[0]
+            provider: serviceID,
+            message: description,
+            deadline: date.toISOString()?.split('T')[0],
+            type: "quote"
         }
-        console.log(body);
-
         const formData = new FormData()
         Object.entries(body).forEach(([key, value]) => {
             formData.append(key, value as string)
@@ -63,8 +62,9 @@ const Quote: React.FC<{ showModal: boolean, setShowModal: any, serviceID: string
             formData.append('images0', { uri: image, name: filename, type });
         }
         
-        const res = await createQuote(formData)
-
+        const res = await createQuote(body)
+        console.log(res);
+        
         if (res?.status === 201 || res?.status === 200) {
             Toast.show({
                 type: 'success',
@@ -90,7 +90,7 @@ const Quote: React.FC<{ showModal: boolean, setShowModal: any, serviceID: string
             }}
         >
             <Pressable onPress={() => setShowModal(false)} style={styles.modalOverlay}>
-                <View style={styles.addModalContent}>
+                <Pressable onPress={e => {e.stopPropagation(); Keyboard.dismiss()}} style={styles.addModalContent}>
                     <Text style={{ ...styles.profileText }}>Get a free quote</Text>
                     <View style={{ ...styles.inputContainer, marginBottom: 10 }}>
                         <Text style={styles.inputText}>Deadline</Text>
@@ -130,7 +130,7 @@ const Quote: React.FC<{ showModal: boolean, setShowModal: any, serviceID: string
                                 <Text style={{ ...styles.buttonText, ...generalStyle.text["dark"] }}>Send Quote</Text>
                         }
                     </Pressable>
-                </View>
+                </Pressable>
             </Pressable>
         </Modal>
     )

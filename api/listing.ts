@@ -4,7 +4,7 @@ import { ListingBody } from "@/types/listing";
 
 export const createListing = async (body: FormData) => {
     try {
-      const res = await apiAxios.post(`/job/`, body, {
+      const res = await apiAxios.post(`/listings`, body, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -26,13 +26,9 @@ export const createListing = async (body: FormData) => {
     }
   };
 
-export const updateListing = async (body: Partial<ListingBody>, id: string) => {
+export const updateListing = async (body: any, id: string) => {
     try {
-      const res = await apiAxios.patch(`/job/${id}/`, body, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      const res = await apiAxios.put(`/listings/${id}`, body);
       return {
         status: res.status,
         data: res.data,
@@ -51,7 +47,7 @@ export const updateListing = async (body: Partial<ListingBody>, id: string) => {
 
 export const initiateListingPayment = async (id: string) => {
     try {
-      const res = await apiAxios.post(`/job/${id}/initiate-payment/`);
+      const res = await apiAxios.post(`/listings/${id}/payment-link`);
       return {
         status: res.status,
         data: res.data,
@@ -70,7 +66,7 @@ export const initiateListingPayment = async (id: string) => {
 
 export const deleteListing = async (id: string) => {
     try {
-      const res = await apiAxios.delete(`/job/${id}/`);
+      const res = await apiAxios.delete(`/listings/${id}`);
       return {
         status: res.status,
         data: res.data,
@@ -89,7 +85,7 @@ export const deleteListing = async (id: string) => {
 
 export const getAllListing = async () => {
     try {
-      const res = await apiAxios.get(`/job/`);
+      const res = await apiAxios.get(`/listings`);
       return {
         status: res.status,
         data: res.data,
@@ -108,7 +104,7 @@ export const getAllListing = async () => {
 
 export const getMyListing = async () => {
     try {
-      const res = await apiAxios.get(`/job/my-jobs/`);
+      const res = await apiAxios.get(`/listings`);
       return {
         status: res.status,
         data: res.data,
@@ -127,7 +123,7 @@ export const getMyListing = async () => {
 
 export const getAListing = async (id: string) => {
     try {
-      const res = await apiAxios.get(`/job/${id}/`);
+      const res = await apiAxios.get(`/listings/${id}`);
       return {
         status: res.status,
         data: res.data,

@@ -14,8 +14,8 @@ const ProviderRegister1 = () => {
     resolver: yupResolver(providerRegisterOneSchema),
   });
 
-  const onSubmit = (data: RegisterProvider) => {
-    dispatch(updateRegisterProvider({ provider: data }))
+  const onSubmit = (data: Partial<RegisterProvider>) => {
+    dispatch(updateRegisterProvider({ provider: data as RegisterProvider }))
     router.push("/providerRegister2")
   }
   return (
@@ -28,23 +28,23 @@ const ProviderRegister1 = () => {
             <Text style={{ ...styles.profileText }}>Personal Information</Text>
             <Controller
               control={control}
-              name="firstname"
+              name="firstName"
               render={({ field: { onChange, onBlur, value } }) => (
                 <TextInput placeholderTextColor={"black"} onChangeText={onChange} onBlur={onBlur} value={value} style={{ ...styles.registerInput }} placeholder='First Name' />
               )}
             />
             <View style={styles.errorContainer}>
-              {errors.firstname && <Text style={styles.errorText}>{errors.firstname.message}</Text>}
+              {errors.firstName && <Text style={styles.errorText}>{errors.firstName.message}</Text>}
             </View>
             <Controller
               control={control}
-              name="lastname"
+              name="lastName"
               render={({ field: { onChange, onBlur, value } }) => (
                 <TextInput placeholderTextColor={"black"} onChangeText={onChange} value={value} onBlur={onBlur} style={{ ...styles.registerInput }} placeholder='Last Name' />
               )}
             />
             <View style={styles.errorContainer}>
-              {errors.lastname && <Text style={styles.errorText}>{errors.lastname.message}</Text>}
+                {errors.lastName && <Text style={styles.errorText}>{errors.lastName.message}</Text>}
             </View>
             <Controller
               control={control}

@@ -4,8 +4,7 @@ import AutoSearch from '../AutoComplete'
 import { debounce } from 'lodash';
 import axios from 'axios';
 import Constants from 'expo-constants'
-import { Service } from '@/types/service';
-import { generalStyle } from '@/style/generalStyle';
+import { BusinessType, CategoryType } from '@/types/service';
 import ServiceCard from '../Home/ServiceCard';
 import { useSelector } from 'react-redux';
 import { RootState } from '../Store/store';
@@ -19,8 +18,8 @@ const Search: React.FC<{ query: string }> = ({ query }) => {
     const [serviceQuery, setServiceQuery] = useState("");
     const [locations, setLocations] = useState([]);
     const [location, setLocation] = useState<LocationData>();
-    const [services, setServices] = useState<Service[]>([])
-    const [serviceSearch, setServiceSearch] = useState<Service[]>([])
+    const [services, setServices] = useState<BusinessType[]>([])
+    const [serviceSearch, setServiceSearch] = useState<BusinessType[]>([])
     const [service, setService] = useState<{ name: string }>()
     const [load, setLoad] = useState(false)
     const [isLoading, setisLoading] = useState(false)
@@ -32,8 +31,8 @@ const Search: React.FC<{ query: string }> = ({ query }) => {
     const baseUrl = Constants.expoConfig?.extra?.BASE_API
     useEffect(() => {
         if (userLocation) {
-            setLocationQuery("Your Location")
-            setLocation(userLocation)
+            // setLocationQuery("Your Location")
+            // setLocation(userLocation)
         }
     }, [userLocation])
 
@@ -93,10 +92,10 @@ const Search: React.FC<{ query: string }> = ({ query }) => {
         // Debounce the search function to reduce API calls
         const delayedSearch = debounce(() => {
             if (serviceQuery.trim() !== "") {
-                const url = `${baseUrl}/category/?search=${serviceQuery}`;
+                const url = `${baseUrl}/categories/search?q=${serviceQuery}`;
                 axios.get(url)
                     .then((response: any) => {
-                        setServiceSearch(response.data.results);
+                        setServiceSearch(response.data);
                     })
                     .catch((error: any) => {
                         console.error(error);
@@ -116,15 +115,15 @@ const Search: React.FC<{ query: string }> = ({ query }) => {
     useEffect(() => {
         setLoad(true)
         setPage(1)
-        let url = ""
-        if (location?.coords?.longitude && location?.coords?.latitude) {
-            url = topService ? `${baseUrl}/service/` : `${baseUrl}/service/?search=${serviceQuery || ""}&longitude=${location?.coords?.longitude}&latitude=${location?.coords?.latitude}&page=1`;
-        } else {
-            url = `${baseUrl}/service/?page=`
-        }
-        axios.get(url)
+        axios.get(`${baseUrl}/businesses/search`, {
+            params: {
+                q: serviceQuery,
+                lng: location?.coords?.longitude || "",
+                lat: location?.coords?.latitude || ""
+            }
+        })
             .then((response: any) => {
-                setServices(response.data.results);
+                setServices(response.data);
                 setLoad(false)
             })
             .catch((error: any) => {
@@ -136,15 +135,15 @@ const Search: React.FC<{ query: string }> = ({ query }) => {
     useEffect(() => {
         if (page > 1) {
             setisLoading(true)
-            let url = ""
-            if (location?.coords?.longitude && location?.coords?.latitude) {
-                url = topService ? `${baseUrl}/service/` : `${baseUrl}/service/?search=${serviceQuery || ""}&longitude=${location?.coords?.longitude}&latitude=${location?.coords?.latitude}&page=${page}`;
-            } else {
-                url = `${baseUrl}/service/?page=${page}`
-            }
-            axios.get(url)
+            axios.get(`${baseUrl}/businesses/search`, {
+                params: {
+                    q: serviceQuery,
+                    lng: location?.coords?.longitude || "",
+                    lat: location?.coords?.latitude || ""
+                }
+            })
                 .then((response: any) => {
-                    setServices([...services, ...response.data.results]);
+                    setServices([...services, ...response.data]);
                     setLoad(false)
                 })
                 .catch((error: any) => {
@@ -177,7 +176,7 @@ const Search: React.FC<{ query: string }> = ({ query }) => {
         setServiceQuery(text);
     };
 
-    const handleServiceSelect = (service: Service) => {
+    const handleServiceSelect = (service: CategoryType) => {
         setService(service)
         setServiceQuery(service?.name)
     }

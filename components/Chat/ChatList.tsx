@@ -23,7 +23,8 @@ const ChatList = () => {
             setLoad(true)
             const response = await getChatList()
             if (response?.status === 201 || response?.status === 200) {
-                const data = response?.data?.results
+                const data = response?.data
+                console.log(data);
                 setChatList(data)
             } else {
                 router.push("/login")
@@ -44,7 +45,7 @@ const ChatList = () => {
                         <View style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: 20, height: "80%", width: "100%" }}>
                             <Text style={{ fontSize: 14, fontWeight: 500 }}>You don't have any chats yet</Text>
                             {
-                                authUser?.service_profile &&
+                                authUser?.user?.business &&
                                 <Text style={{ fontSize: 12, fontWeight: 600, textAlign: "center", paddingTop: 10 }}>Your chats will show up here when you have leads</Text>
                             }
                             <Image style={{ width: 300, height: 300, paddingVertical: 40 }} source={require("../../assets/images/Empty-product.png")} />
@@ -52,14 +53,14 @@ const ChatList = () => {
                         <ScrollView showsVerticalScrollIndicator={false} style={{ width: "100%" }}>
                             {
                                 chatList?.map((chat, i) => (
-                                    <Pressable onPress={() => router.push(`/chat/${chat?.recipient?.id}/${chat?.id}`)} key={i} style={styles.chatContainer}>
-                                        <Image style={styles.image} source={{ uri: chat?.recipient?.profile_picture }} />
+                                    <Pressable onPress={() => router.push(`/chat/${chat?.user?._id}/${chat?._id}`)} key={i} style={styles.chatContainer}>
+                                        <Image style={styles.image} source={{ uri: chat?.user?.profilePicture || `https://ui-avatars.com/api/?name=${chat?.user?.firstName}+${chat?.user?.lastName}` }} />
                                         <View style={{ width: "100%" }}>
                                             <View style={styles.nameView}>
-                                                <Text style={{textTransform: "capitalize"}}>{chat?.recipient?.firstname}</Text>
-                                                <Text>{new Date(chat?.updated_at).getHours()}:{new Date(chat?.updated_at).getMinutes()}</Text>
+                                                <Text style={{textTransform: "capitalize"}}>{chat?.user?.firstName}</Text>
+                                                <Text>{new Date(chat?.lastMessage?.createdAt).toLocaleString()}</Text>
                                             </View>
-                                            <Text style={{ ...styles.text }} numberOfLines={1}>{chat?.last_message_content}</Text>
+                                            <Text style={{ ...styles.text }} numberOfLines={1}>{chat?.lastMessage?.message}</Text>
                                         </View>
                                     </Pressable>
                                 ))

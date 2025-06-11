@@ -6,7 +6,6 @@ import { deleteListing, getMyListing, initiateListingPayment } from '@/api/listi
 import Toast from 'react-native-toast-message'
 import { openURL } from 'expo-linking'
 import { Modalize } from 'react-native-modalize'
-import { generalStyle } from '@/style/generalStyle'
 import { IHandles } from 'react-native-modalize/lib/options'
 import { router } from 'expo-router'
 import { Portal } from 'react-native-paper'
@@ -35,16 +34,16 @@ const List: React.FC<{ listing: ListingBody, setListing: any }> = ({ listing, se
         <>
             <View style={styles.container}>
                 <View style={{ ...styles.flexBetw }}>
-                    <Text style={{ fontWeight: 600 }}>{listing?.category}</Text>
-                    <View style={{ padding: 5, backgroundColor: listing?.status !== "OPEN" ? "#FCE8E7" : "#DEF7EC" }}>
-                        <Text style={{ color: listing?.status !== "OPEN" ? "#F05152" : "#0B9F6E" }}>{listing?.status}</Text>
+                    <Text style={{ fontWeight: 600 }}>{listing?.title}</Text>
+                    <View style={{ padding: 5, backgroundColor: listing?.isPublished ? "#FCE8E7" : "#DEF7EC" }}>
+                        <Text style={{ color: listing?.isPublished ? "#F05152" : "#0B9F6E" }}>{listing?.isPublished ? "Published" : "Draft"}</Text>
                     </View>
                 </View>
                 <Text style={{ marginVertical: 10 }} numberOfLines={2}>{listing?.description}</Text>
                 <View style={{ ...styles.flexBetw }}>
                     <View style={{ ...styles.flexBetw, justifyContent: "center", columnGap: '5' }}>
                         <MaterialIcons name="access-alarms" size={20} color="black" />
-                        <Text>{new Date(listing?.preferred_date)?.toDateString()}</Text>
+                        <Text>{new Date(listing?.deadline)?.toDateString()}</Text>
                     </View>
                     <View style={{ ...styles.flexBetw, width: 150, justifyContent: "center", columnGap: '5' }}>
                         <Ionicons name="location-sharp" size={20} color="black" />
@@ -58,7 +57,7 @@ const List: React.FC<{ listing: ListingBody, setListing: any }> = ({ listing, se
                     <Pressable onPress={() => { setSelectedListing(listing); deleteRef.current?.open() }} style={{ ...styles.iconButton, backgroundColor: "#FCE8E7" }}>
                         <AntDesign name="delete" size={18} color="#F05152" />
                     </Pressable>
-                    <Pressable onPress={() => makePayment(listing?.id!)} style={{ ...styles.iconButton, display: listing?.is_paid ? "none" : "flex", backgroundColor: "#DEF7EC", width: "35%" }}>
+                    <Pressable onPress={() => makePayment(listing?.id!)} style={{ ...styles.iconButton, display: listing?.isPublished ? "none" : "flex", backgroundColor: "#DEF7EC", width: "35%" }}>
                         {
                             paymentLoad ?
                                 <ActivityIndicator color={"#0B9F6E"} /> :
@@ -74,17 +73,16 @@ const List: React.FC<{ listing: ListingBody, setListing: any }> = ({ listing, se
 
 export default List
 
-const DeleteModal: React.FC<{ deleteRef: React.RefObject<IHandles>, listing: ListingBody, setListings: any }> = ({ deleteRef, listing, setListings }) => {
-    const colorScheme = useColorScheme() || "light"
+const DeleteModal: React.FC<{ deleteRef: React.RefObject<IHandles | null>, listing: ListingBody, setListings: any }> = ({ deleteRef, listing, setListings }) => {
     const [deleteLoad, setDeleteLoad] = useState(false)
 
     const handleDeleteListing = async () => {
         setDeleteLoad(true)
         const response = await deleteListing(listing?.id!)
-        if (response?.status === 204) {
+        if (response?.status === 200) {
             const res = await getMyListing()
             if (res?.status === 200) {
-                setListings(res?.data?.data || [])
+                setListings(res?.data || [])
                 deleteRef.current?.close()
             }
         } else {
@@ -104,7 +102,7 @@ const DeleteModal: React.FC<{ deleteRef: React.RefObject<IHandles>, listing: Lis
             >
                 <View style={styles.modalContent}>
                     <Text style={{ fontSize: 18, fontWeight: 600, textAlign: "center", marginTop: 10 }}>Are You Sure You Want To Delete This Listing</Text>
-                    <Text style={{ fontSize: 14, fontWeight: 500, textAlign: "center", marginTop: 10, paddingHorizontal: 20 }}>{listing?.category}</Text>
+                    <Text style={{ fontSize: 14, fontWeight: 500, textAlign: "center", marginTop: 10, paddingHorizontal: 20 }}>{listing?.title}</Text>
                     <View style={{ display: "flex", width: "100%", flexDirection: "row", justifyContent: "space-between", alignItems: "center", columnGap: 10, marginTop: 20 }}>
                         <Pressable onPress={() => deleteRef.current?.close()} style={{ ...styles.cancelButton }}><Text style={{ fontSize: 16, fontWeight: 500 }}>Cancel</Text></Pressable>
                         <Pressable onPress={handleDeleteListing} style={styles.deleteButton}>

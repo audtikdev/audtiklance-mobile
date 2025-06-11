@@ -1,66 +1,57 @@
-import { SubCategory } from "./service";
+import { BusinessType } from "./service";
 
 export type RegisterUserInfo = {
-    firstname: string,
-    lastname: string,
-    email: string,
-    gender?: string,
-    about_me?: string;
-    dob?: string;
-    password: string,
-    confirmPassword: string,
-    otp?: string,
-    phone?: string,
-    profile_picture?: string,
-    country_code?: string,
-    post_code?: string,
-    secret_key?: string
-}
+  _id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phoneNumber: string;
+  aboutMe: string;
+  password: string;
+  confirmPassword?: string;
+  isEmailVerified: boolean;
+  createdAt: string;
+  updatedAt: string;
+  profilePicture: string;
+  favoriteBusinesses: string[];
+  business: Omit<BusinessType, "provider">;
+  notify: boolean;
+};
 
 export type Location = {
-    place_name?: string
-}
+  place_name?: string;
+};
 
 export type RegisterProvider = {
-    firstname?: string;
-    lastname?: string;
-    email?: string;
-    phone?: string,
-    gender?: string;
-    password?: string;
-    confirmPassword?: string;
-    business_name?: string;
-    address?: string;
-    longitude?: string;
-    latitude?: string;
-    otp?: string;
-    dob?: string;
-    secret_key?: string;
-    about_me?: string;
-    images?: Array<{image_url: string, id?: string}>;
-    profile_picture?: string;
-    skill_data?: Array<{
-        skill?: string;
-        cost?: number;
-        time_frame?: string;
-    }>
-}
+  firstName: string;
+  lastName: string;
+  email: string;
+  phoneNumber: string;
+  password: string;
+  profilePicture: string;
+  latitude?: string;
+  longitude?: string;
+  previousWorkImages: string[];
+  skill_data: {
+    skill: string;
+    cost: string;
+    time_frame: string;
+  }[];
+} & BusinessType;
 
 export type AuthUser = {
-    access?: string;
-    refresh?: string;
-    notify?: boolean;
-    service_profile?: string;
-    sub_category?: Array<SubCategory>
-} & RegisterProvider
+  token?: string;
+  user?: RegisterUserInfo;
+};
 
-export type LoginUserInfo = Pick<RegisterUserInfo, "email" | "password">
+export type LoginUserInfo = Pick<RegisterUserInfo, "email" | "password">;
 
 export type NOTIFICATION = {
-    id: string;
-    notification_message: string;
-    created_at: Date | string;
-    is_read: string;
-    notification_type: string;
-    owner: string;
-}
+  id: string;
+  title: string;
+  message: string;
+  createdAt: Date;
+  isRead: boolean;
+  type: string;
+  sender: RegisterUserInfo;
+};

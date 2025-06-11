@@ -9,7 +9,7 @@ import { getSubscriptionPlan } from '@/api/subscribe'
 import { PLAN } from '@/types/subscrbe'
 import { openLink } from '@/utils/helper'
 
-const Plan: React.FC<{ planRef: React.RefObject<IHandles> }> = ({ planRef }) => {
+const Plan: React.FC<{ planRef: React.RefObject<IHandles | null> }> = ({ planRef }) => {
     const subscribeRef = useRef<Modalize>(null)
     const [plan, setPlan] = useState<PLAN>()
 
@@ -50,7 +50,7 @@ const Plan: React.FC<{ planRef: React.RefObject<IHandles> }> = ({ planRef }) => 
 
 export default Plan
 
-const SubscribeModal: React.FC<{ subscribeRef: React.RefObject<IHandles>, plan: PLAN }> = ({ subscribeRef, plan }) => {
+const SubscribeModal: React.FC<{ subscribeRef: React.RefObject<IHandles | null>, plan: PLAN }> = ({ subscribeRef, plan }) => {
     const [load, setLoad] = useState(false)
 
     const subscribe = async () => {

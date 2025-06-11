@@ -5,11 +5,13 @@ import { AntDesign, Entypo, Fontisto, Ionicons, MaterialIcons } from '@expo/vect
 import { IHandles } from 'react-native-modalize/lib/options'
 import { generalStyle } from '@/style/generalStyle'
 import { reportService, reviewService } from '@/api/service'
-import { Service } from '@/types/service'
+import { BusinessType } from '@/types/service'
 import Toast from 'react-native-toast-message'
 import StarRating from '../StarRating'
+import { useSelector } from 'react-redux'
+import { RootState } from '../Store/store'
 
-const FlagOrReportService: React.FC<{ flagOrReportRef: React.RefObject<IHandles>, service: Service, bookService: any }> = ({ flagOrReportRef, service, bookService }) => {
+const FlagOrReportService: React.FC<{ flagOrReportRef: React.RefObject<IHandles | null>, service: BusinessType, bookService: any }> = ({ flagOrReportRef, service, bookService }) => {
     const colorScheme = useColorScheme() || "light"
     const reportModalRef = useRef<Modalize>(null)
     const flagModalRef = useRef<Modalize>(null)
@@ -21,7 +23,7 @@ const FlagOrReportService: React.FC<{ flagOrReportRef: React.RefObject<IHandles>
                 adjustToContentHeight={true}
             >
                 <View style={styles.modalContent}>
-                    <Text style={{ ...styles.buttonText, ...generalStyle.text["light"], textAlign: "center", textTransform: "capitalize" }}>{service?.business_name}</Text>
+                    <Text style={{ ...styles.buttonText, ...generalStyle.text["light"], textAlign: "center", textTransform: "capitalize" }}>{service?.title}</Text>
                     <Pressable onPress={() => { flagOrReportRef.current?.close(); bookService() }} style={{ ...styles.registerButton }}>
                         <AntDesign name="login" size={24} color="white" />
                         <Text style={{ ...styles.buttonText, ...generalStyle.text["dark"] }}>Book Now</Text>
@@ -44,7 +46,7 @@ const FlagOrReportService: React.FC<{ flagOrReportRef: React.RefObject<IHandles>
 
 export default FlagOrReportService
 
-const ReportUser: React.FC<{ reportModalRef: React.RefObject<IHandles>, service: Service }> = ({ reportModalRef, service }) => {
+const ReportUser: React.FC<{ reportModalRef: React.RefObject<IHandles | null>, service: BusinessType }> = ({ reportModalRef, service }) => {
     const [reason, setReason] = useState("")
     const [load, setLoad] = useState(false)
 
@@ -72,7 +74,7 @@ const ReportUser: React.FC<{ reportModalRef: React.RefObject<IHandles>, service:
             adjustToContentHeight={true}
         >
             <View style={styles.modalContent}>
-                <Text style={{ ...styles.buttonText, fontSize: 14, ...generalStyle.text["light"], textAlign: "center", textTransform: "capitalize" }}>Are you sure you want to report {service?.business_name}</Text>
+                <Text style={{ ...styles.buttonText, fontSize: 14, ...generalStyle.text["light"], textAlign: "center", textTransform: "capitalize" }}>Are you sure you want to report {service?.title}</Text>
                 <TextInput onChangeText={(text) => setReason(text)} value={reason} multiline numberOfLines={5} placeholderTextColor={"black"} style={{ ...styles.registerInput, height: 100, padding: 10, }} placeholder='Give a reason why you want to report this service...' />
                 <Pressable onPress={handleReportService} style={styles.deleteButton}>
                     {
@@ -89,7 +91,7 @@ const ReportUser: React.FC<{ reportModalRef: React.RefObject<IHandles>, service:
     )
 }
 
-const FlagUser: React.FC<{ flagModalRef: React.RefObject<IHandles>, service: Service }> = ({ flagModalRef, service }) => {
+const FlagUser: React.FC<{ flagModalRef: React.RefObject<IHandles | null>, service: BusinessType }> = ({ flagModalRef, service }) => {
     const colorScheme = useColorScheme() || "light"
     const [load, setLoad] = useState(false)
 
@@ -117,7 +119,7 @@ const FlagUser: React.FC<{ flagModalRef: React.RefObject<IHandles>, service: Ser
             adjustToContentHeight={true}
         >
             <View style={{ ...styles.modalContent, height: 500 }}>
-                <Text style={{ ...styles.buttonText, fontSize: 14, marginBottom: 20, ...generalStyle.text["light"], textAlign: "center", textTransform: "capitalize" }}>You will no longer see a service post from {service?.business_name}</Text>
+                <Text style={{ ...styles.buttonText, fontSize: 14, marginBottom: 20, ...generalStyle.text["light"], textAlign: "center", textTransform: "capitalize" }}>You will no longer see a service post from {service?.title}</Text>
                 <Pressable onPress={handleReportService} style={styles.deleteButton}>
                     {
                         load ?
@@ -143,20 +145,23 @@ const FlagUser: React.FC<{ flagModalRef: React.RefObject<IHandles>, service: Ser
     )
 }
 
-export const RateModal: React.FC<{ rateRef: React.RefObject<IHandles>, serviceID: string }> = ({ rateRef, serviceID }) => {
+export const RateModal: React.FC<{ rateRef: React.RefObject<IHandles | null>, serviceID: string }> = ({ rateRef, serviceID }) => {
     const [rating, setRating] = useState(0)
     const [content, setContent] = useState("")
     const [load, setLoad] = useState(false)
+    const authUser = useSelector((state: RootState) => state.authProvider.auth)
 
     const handleRateService = async () => {
         const body = {
             rating: rating,
-            comment: content
+            message: content,
+            businessID: serviceID,
+            userID: authUser?.user?._id!
         }
         console.log(body);
         
         setLoad(true)
-        const res = await reviewService(body, serviceID)
+        const res = await reviewService(body)
         setLoad(false)
         rateRef.current?.close()
         if (res?.status === 200 || res?.status === 201) {

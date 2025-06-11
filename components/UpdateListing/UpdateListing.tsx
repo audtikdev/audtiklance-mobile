@@ -1,10 +1,10 @@
 import { View, Text, StyleSheet, TextInput, useColorScheme, Pressable, ImageBackground, Alert, ScrollView, KeyboardAvoidingView, Platform, ActivityIndicator } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import * as ImagePicker from 'expo-image-picker';
-import { AntDesign, MaterialIcons } from '@expo/vector-icons'
+import { AntDesign, Feather, MaterialIcons } from '@expo/vector-icons'
 import { generalStyle } from '@/style/generalStyle'
 import { router } from 'expo-router';
-import { Service } from '@/types/service';
+import { CategoryType } from '@/types/service';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { ListingBody } from '@/types/listing';
 import Toast from 'react-native-toast-message';
@@ -18,37 +18,36 @@ export type ListingLocation = {
     address: string
 }
 
-const UpdateListing: React.FC<{id: string}> = ({id}) => {
+const UpdateListing: React.FC<{ id: string }> = ({ id }) => {
     const colorScheme = useColorScheme() || "light"
     const [image, setImage] = useState("")
     const [showCatModal, setShowCatModal] = useState(false)
     const [showLocModal, setShowLocModal] = useState(false)
-    const [selectedCat, setSelectedCat] = useState<Service>()
+    const [selectedCat, setSelectedCat] = useState<CategoryType>()
     const [selectedLoc, setSelectedLoc] = useState<ListingLocation>()
+    const [showDate, setShowDate] = useState(Platform.OS !== 'android')
     const [date, setDate] = useState(new Date());
     const [show, setShow] = useState(false);
     const [load, setLoad] = useState(false)
     const [jobList, setJobList] = useState<Partial<ListingBody>>()
 
-    useEffect(()=> {
-        (async ()=> {
+    useEffect(() => {
+        (async () => {
             const res = await getAListing(id)
             if (res?.status === 200) {
                 setJobList({
-                   title: res?.data?.title,
-                   budget: res?.data?.budget,
-                   description: res?.data?.description
+                    title: res?.data?.title,
+                    budget: res?.data?.budget,
+                    description: res?.data?.description
                 })
-                setSelectedCat({
-                    name: res?.data?.category
-                })
+                setSelectedCat(res?.data?.category)
                 setSelectedLoc({
                     address: res?.data?.address,
-                    latitude: res?.data?.latitude,
-                    longitude: res?.data?.longitude
+                    latitude: res?.data?.location?.coordinates?.[1],
+                    longitude: res?.data?.location?.coordinates?.[0]
                 })
-                setImage(res?.data?.images?.[0]?.image_url)
-                setDate(new Date(res?.data?.preferred_date))
+                setImage(res?.data?.images?.[0])
+                setDate(new Date(res?.data?.deadline))
             } else {
                 Toast.show({
                     type: 'error',
@@ -59,8 +58,10 @@ const UpdateListing: React.FC<{id: string}> = ({id}) => {
     }, [])
 
     const onChange = (event: any, selectedDate: Date | undefined) => {
+        if (Platform.OS === 'android') {
+            setShowDate(false);
+        }
         const currentDate = selectedDate || date;
-        setShow(false);
         setDate(currentDate);
     };
 
@@ -97,33 +98,29 @@ const UpdateListing: React.FC<{id: string}> = ({id}) => {
             return
         }
         setLoad(true)
-        const body: Partial<ListingBody> = { ...jobList! }
-        body.category = selectedCat?.id!
-        body.longitude = selectedLoc?.longitude!,
-            body.latitude = selectedLoc?.latitude!,
-            body.address = selectedLoc?.address!,
-            body.preferred_date = date.toISOString()
-        const formData = new FormData()
-        Object.entries(body).forEach(([key, value]) => {
-            formData.append(key, value as string)
-        })
-
-        let filename = image.split('/').pop();
-
-        let match = /\.(\w+)$/.exec(filename!);
-        let type = match ? `image/${match[1]}` : `image`;
-
-        // @ts-ignore
-        formData.append('images[0]', { uri: image, name: filename, type });
-
+        const body: any = { ...jobList! }
+        if (selectedCat?.id) {
+            body.categoryId = selectedCat?.id!
+        }
+        if (selectedLoc?.address) {
+            body.address = selectedLoc?.address!
+        }
+        if (date) {
+            body.deadline = date.toISOString()
+        }
+        if (selectedLoc?.latitude && selectedLoc?.longitude) {
+            body.location = JSON.stringify({
+                type: "Point",
+                coordinates: [selectedLoc?.longitude, selectedLoc?.latitude]
+            })
+        }
         const res = await updateListing(body, id)
-
         if (res?.status === 201 || res?.status === 200) {
             Toast.show({
                 type: 'success',
                 text1: 'Job Updated, Redirecting...'
             })
-            setTimeout(()=> {
+            setTimeout(() => {
                 router.push("/listing")
             }, 1000)
         } else {
@@ -146,7 +143,7 @@ const UpdateListing: React.FC<{id: string}> = ({id}) => {
                     <Text style={{ fontSize: 16, fontWeight: 600, marginTop: 30, textAlign: "center", marginBottom: 10 }}>Enter Job Information</Text>
                     <View style={styles.scrollContainer}>
                         <ScrollView showsVerticalScrollIndicator={false}>
-                            <View style={{paddingBottom: 10}}>
+                            <View style={{ paddingBottom: 10 }}>
                                 <View style={styles.inputContainer}>
                                     <Text style={styles.inputText}>Job Title</Text>
                                     <TextInput value={jobList?.title} onChangeText={(text) => handleInput("title", text)} placeholderTextColor={"black"} style={{ ...styles.registerInput }} placeholder='Enter Job Title' />
@@ -183,15 +180,17 @@ const UpdateListing: React.FC<{id: string}> = ({id}) => {
                                 </Pressable>
                                 <View style={{ ...styles.inputContainer, marginBottom: 10 }}>
                                     <Text style={styles.inputText}>Deadline</Text>
-                                    <DateTimePicker
+                                    {Platform.OS === 'android' && <Pressable style={{ display: 'flex', flexDirection: 'row', columnGap: 5, alignItems: 'center' }} onPress={() => setShowDate(true)}>
+                                        <Text>{date?.toLocaleString()}</Text>
+                                        <Feather name="edit" size={14} color="black" />
+                                    </Pressable>}
+                                    {showDate && <DateTimePicker
                                         value={date}
-                                        mode="datetime"
+                                        mode="date"
                                         display="default"
                                         onChange={onChange}
-                                    />
-
+                                    />}
                                 </View>
-
                                 <View style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center", height: 60 }}>
                                     <Pressable onPress={() => router.back()} style={styles.cancelButton}><Text style={{ ...styles.buttonText, ...generalStyle.text["light"] }}>Cancel</Text></Pressable>
                                     <Pressable onPress={handleSubmit} style={styles.createButton}>

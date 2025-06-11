@@ -5,7 +5,7 @@ import Constants from 'expo-constants'
 import { formatCurrency } from '@/utils/helper'
 import { router } from 'expo-router'
 import ReviewCard from '../Review/ReviewCard'
-import { Review, Service } from '@/types/service'
+import { BusinessType, Review } from '@/types/service'
 import axios from 'axios'
 import LottieView from 'lottie-react-native'
 import { Modalize } from 'react-native-modalize'
@@ -21,7 +21,7 @@ import Swiper from 'react-native-swiper'
 
 const ServiceDescription: React.FC<{ id: string }> = ({ id }) => {
     const authUser = useSelector((state: RootState) => state.authProvider.auth)
-    const [service, setService] = useState<Service | null>(null)
+    const [service, setService] = useState<BusinessType | null>(null)
     const [reviews, setReviews] = useState<Review[]>([])
     const [load, setLoad] = useState(true)
     const [showQuoteModal, setShowQuoteModal] = useState(false)
@@ -32,7 +32,7 @@ const ServiceDescription: React.FC<{ id: string }> = ({ id }) => {
     const baseUrl = Constants.expoConfig?.extra?.BASE_API
     
     const fetchService = async () => {
-        const url = `${baseUrl}/service/${id}`;
+        const url = `${baseUrl}/businesses/${id}`;
         axios.get(url)
             .then((response: any) => {
                 setService(response?.data);
@@ -44,8 +44,9 @@ const ServiceDescription: React.FC<{ id: string }> = ({ id }) => {
                 setLoad(false)
             });
         const res = await getServiceReview(id)
+        console.log(res?.data);
         if (res?.status === 200) {
-            setReviews(res?.data?.data)
+            setReviews(res?.data)
         }
     }
 
@@ -57,7 +58,7 @@ const ServiceDescription: React.FC<{ id: string }> = ({ id }) => {
     }, [id])
 
     const bookService = () => {
-        if (!authUser?.access) {
+        if (!authUser?.token) {
             router.push("/login")
         } else {
             if (service?.is_google_place) {
@@ -91,19 +92,19 @@ const ServiceDescription: React.FC<{ id: string }> = ({ id }) => {
                         </View>
                         <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
                             <View style={{ paddingBottom: 20 }}>
-                                <Text style={{ marginTop: 10, fontSize: 16, fontWeight: 500 }}>{service?.business_name}</Text>
+                                <Text style={{ marginTop: 10, fontSize: 16, fontWeight: 500 }}>{service?.title}</Text>
                                 <Swiper autoplay loop style={styles.carouselView}>
                                     {
-                                        [{image_url: service?.profile_picture}, ...service?.images || []]?.map((image, i)=> (
-                                            <Image key={i} style={{ width: '100%', height: '100%', marginTop: 20 }} source={image?.image_url ? { uri: image.image_url } : require("../../assets/images/placeholder.png")} />
+                                        [service?.mainImage, ...(service?.previousWorkImages || [])]?.map((image, i)=> (
+                                            <Image key={i} style={{ width: '100%', height: '100%', marginTop: 20 }} source={image ? { uri: image } : require("../../assets/images/placeholder.png")} />
                                         ))
                                     }
                                 </Swiper>
                                 <Text style={{ marginTop: 20, fontSize: 16, fontWeight: 500 }}>Services offered</Text>
                                 <View style={{ display: 'flex', flexDirection: 'row', gap: 10, marginTop: 5, flexWrap: 'wrap' }}>
                                     {
-                                        service?.sub_category?.map((category, i) => (
-                                            <Text key={i} style={styles.pillText}>{category?.sub_category}</Text>
+                                        service?.services?.map((service, i) => (
+                                            <Text key={i} style={styles.pillText}>{service?.category?.name}</Text>
                                         ))
                                     }
                                 </View>
@@ -111,13 +112,13 @@ const ServiceDescription: React.FC<{ id: string }> = ({ id }) => {
                                     <Text style={{ fontSize: 16, fontWeight: 500 }}>About me</Text>
                                     {
                                         !service?.is_google_place &&
-                                        <Text style={{ fontSize: 16, fontWeight: 500 }}>From {formatCurrency("en-US", "USD", Number(service?.sub_category?.[0]?.cost!))}</Text>
+                                        <Text style={{ fontSize: 16, fontWeight: 500 }}>From {formatCurrency("en-US", "USD", Number(service?.services?.[0]?.price!))}</Text>
                                     }
                                 </View>
                                 <View style={{ marginTop: 10, display: 'flex', flexDirection: 'row', alignItems: 'center', columnGap: 10 }}>
-                                    <Image style={styles.dpImage} source={service?.profile_picture ? { uri: service.profile_picture } : require("../../assets/images/placeholder.png")} />
+                                    <Image style={styles.dpImage} source={service?.mainImage ? { uri: service.mainImage } : require("../../assets/images/placeholder.png")} />
                                     <View>
-                                        <Text>{service?.owner_name}</Text>
+                                        <Text>{service?.provider?.firstName} {service?.provider?.lastName}</Text>
                                         <View style={{ display: 'flex', marginLeft: -5, flexDirection: 'row', alignItems: 'center', columnGap: 5 }}>
                                             <EvilIcons name="location" size={20} color="black" />
                                             <Text>{service?.address}</Text>
@@ -126,7 +127,7 @@ const ServiceDescription: React.FC<{ id: string }> = ({ id }) => {
                                 </View>
                                 {!service?.is_google_place && <Text style={{ marginTop: 15 }}>Get a <Text onPress={()=> setShowQuoteModal(true)} style={{ color: 'blue' }}>free quote</Text> from this professional</Text>}
                                 <Text style={{ marginTop: 20, marginBottom: 5, fontSize: 16, fontWeight: 500 }}>Overview</Text>
-                                <Text>{service?.about_me}</Text>
+                                <Text>{service?.description}</Text>
                                 <View style={{ marginTop: 25, display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
                                     <Text style={{ fontSize: 16, fontWeight: 600 }}>Review From Client</Text>
                                     <Text onPress={() => router.push(`/reviews/${service?.id}`)} style={{ textDecorationLine: "underline" }}>View all</Text>
@@ -139,9 +140,9 @@ const ServiceDescription: React.FC<{ id: string }> = ({ id }) => {
                                             </View> :
                                             <View>
                                                 {
-                                                    !service?.external_reviews || service?.external_reviews?.length < 1 || Object.keys(service?.external_reviews)?.length < 1 ?
+                                                    !service?.reviews || service?.reviews?.length < 1 || Object.keys(service?.reviews)?.length < 1 ?
                                                         <Text style={{ marginVertical: 30, textAlign: "center" }}>No Review Yet</Text> :
-                                                        <ReviewCard review={service?.external_reviews?.[0]!} />
+                                                        <ReviewCard review={service?.reviews?.[0]!} />
                                                 }
                                             </View>
                                     }
@@ -156,7 +157,7 @@ const ServiceDescription: React.FC<{ id: string }> = ({ id }) => {
             <ExtProvider extProviderRef={extProviderRef} service={service!} />
             <FlagOrReportService flagOrReportRef={flagOrReportRef} service={service!} bookService={bookService} />
             <RateModal rateRef={rateRef} serviceID={service?.id!} />
-            <Quote showModal={showQuoteModal} setShowModal={setShowQuoteModal} serviceID={service?.id!} />
+            <Quote showModal={showQuoteModal} setShowModal={setShowQuoteModal} serviceID={service?.provider?._id!} />
         </View>
     )
 }

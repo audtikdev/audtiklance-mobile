@@ -15,6 +15,7 @@ import { CHAT } from '@/components/Chat/type'
 import { getChatList } from '@/api/chat'
 import { getLeads } from '@/api/leads'
 import { NOTIFICATION } from '@/types/auth'
+import { BusinessType } from '@/types/service'
 
 const Home = () => {
     const authUser = useSelector((state: RootState) => state.authProvider.auth)
@@ -23,29 +24,24 @@ const Home = () => {
     const [chatNum, setChatNum] = useState<number>(0)
     const [leadNum, setLeadNum] = useState<number>(0)
     const [notifications, setNotifications] = useState<Array<NOTIFICATION>>([])
+    const [business, setBusiness] = useState<BusinessType | null>(null)
 
     useEffect(() => {
         (async () => {
             setLoad(true)
-            const response = await getUser()
-            const chatRes = await getChatList()
-            const leadRes = await getLeads()
-            const notifyRes = await getNotification()
-            
+            const [response, chatRes, leadRes, notifyRes, businessRes] = await Promise.all([getUser(), getChatList(), getLeads(), getNotification(), getServiceProfile(authUser?.user?.business?.id!)])
             if (response?.status === 201 || response?.status === 200) {
-                setChatNum(chatRes?.data?.count)
-                setLeadNum(leadRes?.data?.count)
-                setNotifications(notifyRes?.data?.results)
-                const data = response.data?.data
-                dispatch(updateAuth({ auth: data }))
-                const res = await getServiceProfile(data?.service_profile)
-                dispatch(updateAuth({ auth: res?.data }))
+                setChatNum(chatRes?.data?.length)
+                setLeadNum(leadRes?.data?.length)
+                setNotifications(notifyRes?.data)
+                setBusiness(businessRes?.data)
+                dispatch(updateAuth({ auth: { user: response?.data } }))
             } else {
                 router.push("/login")
             }
             setLoad(false)
         })()
-    }, [])
+    }, [authUser?.user?._id])
 
     return (
         <View style={{ ...styles.container }}>
@@ -55,7 +51,7 @@ const Home = () => {
                         <LottieView source={require("../../../assets/images/service2.json")} loop={true} autoPlay style={{ width: 300, height: 350 }} />
                     </View> :
                     <>
-                        <Text style={{ fontSize: 20, fontWeight: 700, textTransform: "capitalize" }}>Welcome back, {authUser?.firstname}!</Text>
+                        <Text style={{ fontSize: 20, fontWeight: 700, textTransform: "capitalize" }}>Welcome back, {authUser?.user?.firstName}!</Text>
                         <Text style={{ fontSize: 14, fontWeight: 400, marginTop: 5 }}>Here's what's happening with your business today.</Text>
                         <View style={styles.scrollContainer}>
                             <ScrollView showsVerticalScrollIndicator={false}>
@@ -65,13 +61,12 @@ const Home = () => {
                                         <MaterialIcons name="home-repair-service" size={30} color="black" />
                                     </View>
                                     {
-                                        authUser?.sub_category?.map((serv, i) => (
+                                        business?.services?.map((serv, i) => (
                                             <View key={i} style={{ display: "flex", marginTop: 15, flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
                                                 <View>
-                                                    <Text style={{ fontSize: 18, fontWeight: 600 }}>{serv?.sub_category}</Text>
-                                                    <Text style={{ marginTop: 5 }}>{formatCurrency("en-US", "USD", Number(serv?.cost))}</Text>
+                                                    <Text style={{ fontSize: 18, fontWeight: 600 }}>{serv?.category?.name}</Text>
+                                                    <Text style={{ marginTop: 5 }}>{formatCurrency("en-US", "USD", Number(serv?.price))}</Text>
                                                 </View>
-                                                <Text>{serv?.time_frame}</Text>
                                             </View>
                                         ))
                                     }
@@ -101,10 +96,10 @@ const Home = () => {
                                         notifications?.slice(0, 6).map((notification, i) => (
                                             <View key={i} style={{ display: "flex", marginTop: 15, flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
                                                 <View style={{ display: "flex", flexDirection: "row", columnGap: 10, alignItems: "center" }}>
-
-                                                    <Text>{notification?.notification_message}</Text>
+                                                    <Image source={{ uri: notification?.sender?.profilePicture || `https://ui-avatars.com/api/?name=${notification?.sender?.firstName}+${notification?.sender?.lastName}` }} style={{ width: 30, height: 30, borderRadius: 100 }} />
+                                                    <Text>{notification?.sender?.firstName}</Text>
                                                 </View>
-                                                <Text>{new Date(Date.parse(notification?.created_at as string)).toLocaleDateString()}</Text>
+                                                <Text>{notification?.message}</Text>
                                             </View>
                                         ))
                                     }

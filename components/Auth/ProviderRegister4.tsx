@@ -16,6 +16,7 @@ import { updateAuth } from '../Context/authProvider';
 
 const ProviderRegister4 = () => {
     const providerDetails = useSelector((state: RootState) => state.registerProvider.provider)
+
     const [load, setLoad] = useState(false)
     const colorScheme = useColorScheme() || "light"
     const modalizeRef = useRef<Modalize>(null)
@@ -27,11 +28,8 @@ const ProviderRegister4 = () => {
     const handleSubmit = async () => {
         setLoad(true)
         const response = await sendOtp({ email: providerDetails?.email! })
-        console.log(response);
 
         if (response?.status === 201 || response?.status === 200) {
-            console.log(response?.data?.data);
-            dispatch(updateRegisterProvider({ provider: { secret_key: response?.data?.data } }))
             Keyboard.dismiss()
             Toast.show({
                 type: "success",
@@ -71,46 +69,37 @@ const ProviderRegister4 = () => {
 
     const createAccount = async () => {
         setLoad(true)
-
         const formData = new FormData()
-        let localUri = providerDetails?.profile_picture!;
-        let filename = localUri.split('/').pop();
-
-        let match = /\.(\w+)$/.exec(filename!);
-        let type = match ? `image/${match[1]}` : `image`;
-        // @ts-ignore
-        formData.append('profile_picture', { uri: localUri, name: filename, type });
-        providerDetails?.skill_data?.forEach((skillData, index) => {
-            formData.append(`skill_data[${index}]skill`, skillData.skill!);
-            formData.append(`skill_data[${index}]cost`, `${skillData.cost}`);
-            formData.append(`skill_data[${index}]time_frame`, `${skillData.time_frame}`);
-        })
+        providerDetails?.skill_data?.forEach((skillData) => {
+            formData.append("services", JSON.stringify({ category: skillData?.skill, price: skillData?.cost }));
+        });
+        images.unshift(providerDetails?.profilePicture!)
         images?.forEach((image, i) => {
             let filename = image?.split('/').pop();
 
             let match = /\.(\w+)$/.exec(filename!);
             let type = match ? `image/${match[1]}` : `image`;
             // @ts-ignore
-            formData.append(`images${i}`, { uri: image, name: filename, type });
+            formData.append(`images`, { uri: image, name: filename, type });
         })
-        formData.append("email", providerDetails?.email!)
-        formData.append("password", providerDetails?.password!)
-        formData.append("otp", otp)
-        formData.append("secret_key", providerDetails?.secret_key!)
-        formData.append("longitude", providerDetails?.longitude!)
-        formData.append("latitude", providerDetails?.latitude!)
-        formData.append("business_name", providerDetails?.business_name!)
-        formData.append("phone", providerDetails?.phone!)
-        formData.append("address", providerDetails?.address!)
-        formData.append("about_me", providerDetails?.about_me!)
-        formData.append("is_active", "true")
+        formData.append("title", providerDetails?.title!);
+        formData.append("address", providerDetails?.address!);
+        formData.append("phoneNumber", `+${providerDetails?.phoneNumber}`);
+        formData.append("email", providerDetails?.email!);
+        formData.append("password", providerDetails?.password!);
+        formData.append("firstName", providerDetails?.firstName!);
+        formData.append("lastName", providerDetails?.lastName!);
+        formData.append("location", JSON.stringify({ lat: providerDetails?.latitude, lng: providerDetails?.longitude }))
+        formData.append("description", providerDetails?.description!);
+        formData.append("otp", otp);
         const response = await registerProvider(formData)
         if (response?.status === 201 || response?.status === 200) {
-            dispatch(updateAuth({ auth: response?.data?.data }))
+            dispatch(updateAuth({ auth: { token: response?.data } }))
             Toast.show({
                 type: "success",
                 text1: "Registration Successful"
             })
+            setCreated(true)
         } else {
             Toast.show({
                 type: "error",
@@ -118,7 +107,6 @@ const ProviderRegister4 = () => {
             })
         }
         setLoad(false)
-        setCreated(true)
     }
 
     return (
@@ -157,7 +145,6 @@ const ProviderRegister4 = () => {
             <Modalize
                 ref={modalizeRef}
                 adjustToContentHeight={true}
-                modalStyle={generalStyle.modalBackground[colorScheme]}
                 closeOnOverlayTap={false}
             >
                 {

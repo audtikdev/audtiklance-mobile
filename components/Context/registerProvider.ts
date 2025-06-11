@@ -2,11 +2,11 @@ import { RegisterProvider } from '@/types/auth';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface ProviderRegisterState {
-    provider: RegisterProvider
+    provider: RegisterProvider | null
 }
 
 const initialState: ProviderRegisterState ={
-    provider: {}
+    provider: null
 }
 
 const registerProviderSlice = createSlice({

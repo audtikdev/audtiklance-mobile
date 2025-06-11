@@ -1,13 +1,9 @@
 import { AxiosError } from "axios";
 import apiAxios from ".";
 
-export const createQuote = async (body: FormData) => {
+export const createQuote = async (body: {provider: string, message: string, deadline: string, type: string}) => {
   try {
-    const res = await apiAxios.post(`/quote/`, body, {
-      headers: {
-        "Content-Type": "multipart/form-data"
-      }
-    });
+    const res = await apiAxios.post(`/leads`, body);
     
     return {
       status: res.status,

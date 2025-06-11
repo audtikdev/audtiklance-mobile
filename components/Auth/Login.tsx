@@ -36,13 +36,17 @@ const Login = () => {
             await GoogleSignin.signIn();
             const tokens = await GoogleSignin.getTokens();
             const body = {
-                access_token: tokens.accessToken!,
+                accessToken: tokens.idToken!,
             }
             const res = await googleRegisterUser(body)
             if (res?.status === 201 || res?.status === 200) {
-                const data = res?.data?.data
+                const data = res?.data
                 dispatch(updateAuth({ auth: data }))
-                router.push("/(user)")
+                if (data?.user?.business) {
+                    router.push("/(provider)")
+                } else {
+                    router.push("/(user)")
+                }
             } else {
                 Toast.show({
                     type: "error",
@@ -65,18 +69,20 @@ const Login = () => {
                     AppleAuthentication.AppleAuthenticationScope.EMAIL,
                 ],
             });
+            console.log(credential);
             const decoded = jwtDecode(credential.identityToken!);
             console.log(decoded);
 
             const body = {
                 // @ts-ignore
                 email: decoded?.email,
-                firstname: credential?.fullName?.givenName || "Rejoice",
-                lastname: credential?.fullName?.familyName || "Uahomo"
+                firstName: credential?.fullName?.givenName || "John",
+                lastName: credential?.fullName?.familyName || "Doe",
+                sub: decoded?.sub
             }
             const res = await appleRegisterUser(body)
             if (res?.status === 201 || res?.status === 200) {
-                const data = res?.data?.data
+                const data = res?.data
                 dispatch(updateAuth({ auth: data }))
                 router.push("/(user)")
             } else {
@@ -114,9 +120,9 @@ const Login = () => {
         console.log(response);
 
         if (response?.status === 201 || response?.status === 200) {
-            const data = response?.data?.data
+            const data = response?.data
             dispatch(updateAuth({ auth: data }))
-            if (data?.service_profile) {
+            if (data?.user?.business) {
                 router.push("/(provider)")
             } else {
                 router.push("/(user)")
@@ -137,7 +143,7 @@ const Login = () => {
                     <View style={{ width: '100%' }}>
                         <View style={styles.registerMain}>
                             <Image source={require("../../assets/images/logo.png")} />
-                            <Text style={{ ...styles.profileText }}>Welcome Back {authUser?.firstname}</Text>
+                            <Text style={{ ...styles.profileText }}>Welcome Back {authUser?.user?.firstName}</Text>
                             <TextInput textContentType="emailAddress" autoCapitalize='none' autoCorrect={false} keyboardType='email-address' placeholderTextColor={"black"} onChangeText={(text) => handleInput("email", text)} value={userInfo?.email} style={{ ...styles.registerInput }} placeholder='Email' />
                             <TextInput textContentType="password" placeholderTextColor={"black"} onChangeText={(text) => handleInput("password", text)} value={userInfo?.password} style={{ ...styles.registerInput }} placeholder='Password' />
                             <Text onPress={() => router.push("/forgotPassword")} style={{ alignSelf: "flex-end", fontSize: 14, textDecorationLine: "underline", marginTop: -15 }}>Forgot Password?</Text>
