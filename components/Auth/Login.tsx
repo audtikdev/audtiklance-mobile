@@ -43,9 +43,9 @@ const Login = () => {
                 const data = res?.data
                 dispatch(updateAuth({ auth: data }))
                 if (data?.user?.business) {
-                    router.push("/(provider)")
+                    router.replace("/(provider)")
                 } else {
-                    router.push("/(user)")
+                    router.replace("/(user)")
                 }
             } else {
                 Toast.show({
@@ -84,7 +84,7 @@ const Login = () => {
             if (res?.status === 201 || res?.status === 200) {
                 const data = res?.data
                 dispatch(updateAuth({ auth: data }))
-                router.push("/(user)")
+                router.replace("/(user)")
             } else {
                 Toast.show({
                     type: "error",
@@ -123,9 +123,9 @@ const Login = () => {
             const data = response?.data
             dispatch(updateAuth({ auth: data }))
             if (data?.user?.business) {
-                router.push("/(provider)")
+                router.replace("/(provider)")
             } else {
-                router.push("/(user)")
+                router.replace("/(user)")
             }
         } else {
             Toast.show({

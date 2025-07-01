@@ -75,7 +75,7 @@ const UserRegister = () => {
       console.log("success");
       const data = response?.data
       dispatch(updateAuth({ auth: data }))
-      router.push("/(user)")
+      router.replace("/(user)")
     } else {
       Toast.show({
         type: "error",
