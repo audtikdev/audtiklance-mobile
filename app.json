@@ -1,8 +1,8 @@
 {
   "expo": {
     "name": "HandyTap",
-    "owner": "handytap",
-    "slug": "handytap_mobile",
+    "owner": "audtiklance",
+    "slug": "audtiklance_mobile",
     "version": "1.0.6",
     "orientation": "portrait",
     "icon": "./assets/images/logo.jpeg",
