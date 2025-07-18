@@ -1,2 +1,2 @@
-# audtiklance-mobile
-Audtiklance mobile version
+# handytap-mobile
+Handytap mobile version

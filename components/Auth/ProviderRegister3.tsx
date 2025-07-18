@@ -143,7 +143,7 @@ const ProviderRegister3 = () => {
                     <View style={styles.activeServiceTitleContainer}>
                         <Text style={styles.activeServiceTitle}>{activeService?.category?.name}</Text>
                     </View>
-                    <Text style={styles.activeServiceText}>Pros with upfront pricing get hired more on Audtiklance.</Text>
+                    <Text style={styles.activeServiceText}>Pros with upfront pricing get hired more on HandyTap.</Text>
                     <Text style={styles.activeServiceText}>Add a base price to help you get contacted and hired more, The price will include: Labor (excludes cost of parts).</Text>
                     <Text style={{ marginBottom: 5, marginTop: 10 }}>Enter your base price</Text>
                     <TextInput placeholderTextColor={"black"} onChangeText={(text) => handlePriceinput(text)} value={activeService?.price} keyboardType='phone-pad' style={{ ...styles.registerInput }} placeholder='$0.00' />

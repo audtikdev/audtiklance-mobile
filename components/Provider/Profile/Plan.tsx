@@ -29,7 +29,7 @@ const Plan: React.FC<{ planRef: React.RefObject<IHandles | null> }> = ({ planRef
                 adjustToContentHeight={true}
             >
                 <View style={{ ...styles.modalContent, height: 500 }}>
-                    <Text style={{ ...styles.profileText }}>Upgrade To AudtikLance Preferred</Text>
+                    <Text style={{ ...styles.profileText }}>Upgrade To HandyTap Preferred</Text>
                     {
                         planBenefits?.map((benifit, i) => (
                             <View style={{ display: "flex", flexDirection: "row", columnGap: 10, marginTop: 15, width: "90%" }} key={i}>
@@ -63,7 +63,7 @@ const SubscribeModal: React.FC<{ subscribeRef: React.RefObject<IHandles | null>,
             adjustToContentHeight={true}
         >
             <View style={{ ...styles.modalContent, height: 250 }}>
-                <Text style={{ ...styles.profileText }}>Subscribe To AudtikLance Preferred</Text>
+                <Text style={{ ...styles.profileText }}>Subscribe To HandyTap Preferred</Text>
                 <Text style={{ fontSize: 14, fontWeight: 500, textAlign: "center", marginBottom: 20 }}>Subscribe to get the plan upgraded perks for:</Text>
                 <Text style={{ fontSize: 28, fontWeight: 700, textAlign: "center", marginBottom: 20 }}>${plan?.max_cost}</Text>
 

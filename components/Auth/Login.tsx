@@ -179,7 +179,7 @@ const Login = () => {
                         </View>
                         <View style={styles.termsContainer}>
                             <Text style={{ textAlign: "center", fontSize: 12 }}>By signing up for an account, you agree to</Text>
-                            <Text style={{ ...styles.termsText, textAlign: 'center', fontSize: 12 }}>Audtiklance’s Terms of Service and Privacy Policy.</Text>
+                            <Text style={{ ...styles.termsText, textAlign: 'center', fontSize: 12 }}>HandyTap’s Terms of Service and Privacy Policy.</Text>
                         </View>
                     </View>
                 </TouchableWithoutFeedback>
