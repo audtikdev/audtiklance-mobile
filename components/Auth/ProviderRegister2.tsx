@@ -95,7 +95,7 @@ const ProviderRegister2 = () => {
                         <AntDesign name="arrowleft" size={24} color="black" />
                         <Text>Back</Text>
                     </Pressable> */}
-                    <Image source={require("../../assets/images/logo.png")} />
+                    <Image style={{ width: 100, height: 100, objectFit: "contain" }} source={require("../../assets/images/logo.png")} />
                     <Text style={{ ...styles.profileText, marginBottom: 0 }}>Service Provider Profile Creation</Text>
 
                     <Text style={{ ...styles.profileText, }}>Business Information</Text>

@@ -23,7 +23,7 @@ const ProviderRegister1 = () => {
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View style={{width: '100%'}}>
           <View style={styles.registerMain}>
-            <Image source={require("../../assets/images/logo.png")} />
+            <Image style={{ width: 100, height: 100, objectFit: "contain" }} source={require("../../assets/images/logo.png")} />
             <Text style={{ ...styles.profileText, marginBottom: 0 }}>Service Provider Profile Creation</Text>
             <Text style={{ ...styles.profileText }}>Personal Information</Text>
             <Controller

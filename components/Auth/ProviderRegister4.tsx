@@ -114,7 +114,7 @@ const ProviderRegister4 = () => {
             <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.registerContainer}>
                 <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
                     <View style={styles.registerMain}>
-                        <Image source={require("../../assets/images/logo.png")} />
+                        <Image style={{ width: 100, height: 100, objectFit: "contain" }} source={require("../../assets/images/logo.png")} />
                         <Text style={{ ...styles.profileText, }}>Service Provider Profile Creation</Text>
                         <Text style={{ ...styles.profileText, }}>Upload Media Of Your Previous Work</Text>
                         <Pressable onPress={handleImageSelect} style={{ ...styles.uploadView }}>

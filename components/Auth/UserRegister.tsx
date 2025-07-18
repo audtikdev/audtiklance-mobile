@@ -117,7 +117,7 @@ const UserRegister = () => {
     <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.registerContainer}>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View style={styles.registerMain}>
-          <Image source={require("../../assets/images/logo.png")} />
+          <Image style={{ width: 100, height: 100, objectFit: "contain" }} source={require("../../assets/images/logo.png")} />
           <Text style={{ ...styles.profileText }}>Create a profile</Text>
           <Controller
             control={control}
