@@ -36,8 +36,8 @@ export const planBenefits = [
     "Dedicated support rep",
     "Customize a map of where you get leads",
     "Priority placement in customer searches",
-    "Earned badges, HandyTap Verification, and more on profile",
-    "Easily source HandyTap reviews and import from Google",
+    "Earned badges, HandiTap Verification, and more on profile",
+    "Easily source HandiTap reviews and import from Google",
     "Customers can contact you directly from profile",
     "Hours, logos, photos, and review on profile"
 ]

@@ -1,2 +1,2 @@
-# handytap-mobile
-Handytap mobile version
+# HandiTap-mobile
+HandiTap mobile version
