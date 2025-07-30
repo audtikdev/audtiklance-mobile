@@ -102,7 +102,7 @@ const ProfileMain = () => {
                                 </View>
                                 <AntDesign name="right" size={20} color={colorScheme === "light" ? "black" : "white"} />
                             </Pressable>
-                            <Pressable onPress={() => openLink("https://app.audtiklance.com/terms")} style={{ display: "flex", justifyContent: "space-between", flexDirection: "row", alignItems: "baseline" }}>
+                            <Pressable onPress={() => openLink("https://handitap.com/terms")} style={{ display: "flex", justifyContent: "space-between", flexDirection: "row", alignItems: "baseline" }}>
                                 <View style={styles.box}>
                                     <View style={{ ...styles.iconView }}>
                                         <Feather name="file-text" size={20} color="black" />

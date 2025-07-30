@@ -11,7 +11,7 @@
     "newArchEnabled": true,
     "extra": {
       "MAPBOX_KEY": "pk.eyJ1IjoidmlrdG9oIiwiYSI6ImNrcmpyamM1ZjA1ZG8ydnBjbWRpOWtjN2kifQ.auBvgsbud2l08nrj8lXZfg",
-      "BASE_API": "https://api.audtiklance.com",
+      "BASE_API": "https://api.handitap.com",
       "router": {
         "origin": false
       },

@@ -38,7 +38,7 @@ const Plan: React.FC<{ planRef: React.RefObject<IHandles | null> }> = ({ planRef
                             </View>
                         ))
                     }
-                    <Pressable onPress={() => openLink('https://app.audtiklance.com/pricing')} style={{ ...styles.registerButton, marginTop: 40 }}>
+                    <Pressable onPress={() => openLink('https://handitap.com/pricing')} style={{ ...styles.registerButton, marginTop: 40 }}>
                         <Text style={{ ...styles.buttonText, ...generalStyle.text["dark"] }}>Upgrade</Text>
                     </Pressable>
                 </View>

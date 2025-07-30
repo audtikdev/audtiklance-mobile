@@ -61,7 +61,7 @@ export const registerUser = async (body: Partial<RegisterUserInfo>) => {
 
 export const googleRegisterUser = async (body: {accessToken: string}) => {
   try {
-    const res = await apiAxios.post("https://api.audtiklance.com/auth/google", body);
+    const res = await apiAxios.post("https://api.handitap.com/auth/google", body);
     return {
       status: res.status,
       data: res.data,
