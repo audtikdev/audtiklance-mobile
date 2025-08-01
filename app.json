@@ -3,10 +3,10 @@
     "name": "HandiTap",
     "owner": "audtiklance",
     "slug": "audtiklance_mobile",
-    "version": "1.0.7",
+    "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/logo.jpeg",
-    "scheme": "audtiklance",
+    "scheme": "handitap",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "extra": {
@@ -21,7 +21,7 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "audtiklance",
+      "bundleIdentifier": "handitap",
       "usesAppleSignIn": true,
       "infoPlist": {
         "NSLocationWhenInUseUsageDescription": "We use your location to show nearby service providers and personalized recommendations. For example, this helps us find service providers within 5 miles of you.",
